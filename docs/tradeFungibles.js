@@ -2068,7 +2068,7 @@ data: {{ data }}
     },
 
     newSellOffers() {
-      console.log(now() + " INFO TradeFungibles:computed.newSellOffers - this.tokenSet: " + JSON.stringify(this.tokenSet, null, 2));
+      // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - this.tokenSet: " + JSON.stringify(this.tokenSet, null, 2));
       // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - tokenSet.timestamp: " + this.formatTimestamp(this.tokenSet.timestamp) + ", token.symbol: " + this.tokenSet.symbol + ", token.decimals: " + this.tokenSet.decimals);
       const TENPOW18 = ethers.BigNumber.from("1000000000000000000");
 
@@ -2099,7 +2099,7 @@ data: {{ data }}
             collator[e.maker].offers[e.index] = e;
           }
         } else if (e.eventType == EVENTTYPE_TRADED) {
-          console.log(now() + " INFO TradeFungibles:computed.newSellOffers - TRADED e: " + JSON.stringify(e));
+          // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - TRADED e: " + JSON.stringify(e));
           //         // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - TRADED e: " + JSON.stringify(e));
           //         if (!(e.maker in collator)) {
           //           collator[e.maker] = {};
@@ -2139,7 +2139,7 @@ data: {{ data }}
           }
         }
       }
-      console.log(now() + " INFO TradeFungibles:computed.newSellOffers - prices: " + JSON.stringify(prices, null, 2));
+      // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - prices: " + JSON.stringify(prices, null, 2));
 
       if (simulate && this.tokenSet.timestamp) {
         for (const [i, point] of points.entries()) {
@@ -2153,7 +2153,7 @@ data: {{ data }}
           });
         }
       }
-      console.log(now() + " INFO TradeFungibles:computed.newSellOffers - prices: " + JSON.stringify(prices, null, 2));
+      // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - prices: " + JSON.stringify(prices, null, 2));
 
       prices.sort((a, b) => {
         if (a.valid && !b.valid) {

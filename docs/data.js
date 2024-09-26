@@ -1741,10 +1741,10 @@ const dataModule = {
       //       };
       //     }
       //     tokenAgents[e.contract].events.push(e);
-      //     if (e.eventType == EVENTTYPE_TRADED) {
-      //       // console.log("Traded: " + JSON.stringify(e));
-      //       tradeHashes[e.txHash] = e.contract;
-      //     }
+          if (e.eventType == EVENTTYPE_TRADED) {
+            console.log("Traded: " + JSON.stringify(e));
+            tradeHashes[e.txHash] = e.contract;
+          }
         }
         rows = parseInt(rows) + data.length;
         done = data.length < context.state.DB_PROCESSING_BATCH_SIZE;
@@ -1780,12 +1780,12 @@ const dataModule = {
               }
             }
             if (e.txHash in tradeHashes) {
-              // console.log(now() + " INFO dataModule:actions.collateTokenSet - Trade Transfer: " + JSON.stringify(e));
-              const tokenAgent = tradeHashes[e.txHash];
-              if (approvals[e.contract] && approvals[e.contract][e.from] && approvals[e.contract][e.from][tokenAgent]) {
-                approvals[e.contract][e.from][tokenAgent].spent = ethers.BigNumber.from(approvals[e.contract][e.from][tokenAgent].spent).add(e.tokens).toString();
-                approvals[e.contract][e.from][tokenAgent].tokens = ethers.BigNumber.from(approvals[e.contract][e.from][tokenAgent].tokens).sub(e.tokens).toString();
-                approvals[e.contract][e.from][tokenAgent].spends.push({ txHash: e.txHash, logIndex: e.logIndex, tokens: e.tokens });
+              console.log(now() + " INFO dataModule:actions.collateTokenSet - Trade Transfer: " + JSON.stringify(e));
+              const exchange = tradeHashes[e.txHash];
+              if (approvals[e.contract] && approvals[e.contract][e.from] && approvals[e.contract][e.from][exchange]) {
+                approvals[e.contract][e.from][exchange].spent = ethers.BigNumber.from(approvals[e.contract][e.from][exchange].spent).add(e.tokens).toString();
+                approvals[e.contract][e.from][exchange].tokens = ethers.BigNumber.from(approvals[e.contract][e.from][exchange].tokens).sub(e.tokens).toString();
+                approvals[e.contract][e.from][exchange].spends.push({ txHash: e.txHash, logIndex: e.logIndex, tokens: e.tokens });
               }
             }
           } else if (e.eventType == EVENTTYPE_APPROVAL) {
@@ -1826,6 +1826,7 @@ const dataModule = {
       };
       context.commit('setState', { name: 'tokenSet', data: tokenSet });
       await context.dispatch('saveData', ['tokenSet']);
+      // console.log(now() + " INFO dataModule:actions.collateTokenSet END - approvals: " + JSON.stringify(approvals));
       // console.log(now() + " INFO dataModule:actions.collateTokenSet END - tokenAgents: " + JSON.stringify(tokenAgents));
       console.log(now() + " INFO dataModule:actions.collateTokenSet END - tokenSet: " + JSON.stringify(tokenSet, null, 2));
     },
