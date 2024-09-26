@@ -2068,7 +2068,7 @@ data: {{ data }}
     },
 
     newSellOffers() {
-      console.log(now() + " INFO TradeFungibles:computed.newSellOffers - this.tokenSet: " + JSON.stringify(this.tokenSet, null, 2));
+      // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - this.tokenSet: " + JSON.stringify(this.tokenSet, null, 2));
       // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - tokenSet.timestamp: " + this.formatTimestamp(this.tokenSet.timestamp) + ", token.symbol: " + this.tokenSet.symbol + ", token.decimals: " + this.tokenSet.decimals);
       const TENPOW18 = ethers.BigNumber.from("1000000000000000000");
 
@@ -2089,7 +2089,7 @@ data: {{ data }}
         if (e.eventType == EVENTTYPE_OFFERED && e.buySell == 1) {
           // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - OFFERED e: " + JSON.stringify(e));
           if ((!mineOnly || e.maker == coinbaseIndex) && /*(includeInvalidated || d.nonce == e.nonce) &&*/ (includeExpired || (e.expiry == 0 || e.expiry >= this.tokenSet.timestamp))) {
-            console.log(now() + " INFO TradeFungibles:computed.newSellOffers - OFFERED SELL e: " + JSON.stringify(e));
+            // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - OFFERED SELL e: " + JSON.stringify(e));
             if (!(e.maker in collator)) {
               collator[e.maker] = {
                 nonce: 0, // TODO
@@ -2169,7 +2169,7 @@ data: {{ data }}
         }
         return tokensA.lt(tokensB) ? 1 : -1;
       });
-      console.log(now() + " INFO TradeFungibles:computed.newSellOffers - prices: " + JSON.stringify(prices, null, 2));
+      // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - prices: " + JSON.stringify(prices, null, 2));
       const tokenBalances = {};
       const tokenApprovals = {};
       for (const [maker, d1] of Object.entries(collator)) {
@@ -2181,8 +2181,8 @@ data: {{ data }}
         }
         tokenApprovals[maker][this.tokenSet.demodexIndex] = { tokens: approval, originalTokens: approval };
       }
-      console.log(now() + " INFO TradeFungibles:computed.newSellOffers - tokenBalances: " + JSON.stringify(tokenBalances, null, 2));
-      console.log(now() + " INFO TradeFungibles:computed.newSellOffers - tokenApprovals: " + JSON.stringify(tokenApprovals, null, 2));
+      // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - tokenBalances: " + JSON.stringify(tokenBalances, null, 2));
+      // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - tokenApprovals: " + JSON.stringify(tokenApprovals, null, 2));
 
       const records = [];
       const trades = [];
@@ -2192,46 +2192,47 @@ data: {{ data }}
       let filledWeth = null;
       let filledAveragePrice = null;
       for (const [i, price] of prices.entries()) {
-        // const ignoreApproval = price.owner == coinbaseIndex && ignoreMyApprovals;
-        // const tokenBalance = ethers.BigNumber.from(tokenBalances[price.owner] && tokenBalances[price.owner].tokens || 0);
-        // const tokenApproval = ethers.BigNumber.from(!price.simulated && tokenApprovals[price.owner] && tokenApprovals[price.owner][price.tokenAgent] && tokenApprovals[price.owner][price.tokenAgent].tokens || 0);
-        // let tokens = ethers.BigNumber.from(price.tokens);
-        // let wethAmount = null;
-        // if (price.valid) {
-        //   if (tokens.gt(tokenBalance)) {
-        //     tokens = tokenBalance;
-        //   }
-        //   if (!ignoreApproval && !simulate && tokens.gt(tokenApproval)) {
-        //     tokens = tokenApproval;
-        //   }
-        //   if (maxTokens != null) {
-        //     if (tokens.gt(maxTokens)) {
-        //       tokens = maxTokens;
-        //     }
-        //     maxTokens = maxTokens.sub(tokens);
-        //   }
-        //   if (maxWeth != null) {
-        //     wethAmount = tokens.mul(ethers.BigNumber.from(price.price)).div(TENPOW18);
-        //     // maxTokensFromWeth = maxWeth * 10**18 / e.price
-        //     const maxTokensFromWeth = maxWeth.mul(TENPOW18).div(price.price);
-        //     if (tokens.gt(maxTokensFromWeth)) {
-        //       wethAmount = maxWeth;
-        //       tokens = maxTokensFromWeth;
-        //     }
-        //     maxWeth = maxWeth.sub(wethAmount);
-        //   }
-        //   if (tokens.gt(0)) {
-        //     wethAmount = tokens.mul(ethers.BigNumber.from(price.price)).div(TENPOW18);
-        //     totalTokens = ethers.BigNumber.from(totalTokens).add(tokens);
-        //     totalWeth = ethers.BigNumber.from(totalWeth).add(wethAmount);
-        //     tokenBalances[price.owner].tokens = ethers.BigNumber.from(tokenBalances[price.owner].tokens).sub(tokens).toString();
-        //     if (!ignoreApproval && !price.simulated && tokenApprovals[price.owner] && tokenApprovals[price.owner][price.tokenAgent]) {
-        //       tokenApprovals[price.owner][price.tokenAgent].tokens = ethers.BigNumber.from(tokenApprovals[price.owner][price.tokenAgent].tokens).sub(tokens).toString();
-        //     }
-        //     trades.push({ index: price.offerIndex, price: price.price, execution: 1, tokenIds: [], tokenss: [tokens.toString()] });
-        //   }
-        // }
-        // records.push({ ...price, originalTokens: price.tokens, tokens: tokens.toString(), totalTokens: totalTokens.toString(), wethAmount: wethAmount != null && wethAmount.toString() || null, totalWeth: totalWeth.toString() });
+        const ignoreApproval = price.maker == coinbaseIndex && ignoreMyApprovals;
+        const tokenBalance = ethers.BigNumber.from(tokenBalances[price.maker] && tokenBalances[price.maker].tokens || 0);
+        const tokenApproval = ethers.BigNumber.from(!price.simulated && tokenApprovals[price.maker] && tokenApprovals[price.maker][this.tokenSet.demodexIndex] && tokenApprovals[price.maker][this.tokenSet.demodexIndex].tokens || 0);
+        // console.log(i + " " + ignoreApproval + " " + ethers.utils.formatEther(tokenBalance) + " " + ethers.utils.formatEther(tokenApproval) + " " + JSON.stringify(price));
+        let tokens = ethers.BigNumber.from(price.tokens);
+        let wethAmount = null;
+        if (price.valid) {
+          if (tokens.gt(tokenBalance)) {
+            tokens = tokenBalance;
+          }
+          if (!ignoreApproval && !simulate && tokens.gt(tokenApproval)) {
+            tokens = tokenApproval;
+          }
+          if (maxTokens != null) {
+            if (tokens.gt(maxTokens)) {
+              tokens = maxTokens;
+            }
+            maxTokens = maxTokens.sub(tokens);
+          }
+          if (maxWeth != null) {
+            wethAmount = tokens.mul(ethers.BigNumber.from(price.price)).div(TENPOW18);
+            // maxTokensFromWeth = maxWeth * 10**18 / e.price
+            const maxTokensFromWeth = maxWeth.mul(TENPOW18).div(price.price);
+            if (tokens.gt(maxTokensFromWeth)) {
+              wethAmount = maxWeth;
+              tokens = maxTokensFromWeth;
+            }
+            maxWeth = maxWeth.sub(wethAmount);
+          }
+          if (tokens.gt(0)) {
+            wethAmount = tokens.mul(ethers.BigNumber.from(price.price)).div(TENPOW18);
+            totalTokens = ethers.BigNumber.from(totalTokens).add(tokens);
+            totalWeth = ethers.BigNumber.from(totalWeth).add(wethAmount);
+            tokenBalances[price.maker].tokens = ethers.BigNumber.from(tokenBalances[price.maker].tokens).sub(tokens).toString();
+            if (!ignoreApproval && !price.simulated && tokenApprovals[price.maker] && tokenApprovals[price.maker][price.tokenAgent]) {
+              tokenApprovals[price.maker][price.tokenAgent].tokens = ethers.BigNumber.from(tokenApprovals[price.maker][price.tokenAgent].tokens).sub(tokens).toString();
+            }
+            trades.push({ index: price.offerIndex, price: price.price, execution: 1, tokenIds: [], tokenss: [tokens.toString()] });
+          }
+        }
+        records.push({ ...price, originalTokens: price.tokens, tokens: tokens.toString(), totalTokens: totalTokens.toString(), wethAmount: wethAmount != null && wethAmount.toString() || null, totalWeth: totalWeth.toString() });
       }
       if (maxTokens != null || maxWeth != null) {
         filledTokens = totalTokens;
