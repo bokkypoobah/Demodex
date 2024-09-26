@@ -1285,17 +1285,14 @@ buyOffers: {{ buyOffers }}
                         {{ data1.item.eventType }}
                       </b-col>
                       <b-col cols="2">
-                        <b-link v-if="info.maker" size="sm" :href="explorer + 'address/' + info.maker" variant="link" v-b-popover.hover.ds500="'Maker ' + info.maker" target="_blank">
-                          {{ info.maker.substring(0, 8) + '...' + info.maker.slice(-6) }}
+                        <b-link size="sm" :href="explorer + 'address/' + indexToAddress[info.maker]" variant="link" v-b-popover.hover.ds500="'Maker ' + indexToAddress[info.maker]" target="_blank">
+                          {{ indexToAddress[info.maker].substring(0, 8) + '...' + indexToAddress[info.maker].slice(-6) }}
                         </b-link>
                       </b-col>
                       <b-col cols="2">
-                        <!-- <b-link v-if="data1.item.to" size="sm" :href="explorer + 'address/' + data1.item.to" variant="link" v-b-popover.hover.ds500="data1.item.to" target="_blank">
-                          {{ data1.item.to.substring(0, 8) + '...' + data1.item.to.slice(-6) }}
-                        </b-link> -->
                       </b-col>
                       <b-col cols="1">
-                        <b-link v-if="info.token" size="sm" :href="explorer + 'token/' + indexToAddress[info.token]" variant="link" v-b-popover.hover.ds500="indexToAddress[info.token]" target="_blank">
+                        <b-link size="sm" :href="explorer + 'token/' + indexToAddress[info.token]" variant="link" v-b-popover.hover.ds500="indexToAddress[info.token]" target="_blank">
                           <span v-if="info.token == tokenSet.tokenIndex">
                             {{ settings.symbol }}
                           </span>
