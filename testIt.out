@@ -2,8 +2,190 @@
 
   TokenAgentFactory
     Demodex
-      ✔ Test Demodex secondary functions (582ms)
+        * accounts[0]->demodex.deploy() => 0xDc64a140 - gasUsed: 4,773,885 0.004773885Ξ 11.93 USD @ 1.0 gwei 2500.00 ETH/USD
+        * now: 11:33:33 AM, expiry: 11:35:33 AM
+      ✔ Test Demodex secondary functions (600ms)
+      ✔ Test TokenAgent invalid offers
+
+            # Account                         ETH          WETH 0x5FbDB231        ERC-20 0xe7f1725E                 ERC-721 0x9fE46736                ERC-1155 0xCf7Ed3Ac
+          --- ---------- ------------------------ ------------------------ ------------------------ ---------------------------------- ----------------------------------
+            0 0xf39Fd6e5  9899.981964687028914481                    100.0                   1000.0                         0, 1, 2, 3             0:10, 1:10, 2:10, 3:10
+            1 0x70997970  9899.999737755788896774                    100.0                   1000.0                         4, 5, 6, 7             0:20, 1:20, 2:20, 3:20
+            2 0x3C44CdDd  9899.999741848277954685                    100.0                   1000.0                       8, 9, 10, 11             0:30, 1:30, 2:30, 3:30
+            3 0x90F79bf6  9899.999745430752673137                    100.0                   1000.0                     12, 13, 14, 15             0:40, 1:40, 2:40, 3:40
+
+        * offers1: [["0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",0,1727314533,["0.3","0.2","0.1"],[],["1.0","1.0","0.1"]],["0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",1,1727314533,["0.1","0.2","0.3"],[],["1.0","1.0","0.1"]]]
+        * accounts[1]->demodex.addOffers(offers1) => [0, 1] - gasUsed: 467,935 0.000467935Ξ 1.17 USD @ 1.0 gwei 2500.00 ETH/USD
+          + demodex.Offered(index:0, token: 0xe7f1725E, tokenType: 20, maker: 0x70997970, buySell: BUY, expiry: 11:35:33 AM, nonce: 0, prices: [0.3,0.2,0.1], tokenIds: [], tokenss: [1,1,0.1], timestamp: 11:34:31 AM)
+          + demodex.Offered(index:1, token: 0xe7f1725E, tokenType: 20, maker: 0x70997970, buySell: SELL, expiry: 11:35:33 AM, nonce: 0, prices: [0.1,0.2,0.3], tokenIds: [], tokenss: [1,1,0.1], timestamp: 11:34:31 AM)
+
+            # Account                         ETH          WETH 0x5FbDB231        ERC-20 0xe7f1725E                 ERC-721 0x9fE46736                ERC-1155 0xCf7Ed3Ac
+          --- ---------- ------------------------ ------------------------ ------------------------ ---------------------------------- ----------------------------------
+            0 0xf39Fd6e5  9899.981964687028914481                    100.0                   1000.0                         0, 1, 2, 3             0:10, 1:10, 2:10, 3:10
+            1 0x70997970  9899.999269621019022444                    100.0                   1000.0                         4, 5, 6, 7             0:20, 1:20, 2:20, 3:20
+            2 0x3C44CdDd  9899.999741848277954685                    100.0                   1000.0                       8, 9, 10, 11             0:30, 1:30, 2:30, 3:30
+            3 0x90F79bf6  9899.999745430752673137                    100.0                   1000.0                     12, 13, 14, 15             0:40, 1:40, 2:40, 3:40
+
+          tokenAgents[1] Offers
+            # Token      Type Maker        B/S  Expiry       Nonce                         Prices                       TokenIds                        Tokenss
+          --- ---------- ---- ------------ ---- ------------ ----- ------------------------------ ------------------------------ ------------------------------
+            0 0xe7f1725E 20   0x70997970C5 BUY  10:00:00 AM      0               0.30, 0.20, 0.10                                              1.00, 1.00, 0.10
+            1 0xe7f1725E 20   0x70997970C5 SELL 10:00:00 AM      0               0.10, 0.20, 0.30                                              1.00, 1.00, 0.10
+
+        * trades1: [[0,"295238095238095238",1,[],["1050000000000000000"]]]
+        * accounts[2]->demodex.trade(trades1, PAYMENTTYPE_WETH) - gasUsed: 125,200 0.0001252Ξ 0.31 USD @ 1.0 gwei 2500.00 ETH/USD
+          + demodex.InternalTransfer(from: 0x3C44CdDd, to: 0xDc64a140, ethers: 10.0, timestamp: 11:34:32 AM)
+          + erc20Token.Transfer(from: 0x3C44CdDd, to: 0x70997970, tokens: 1.05)
+          + weth.Transfer(src: 0x70997970, guy: 0x3C44CdDd, wad: 0.31)
+          + demodex.Traded(index:0, token: 0xe7f1725E, tokenType: 20, maker: 0x70997970, taker: 0x3C44CdDd, makerBuySell: BUY, prices: [0.3,0.2,0], tokenIds: [], tokenss: [1,0.05,0], remainingTokenss: [0,0.95,0.1], price: 0.295238095238095238, timestamp: 11:34:32 AM)
+          + demodex.InternalTransfer(from: 0xDc64a140, to: 0x3C44CdDd, ethers: 10.0, timestamp: 11:34:32 AM)
+
+            # Account                         ETH          WETH 0x5FbDB231        ERC-20 0xe7f1725E                 ERC-721 0x9fE46736                ERC-1155 0xCf7Ed3Ac
+          --- ---------- ------------------------ ------------------------ ------------------------ ---------------------------------- ----------------------------------
+            0 0xf39Fd6e5  9899.981964687028914481                    100.0                   1000.0                         0, 1, 2, 3             0:10, 1:10, 2:10, 3:10
+            1 0x70997970  9899.999269621019022444                    99.69                  1001.05                         4, 5, 6, 7             0:20, 1:20, 2:20, 3:20
+            2 0x3C44CdDd  9899.999616601300661085                   100.31                   998.95                       8, 9, 10, 11             0:30, 1:30, 2:30, 3:30
+            3 0x90F79bf6  9899.999745430752673137                    100.0                   1000.0                     12, 13, 14, 15             0:40, 1:40, 2:40, 3:40
+
+          tokenAgents[1] Offers
+            # Token      Type Maker        B/S  Expiry       Nonce                         Prices                       TokenIds                        Tokenss
+          --- ---------- ---- ------------ ---- ------------ ----- ------------------------------ ------------------------------ ------------------------------
+            0 0xe7f1725E 20   0x70997970C5 BUY  10:00:00 AM      0               0.30, 0.20, 0.10                                              0.00, 0.95, 0.10
+            1 0xe7f1725E 20   0x70997970C5 SELL 10:00:00 AM      0               0.10, 0.20, 0.30                                              1.00, 1.00, 0.10
+
+        * trades2: [[0,"190476190476190476",1,[],["1050000000000000000"]]]
+        * accounts[2]->demodex.trade(trades2, PAYMENTTYPE_WETH) - gasUsed: 111,616 0.000111616Ξ 0.28 USD @ 1.0 gwei 2500.00 ETH/USD
+          + erc20Token.Transfer(from: 0x3C44CdDd, to: 0x70997970, tokens: 1.05)
+          + weth.Transfer(src: 0x70997970, guy: 0x3C44CdDd, wad: 0.2)
+          + demodex.Traded(index:0, token: 0xe7f1725E, tokenType: 20, maker: 0x70997970, taker: 0x3C44CdDd, makerBuySell: BUY, prices: [0.2,0.1,0], tokenIds: [], tokenss: [0.95,0.1,0], remainingTokenss: [0,0,0], price: 0.190476190476190476, timestamp: 11:34:33 AM)
+
+            # Account                         ETH          WETH 0x5FbDB231        ERC-20 0xe7f1725E                 ERC-721 0x9fE46736                ERC-1155 0xCf7Ed3Ac
+          --- ---------- ------------------------ ------------------------ ------------------------ ---------------------------------- ----------------------------------
+            0 0xf39Fd6e5  9899.981964687028914481                    100.0                   1000.0                         0, 1, 2, 3             0:10, 1:10, 2:10, 3:10
+            1 0x70997970  9899.999269621019022444                    99.49                   1002.1                         4, 5, 6, 7             0:20, 1:20, 2:20, 3:20
+            2 0x3C44CdDd  9899.999504948611588957                   100.51                    997.9                       8, 9, 10, 11             0:30, 1:30, 2:30, 3:30
+            3 0x90F79bf6  9899.999745430752673137                    100.0                   1000.0                     12, 13, 14, 15             0:40, 1:40, 2:40, 3:40
+
+          tokenAgents[1] Offers
+            # Token      Type Maker        B/S  Expiry       Nonce                         Prices                       TokenIds                        Tokenss
+          --- ---------- ---- ------------ ---- ------------ ----- ------------------------------ ------------------------------ ------------------------------
+            0 0xe7f1725E 20   0x70997970C5 BUY  10:00:00 AM      0               0.30, 0.20, 0.10                                              0.00, 0.00, 0.00
+            1 0xe7f1725E 20   0x70997970C5 SELL 10:00:00 AM      0               0.10, 0.20, 0.30                                              1.00, 1.00, 0.10
+
+      ✔ Test TokenAgent ERC-20 offers and trades (67ms)
+
+            # Account                         ETH          WETH 0x5FbDB231        ERC-20 0xe7f1725E                 ERC-721 0x9fE46736                ERC-1155 0xCf7Ed3Ac
+          --- ---------- ------------------------ ------------------------ ------------------------ ---------------------------------- ----------------------------------
+            0 0xf39Fd6e5  9899.981964687028914481                    100.0                   1000.0                         0, 1, 2, 3             0:10, 1:10, 2:10, 3:10
+            1 0x70997970  9899.999737755788896774                    100.0                   1000.0                         4, 5, 6, 7             0:20, 1:20, 2:20, 3:20
+            2 0x3C44CdDd  9899.999741848277954685                    100.0                   1000.0                       8, 9, 10, 11             0:30, 1:30, 2:30, 3:30
+            3 0x90F79bf6  9899.999745430752673137                    100.0                   1000.0                     12, 13, 14, 15             0:40, 1:40, 2:40, 3:40
+
+        * offers1: ["0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0,0,1727314533,100000000000000000,,14","0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0,1,1727314533,100000000000000000,4,5,6,7,24","0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0,1,1727314533,100000000000000000,200000000000000000,300000000000000000,400000000000000000,4,5,6,7,34"]
+        * accounts[1]->demodex.addOffers(offers1) => [0, 1, 2] - gasUsed: 648,572 0.000648572Ξ 1.62 USD @ 1.0 gwei 2500.00 ETH/USD
+          + demodex.Offered(index:0, token: 0x9fE46736, tokenType: 721, maker: 0x70997970, buySell: BUY, expiry: 11:35:33 AM, nonce: 0, prices: [0.1], tokenIds: [], tokenss: [14], timestamp: 11:34:31 AM)
+          + demodex.Offered(index:1, token: 0x9fE46736, tokenType: 721, maker: 0x70997970, buySell: SELL, expiry: 11:35:33 AM, nonce: 0, prices: [0.1], tokenIds: [4,5,6,7], tokenss: [24], timestamp: 11:34:31 AM)
+          + demodex.Offered(index:2, token: 0x9fE46736, tokenType: 721, maker: 0x70997970, buySell: SELL, expiry: 11:35:33 AM, nonce: 0, prices: [0.1,0.2,0.3,0.4], tokenIds: [4,5,6,7], tokenss: [34], timestamp: 11:34:31 AM)
+
+            # Account                         ETH          WETH 0x5FbDB231        ERC-20 0xe7f1725E                 ERC-721 0x9fE46736                ERC-1155 0xCf7Ed3Ac
+          --- ---------- ------------------------ ------------------------ ------------------------ ---------------------------------- ----------------------------------
+            0 0xf39Fd6e5  9899.981964687028914481                    100.0                   1000.0                         0, 1, 2, 3             0:10, 1:10, 2:10, 3:10
+            1 0x70997970  9899.999088906901835678                    100.0                   1000.0                         4, 5, 6, 7             0:20, 1:20, 2:20, 3:20
+            2 0x3C44CdDd  9899.999741848277954685                    100.0                   1000.0                       8, 9, 10, 11             0:30, 1:30, 2:30, 3:30
+            3 0x90F79bf6  9899.999745430752673137                    100.0                   1000.0                     12, 13, 14, 15             0:40, 1:40, 2:40, 3:40
+
+          tokenAgents[1] Offers
+            # Token      Type Maker        B/S  Expiry       Nonce                         Prices                       TokenIds                        Tokenss
+          --- ---------- ---- ------------ ---- ------------ ----- ------------------------------ ------------------------------ ------------------------------
+            0 0x9fE46736 721  0x70997970C5 BUY  10:00:00 AM      0                           0.10                                                            14
+            1 0x9fE46736 721  0x70997970C5 SELL 10:00:00 AM      0                           0.10                     4, 5, 6, 7                             24
+            2 0x9fE46736 721  0x70997970C5 SELL 10:00:00 AM      0         0.10, 0.20, 0.30, 0.40                     4, 5, 6, 7                             34
+
+        * trades1: [[1,"400000000000000000",1,[4,5,6,7],[]]]
+        * accounts[2]->demodex.trade(trades1, PAYMENTTYPE_WETH) - gasUsed: 190,177 0.000190177Ξ 0.48 USD @ 1.0 gwei 2500.00 ETH/USD
+          + demodex.InternalTransfer(from: 0x3C44CdDd, to: 0xDc64a140, ethers: 10.0, timestamp: 11:34:32 AM)
+          + erc721Token.Approval(from: 0x70997970, to: 0x00000000, tokenId: 4)
+          + erc721Token.Transfer(from: 0x70997970, to: 0x3C44CdDd, tokenId: 4)
+          + erc721Token.Approval(from: 0x70997970, to: 0x00000000, tokenId: 5)
+          + erc721Token.Transfer(from: 0x70997970, to: 0x3C44CdDd, tokenId: 5)
+          + erc721Token.Approval(from: 0x70997970, to: 0x00000000, tokenId: 6)
+          + erc721Token.Transfer(from: 0x70997970, to: 0x3C44CdDd, tokenId: 6)
+          + erc721Token.Approval(from: 0x70997970, to: 0x00000000, tokenId: 7)
+          + erc721Token.Transfer(from: 0x70997970, to: 0x3C44CdDd, tokenId: 7)
+          + weth.Transfer(src: 0x3C44CdDd, guy: 0x70997970, wad: 0.4)
+          + demodex.Traded(index:1, token: 0x9fE46736, tokenType: 721, maker: 0x70997970, taker: 0x3C44CdDd, makerBuySell: SELL, prices: [0.1,0.1,0.1,0.1], tokenIds: [4,5,6,7], tokenss: [4], remainingTokenss: [20], price: 0.4, timestamp: 11:34:32 AM)
+          + demodex.InternalTransfer(from: 0xDc64a140, to: 0x3C44CdDd, ethers: 10.0, timestamp: 11:34:32 AM)
+
+            # Account                         ETH          WETH 0x5FbDB231        ERC-20 0xe7f1725E                 ERC-721 0x9fE46736                ERC-1155 0xCf7Ed3Ac
+          --- ---------- ------------------------ ------------------------ ------------------------ ---------------------------------- ----------------------------------
+            0 0xf39Fd6e5  9899.981964687028914481                    100.0                   1000.0                         0, 1, 2, 3             0:10, 1:10, 2:10, 3:10
+            1 0x70997970  9899.999088906901835678                    100.4                   1000.0                                                0:20, 1:20, 2:20, 3:20
+            2 0x3C44CdDd  9899.999551599797837288                     99.6                   1000.0           4, 5, 6, 7, 8, 9, 10, 11             0:30, 1:30, 2:30, 3:30
+            3 0x90F79bf6  9899.999745430752673137                    100.0                   1000.0                     12, 13, 14, 15             0:40, 1:40, 2:40, 3:40
+
+          tokenAgents[1] Offers
+            # Token      Type Maker        B/S  Expiry       Nonce                         Prices                       TokenIds                        Tokenss
+          --- ---------- ---- ------------ ---- ------------ ----- ------------------------------ ------------------------------ ------------------------------
+            0 0x9fE46736 721  0x70997970C5 BUY  10:00:00 AM      0                           0.10                                                            14
+            1 0x9fE46736 721  0x70997970C5 SELL 10:00:00 AM      0                           0.10                     4, 5, 6, 7                             20
+            2 0x9fE46736 721  0x70997970C5 SELL 10:00:00 AM      0         0.10, 0.20, 0.30, 0.40                     4, 5, 6, 7                             34
+
+      ✔ Test TokenAgent ERC-721 offers and trades (44ms)
+
+            # Account                         ETH          WETH 0x5FbDB231        ERC-20 0xe7f1725E                 ERC-721 0x9fE46736                ERC-1155 0xCf7Ed3Ac
+          --- ---------- ------------------------ ------------------------ ------------------------ ---------------------------------- ----------------------------------
+            0 0xf39Fd6e5  9899.981964687028914481                    100.0                   1000.0                         0, 1, 2, 3             0:10, 1:10, 2:10, 3:10
+            1 0x70997970  9899.999737755788896774                    100.0                   1000.0                         4, 5, 6, 7             0:20, 1:20, 2:20, 3:20
+            2 0x3C44CdDd  9899.999741848277954685                    100.0                   1000.0                       8, 9, 10, 11             0:30, 1:30, 2:30, 3:30
+            3 0x90F79bf6  9899.999745430752673137                    100.0                   1000.0                     12, 13, 14, 15             0:40, 1:40, 2:40, 3:40
+
+        * offers1: ["0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9,0,1727314533,100000000000000000,,","0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9,1,1727314533,100000000000000000,0,1,2,3,5,6,7,8","0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9,1,1727314533,100000000000000000,200000000000000000,300000000000000000,400000000000000000,0,1,2,3,10,10,10,10"]
+        * accounts[1]->demodex.addOffers(offers1) => [0, 1, 2] - gasUsed: 658,704 0.000658704Ξ 1.65 USD @ 1.0 gwei 2500.00 ETH/USD
+          + demodex.Offered(index:0, token: 0xCf7Ed3Ac, tokenType: 1155, maker: 0x70997970, buySell: BUY, expiry: 11:35:33 AM, nonce: 0, prices: [0.1], tokenIds: [], tokenss: [], timestamp: 11:34:31 AM)
+          + demodex.Offered(index:1, token: 0xCf7Ed3Ac, tokenType: 1155, maker: 0x70997970, buySell: SELL, expiry: 11:35:33 AM, nonce: 0, prices: [0.1], tokenIds: [0,1,2,3], tokenss: [5,6,7,8], timestamp: 11:34:31 AM)
+          + demodex.Offered(index:2, token: 0xCf7Ed3Ac, tokenType: 1155, maker: 0x70997970, buySell: SELL, expiry: 11:35:33 AM, nonce: 0, prices: [0.1,0.2,0.3,0.4], tokenIds: [0,1,2,3], tokenss: [10,10,10,10], timestamp: 11:34:31 AM)
+
+            # Account                         ETH          WETH 0x5FbDB231        ERC-20 0xe7f1725E                 ERC-721 0x9fE46736                ERC-1155 0xCf7Ed3Ac
+          --- ---------- ------------------------ ------------------------ ------------------------ ---------------------------------- ----------------------------------
+            0 0xf39Fd6e5  9899.981964687028914481                    100.0                   1000.0                         0, 1, 2, 3             0:10, 1:10, 2:10, 3:10
+            1 0x70997970  9899.999078770576302502                    100.0                   1000.0                         4, 5, 6, 7             0:20, 1:20, 2:20, 3:20
+            2 0x3C44CdDd  9899.999741848277954685                    100.0                   1000.0                       8, 9, 10, 11             0:30, 1:30, 2:30, 3:30
+            3 0x90F79bf6  9899.999745430752673137                    100.0                   1000.0                     12, 13, 14, 15             0:40, 1:40, 2:40, 3:40
+
+          tokenAgents[1] Offers
+            # Token      Type Maker        B/S  Expiry       Nonce                         Prices                       TokenIds                        Tokenss
+          --- ---------- ---- ------------ ---- ------------ ----- ------------------------------ ------------------------------ ------------------------------
+            0 0xCf7Ed3Ac 1155 0x70997970C5 BUY  10:00:00 AM      0                           0.10                                                              
+            1 0xCf7Ed3Ac 1155 0x70997970C5 SELL 10:00:00 AM      0                           0.10                     0, 1, 2, 3                     5, 6, 7, 8
+            2 0xCf7Ed3Ac 1155 0x70997970C5 SELL 10:00:00 AM      0         0.10, 0.20, 0.30, 0.40                     0, 1, 2, 3                 10, 10, 10, 10
+
+        * trades1: [[1,"2600000000000000000",1,[0,1,2,3],[5,6,7,8]]]
+        * accounts[2]->demodex.trade(trades1, PAYMENTTYPE_WETH) - gasUsed: 199,652 0.000199652Ξ 0.50 USD @ 1.0 gwei 2500.00 ETH/USD
+          + demodex.InternalTransfer(from: 0x3C44CdDd, to: 0xDc64a140, ethers: 10.0, timestamp: 11:34:32 AM)
+          + erc1155Token.TransferSingle(operator: 0xDc64a140, from: 0x70997970, to: 0x3C44CdDd, tokenId: 0, tokens: 5)
+          + erc1155Token.TransferSingle(operator: 0xDc64a140, from: 0x70997970, to: 0x3C44CdDd, tokenId: 1, tokens: 6)
+          + erc1155Token.TransferSingle(operator: 0xDc64a140, from: 0x70997970, to: 0x3C44CdDd, tokenId: 2, tokens: 7)
+          + erc1155Token.TransferSingle(operator: 0xDc64a140, from: 0x70997970, to: 0x3C44CdDd, tokenId: 3, tokens: 8)
+          + weth.Transfer(src: 0x3C44CdDd, guy: 0x70997970, wad: 2.6)
+          + demodex.Traded(index:1, token: 0xCf7Ed3Ac, tokenType: 1155, maker: 0x70997970, taker: 0x3C44CdDd, makerBuySell: SELL, prices: [0.1,0.1,0.1,0.1], tokenIds: [0,1,2,3], tokenss: [5,6,7,8], remainingTokenss: [0,0,0,0], price: 2.6, timestamp: 11:34:32 AM)
+          + demodex.InternalTransfer(from: 0xDc64a140, to: 0x3C44CdDd, ethers: 10.0, timestamp: 11:34:32 AM)
+
+            # Account                         ETH          WETH 0x5FbDB231        ERC-20 0xe7f1725E                 ERC-721 0x9fE46736                ERC-1155 0xCf7Ed3Ac
+          --- ---------- ------------------------ ------------------------ ------------------------ ---------------------------------- ----------------------------------
+            0 0xf39Fd6e5  9899.981964687028914481                    100.0                   1000.0                         0, 1, 2, 3             0:10, 1:10, 2:10, 3:10
+            1 0x70997970  9899.999078770576302502                    102.6                   1000.0                         4, 5, 6, 7             0:15, 1:14, 2:13, 3:12
+            2 0x3C44CdDd  9899.999542121229366841                     97.4                   1000.0                       8, 9, 10, 11             0:35, 1:36, 2:37, 3:38
+            3 0x90F79bf6  9899.999745430752673137                    100.0                   1000.0                     12, 13, 14, 15             0:40, 1:40, 2:40, 3:40
+
+          tokenAgents[1] Offers
+            # Token      Type Maker        B/S  Expiry       Nonce                         Prices                       TokenIds                        Tokenss
+          --- ---------- ---- ------------ ---- ------------ ----- ------------------------------ ------------------------------ ------------------------------
+            0 0xCf7Ed3Ac 1155 0x70997970C5 BUY  10:00:00 AM      0                           0.10                                                              
+            1 0xCf7Ed3Ac 1155 0x70997970C5 SELL 10:00:00 AM      0                           0.10                     0, 1, 2, 3                     0, 0, 0, 0
+            2 0xCf7Ed3Ac 1155 0x70997970C5 SELL 10:00:00 AM      0         0.10, 0.20, 0.30, 0.40                     0, 1, 2, 3                 10, 10, 10, 10
+
+      ✔ Test TokenAgent ERC-1155 offers and trades (44ms)
 
 
-  1 passing (584ms)
+  5 passing (769ms)
 

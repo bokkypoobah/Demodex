@@ -53,18 +53,19 @@ describe("TokenAgentFactory", function () {
     return e != null ? e.toString().replace(/(?<!(\.\d*|^.{0}))(?=(\d{3})+(?!\d))/g, ',') : null;
   }
   function printLogs(d, label, txReceipt) {
-    const tokenAgentAdresses = {};
-    for (let i = 0; i < 4; i++) {
-      tokenAgentAdresses[d.tokenAgents[i].target] = i;
-    }
+    const tokenAgentAdresses = {}; // TODO delete
+    // for (let i = 0; i < 4; i++) {
+    //   tokenAgentAdresses[d.tokenAgents[i].target] = i;
+    // }
     const fee = BigInt(txReceipt.gasUsed) * GASPRICE;
     const feeUsd = parseFloat(ethers.formatEther(fee)) * ETHUSD;
     console.log("        * " + label + " - gasUsed: " + formatNumber(txReceipt.gasUsed) + " " + ethers.formatEther(fee) + "Ξ " + feeUsd.toFixed(2) + " USD @ " + ethers.formatUnits(GASPRICE, "gwei") + " gwei " + ETHUSD.toFixed(2) + " ETH/USD");
     txReceipt.logs.forEach((event) => {
-      if (event.address in tokenAgentAdresses) {
-        const log = d.tokenAgents[1].interface.parseLog(event);
+      if (event.address == d.demodex.target) {
+        const log = d.demodex.interface.parseLog(event);
+        // console.log("        * log: " + JSON.stringify(log, (k, v) => typeof v === 'bigint' ? ethers.formatEther(v) : v));
         if (log.name == "Offered") {
-          console.log("          + tokenAgents[" + tokenAgentAdresses[event.address] + "]." + log.name + '(index:' + parseInt(log.args[0]) +
+          console.log("          + demodex." + log.name + '(index:' + parseInt(log.args[0]) +
             ', token: ' + log.args[1].substring(0, 10) +
             ', tokenType: ' + (log.args[2] == 1 ? '20' : (log.args[2] == 2 ? '721' : '1155')) +
             ', maker: ' + log.args[3].substring(0, 10) +
@@ -77,7 +78,7 @@ describe("TokenAgentFactory", function () {
             ', timestamp: ' + new Date(parseInt(log.args[10]) * 1000).toLocaleTimeString() +
             ')');
         // } else if (log.name == "OfferTaken") {
-        //   console.log("          + tokenAgents[" + tokenAgentAdresses[event.address] + "]." + log.name + '(index:' + parseInt(log.args[0]) +
+        //   console.log("          + demodex." + log.name + '(index:' + parseInt(log.args[0]) +
         //     ', token: ' + log.args[1].substring(0, 10) +
         //     ', tokenType: ' + (log.args[2] == 1 ? '20' : (log.args[2] == 2 ? '721' : '1155')) +
         //     ', maker: ' + log.args[3].substring(0, 10) +
@@ -90,7 +91,7 @@ describe("TokenAgentFactory", function () {
         //     ', timestamp: ' + new Date(parseInt(log.args[5]) * 1000).toLocaleTimeString() +
         //     ')');
         } else if (log.name == "Traded") {
-          console.log("          + tokenAgents[" + tokenAgentAdresses[event.address] + "]." + log.name + '(index:' + parseInt(log.args[0]) +
+          console.log("          + demodex." + log.name + '(index:' + parseInt(log.args[0]) +
             ', token: ' + log.args[1].substring(0, 10) +
             ', tokenType: ' + (log.args[2] == 1 ? '20' : (log.args[2] == 2 ? '721' : '1155')) +
             ', maker: ' + log.args[3].substring(0, 10) +
@@ -104,9 +105,9 @@ describe("TokenAgentFactory", function () {
             ', price: ' + ethers.formatEther(log.args[10]) +
             ', timestamp: ' + new Date(parseInt(log.args[11]) * 1000).toLocaleTimeString() + ')');
         } else if (log.name == "InternalTransfer") {
-          console.log("          + tokenAgents[" + tokenAgentAdresses[event.address] + "]." + log.name + '(from: ' + log.args[0].substring(0, 10) + ', to: ' + log.args[1].substring(0, 10) + ', ethers: ' + ethers.formatEther(log.args[2]) + ', timestamp: ' + new Date(parseInt(log.args[3]) * 1000).toLocaleTimeString() + ')');
+          console.log("          + demodex." + log.name + '(from: ' + log.args[0].substring(0, 10) + ', to: ' + log.args[1].substring(0, 10) + ', ethers: ' + ethers.formatEther(log.args[2]) + ', timestamp: ' + new Date(parseInt(log.args[3]) * 1000).toLocaleTimeString() + ')');
         } else {
-          console.log("          + tokenAgents[" + tokenAgentAdresses[event.address] + "]." + log.name + '(' + log.args.join(', ') + ')');
+          console.log("          + demodex." + log.name + '(' + log.args.join(', ') + ')');
         }
       } else if (event.address == d.weth.target) {
         const log = d.weth.interface.parseLog(event);
@@ -177,22 +178,23 @@ describe("TokenAgentFactory", function () {
       );
     }
 
-    const offersInfo = await d.tokenAgents[1].getOffersInfo(0, 10);
+    const offersInfo = await d.demodex.getOffersInfo(0, 10);
     if (offersInfo.length > 0) {
       console.log();
       console.log("          tokenAgents[1] Offers");
-      console.log("            # Token      Type B/S  Expiry       Nonce                         Prices                       TokenIds                        Tokenss");
-      console.log("          --- ---------- ---- ---- ------------ ----- ------------------------------ ------------------------------ ------------------------------");
+      console.log("            # Token      Type Maker        B/S  Expiry       Nonce                         Prices                       TokenIds                        Tokenss");
+      console.log("          --- ---------- ---- ------------ ---- ------------ ----- ------------------------------ ------------------------------ ------------------------------");
       for (let i = 0; i < offersInfo.length; i++) {
         const info = offersInfo[i];
         console.log("          " + padLeft(info[0], 3) + " " + info[1].substring(0, 10) + " " +
           padRight(info[2] == 1 ? '20' : (info[2] == 2 ? '721' : '1155'), 4) + " " +
-          (info[3] ? 'SELL' : 'BUY ') + " " +
-          padRight(new Date(parseInt(info[4]) * 1000).toLocaleTimeString(), 12) + " " +
-          padLeft(info[5], 5) + " " +
-          padLeft(info[6].map(e => parseFloat(ethers.formatEther(e)).toFixed(2)).join(", "), 30) + " " +
-          padLeft(info[7].map(e => parseInt(e)).join(", "), 30) + " " +
-          padLeft(info[8].map(e => (info[2] == 1 ? parseFloat(ethers.formatEther(e)).toFixed(2) : parseInt(e)) ).join(", "), 30)
+          info[3].substring(0, 12) + " " +
+          (info[4] ? 'SELL' : 'BUY ') + " " +
+          padRight(new Date(parseInt(info[6]) * 1000).toLocaleTimeString(), 12) + " " +
+          padLeft(info[6], 5) + " " +
+          padLeft(info[7].map(e => parseFloat(ethers.formatEther(e)).toFixed(2)).join(", "), 30) + " " +
+          padLeft(info[8].map(e => parseInt(e)).join(", "), 30) + " " +
+          padLeft(info[9].map(e => (info[2] == 1 ? parseFloat(ethers.formatEther(e)).toFixed(2) : parseInt(e)) ).join(", "), 30)
         );
       }
     }
@@ -221,49 +223,12 @@ describe("TokenAgentFactory", function () {
 
     const Demodex = await ethers.getContractFactory("Demodex");
     const demodex = await Demodex.deploy(weth);
-
-    return;
-
-    const TokenAgent = await ethers.getContractFactory("TokenAgent");
-    const tokenAgentTemplate = await TokenAgent.deploy();
-    const TokenAgentFactory = await ethers.getContractFactory("TokenAgentFactory");
-    const tokenAgentFactory = await TokenAgentFactory.deploy();
-    const tokenAgentFactoryTxDeployment = await tokenAgentFactory.waitForDeployment();
-    const tokenAgentFactoryTx = await tokenAgentFactoryTxDeployment.deploymentTransaction();
-    const tokenAgentFactoryTxReceipt = await tokenAgentFactoryTx.wait();
-    const fee = BigInt(tokenAgentFactoryTxReceipt.gasUsed) * GASPRICE;
+    const demodexTxDeployment = await demodex.waitForDeployment();
+    const demodexTx = await demodexTxDeployment.deploymentTransaction();
+    const demodexTxReceipt = await demodexTx.wait();
+    const fee = BigInt(demodexTxReceipt.gasUsed) * GASPRICE;
     const feeUsd = parseFloat(ethers.formatEther(fee)) * ETHUSD;
-    console.log("        * accounts[0]->TokenAgentFactory.deploy() => " + tokenAgentFactory.target.substring(0, 10) + " - gasUsed: " + formatNumber(tokenAgentFactoryTxReceipt.gasUsed) + " " + ethers.formatEther(fee) + "Ξ " + feeUsd.toFixed(2) + " USD @ " + ethers.formatUnits(GASPRICE, "gwei") + " gwei " + ETHUSD.toFixed(2) + " ETH/USD");
-
-    await tokenAgentFactory.init(weth, tokenAgentTemplate);
-
-    const tokenAgents = [];
-    for (let i = 0; i < 4; i++) {
-      const newTokenAgentTx = await tokenAgentFactory.connect(accounts[i]).newTokenAgent();
-      const newTokenAgentTxReceipt = await newTokenAgentTx.wait();
-      const fee = BigInt(newTokenAgentTxReceipt.gasUsed) * GASPRICE;
-      const feeUsd = parseFloat(ethers.formatEther(fee)) * ETHUSD;
-      newTokenAgentTxReceipt.logs.forEach((event) => {
-        const log = tokenAgentFactory.interface.parseLog(event);
-        // console.log("          + tokenAgentFactory." + log.name + ' ' + JSON.stringify(log.args.map(e => e.toString())));
-        DEBUGSETUPEVENTS && console.log("          + tokenAgentFactory." + log.name + '(tokenAgent: ' + log.args[0].substring(0, 12) + ', owner: ' + log.args[1].substring(0, 12) + ', index: ' + log.args[2] + ', indexByOwner: ' + log.args[3] + ', timestamp: ' + new Date(parseInt(log.args[4]) * 1000).toLocaleTimeString() + ')');
-        console.log("        * accounts[" + i + "]->tokenAgentFactory.newTokenAgent() => " + log.args[0].substring(0, 10) + " - gasUsed: " + formatNumber(newTokenAgentTxReceipt.gasUsed) + " " + ethers.formatEther(fee) + "Ξ " + feeUsd.toFixed(2) + " USD @ " + ethers.formatUnits(GASPRICE, "gwei") + " gwei " + ETHUSD.toFixed(2) + " ETH/USD");
-      });
-
-      const tokenAgentByOwnerInfo = await tokenAgentFactory.getTokenAgentByOwnerInfo(accounts[i].address);
-      console.log("        * tokenAgentByOwnerInfo: " + JSON.stringify(tokenAgentByOwnerInfo.map(e => e.toString())));
-      const tokenAgentAddress = tokenAgentByOwnerInfo[1];
-      const tokenAgent = TokenAgent.attach(tokenAgentAddress);
-      tokenAgents.push(tokenAgent);
-    }
-
-    const tokenAgentsInfo = await tokenAgentFactory.getTokenAgentsInfo(0, 10);
-    console.log("          Index tokenAgent Owner");
-    console.log("          ----- ---------- ----------");
-    for (let i = 0; i < tokenAgentsInfo.length; i++) {
-      const info = tokenAgentsInfo[i];
-      console.log("          " + padLeft(info[0], 5) + " " + info[1].substring(0, 10) + " " + info[2].substring(0, 10));
-    }
+    console.log("        * accounts[0]->demodex.deploy() => " + demodex.target.substring(0, 10) + " - gasUsed: " + formatNumber(demodexTxReceipt.gasUsed) + " " + ethers.formatEther(fee) + "Ξ " + feeUsd.toFixed(2) + " USD @ " + ethers.formatUnits(GASPRICE, "gwei") + " gwei " + ETHUSD.toFixed(2) + " ETH/USD");
 
     const amountWeth = ethers.parseUnits("100", 18);
     for (let i = 0; i < 4; i++) {
@@ -274,7 +239,6 @@ describe("TokenAgentFactory", function () {
         DEBUGSETUPEVENTS && console.log("          + weth." + log.name + '(dst:' + log.args[0].substring(0, 12) + ', wad: ' + ethers.formatEther(log.args[1]) + ')');
       });
     }
-
     const amountERC20 = ethers.parseUnits("1000", 18);
     for (let i = 1; i < 4; i++) {
       const transferTx = await erc20Token.transfer(accounts[i], amountERC20);
@@ -290,27 +254,22 @@ describe("TokenAgentFactory", function () {
       const log = weth.interface.parseLog(event);
       DEBUGSETUPEVENTS && console.log("          + erc20Token." + log.name + '(from:' + log.args[0].substring(0, 12) + ', to:' + log.args[1].substring(0, 12) + ', tokens: ' + ethers.formatEther(log.args[2]) + ')');
     });
-
     const approveAmount = ethers.parseUnits("12.345", 18);
     for (let i = 1; i < 4; i++) {
-      for (let j = 0; j < 4; j++) {
-        const approvalTx = await weth.connect(accounts[i]).approve(tokenAgents[j], approveAmount);
-        const approvalTxReceipt = await approvalTx.wait();
-        approvalTxReceipt.logs.forEach((event) => {
-          const log = weth.interface.parseLog(event);
-          DEBUGSETUPEVENTS && console.log("          + weth." + log.name + '(owner:' + log.args[0].substring(0, 12) + ', spender:' + log.args[1].substring(0, 12) + ', tokens: ' + ethers.formatEther(log.args[2]) + ')');
-        });
-      }
+      const approvalTx = await weth.connect(accounts[i]).approve(demodex, approveAmount);
+      const approvalTxReceipt = await approvalTx.wait();
+      approvalTxReceipt.logs.forEach((event) => {
+        const log = weth.interface.parseLog(event);
+        DEBUGSETUPEVENTS && console.log("          + weth." + log.name + '(owner:' + log.args[0].substring(0, 12) + ', spender:' + log.args[1].substring(0, 12) + ', tokens: ' + ethers.formatEther(log.args[2]) + ')');
+      });
     }
     for (let i = 1; i < 4; i++) {
-      for (let j = 0; j < 4; j++) {
-        const approvalTx = await erc20Token.connect(accounts[i]).approve(tokenAgents[j], approveAmount);
-        const approvalTxReceipt = await approvalTx.wait();
-        approvalTxReceipt.logs.forEach((event) => {
-          const log = weth.interface.parseLog(event);
-          DEBUGSETUPEVENTS && console.log("          + erc20Token." + log.name + '(owner:' + log.args[0].substring(0, 12) + ', spender:' + log.args[1].substring(0, 12) + ', tokens: ' + ethers.formatEther(log.args[2]) + ')');
-        });
-      }
+      const approvalTx = await erc20Token.connect(accounts[i]).approve(demodex, approveAmount);
+      const approvalTxReceipt = await approvalTx.wait();
+      approvalTxReceipt.logs.forEach((event) => {
+        const log = weth.interface.parseLog(event);
+        DEBUGSETUPEVENTS && console.log("          + erc20Token." + log.name + '(owner:' + log.args[0].substring(0, 12) + ', spender:' + log.args[1].substring(0, 12) + ', tokens: ' + ethers.formatEther(log.args[2]) + ')');
+      });
     }
 
     for (let i = 0; i < 4; i++) {
@@ -323,16 +282,13 @@ describe("TokenAgentFactory", function () {
         });
       }
     }
-
     for (let i = 1; i < 4; i++) {
-      for (let j = 0; j < 4; j++) {
-        const setApprovalForAllTx = await erc721Token.connect(accounts[i]).setApprovalForAll(tokenAgents[j], true);
-        const setApprovalForAllTxReceipt = await setApprovalForAllTx.wait();
-        setApprovalForAllTxReceipt.logs.forEach((event) => {
-          const log = erc721Token.interface.parseLog(event);
-          DEBUGSETUPEVENTS && console.log("          + erc721Token." + log.name + '(owner:' + log.args[0].substring(0, 12) + ', operator: ' + log.args[1].substring(0, 12) + ', approved: ' + log.args[2]);
-        });
-      }
+      const setApprovalForAllTx = await erc721Token.connect(accounts[i]).setApprovalForAll(demodex, true);
+      const setApprovalForAllTxReceipt = await setApprovalForAllTx.wait();
+      setApprovalForAllTxReceipt.logs.forEach((event) => {
+        const log = erc721Token.interface.parseLog(event);
+        DEBUGSETUPEVENTS && console.log("          + erc721Token." + log.name + '(owner:' + log.args[0].substring(0, 12) + ', operator: ' + log.args[1].substring(0, 12) + ', approved: ' + log.args[2]);
+      });
     }
 
     for (let tokenId = 0; tokenId < 4; tokenId++) {
@@ -345,58 +301,40 @@ describe("TokenAgentFactory", function () {
           });
         }
     }
-
     for (let i = 0; i < 4; i++) {
-      for (let j = 0; j < 4; j++) {
-        const setApprovalForAllTx = await erc1155Token.connect(accounts[i]).setApprovalForAll(tokenAgents[j], true);
-        const setApprovalForAllTxReceipt = await setApprovalForAllTx.wait();
-        setApprovalForAllTxReceipt.logs.forEach((event) => {
-          const log = erc1155Token.interface.parseLog(event);
-          DEBUGSETUPEVENTS && console.log("          + erc1155Token." + log.name + '(owner:' + log.args[0].substring(0, 12) + ', operator: ' + log.args[1].substring(0, 12) + ', approved: ' + log.args[2]);
-        });
-      }
+      const setApprovalForAllTx = await erc1155Token.connect(accounts[i]).setApprovalForAll(demodex, true);
+      const setApprovalForAllTxReceipt = await setApprovalForAllTx.wait();
+      setApprovalForAllTxReceipt.logs.forEach((event) => {
+        const log = erc1155Token.interface.parseLog(event);
+        DEBUGSETUPEVENTS && console.log("          + erc1155Token." + log.name + '(owner:' + log.args[0].substring(0, 12) + ', operator: ' + log.args[1].substring(0, 12) + ', approved: ' + log.args[2]);
+      });
     }
 
     const now = parseInt(new Date().getTime()/1000);
     const expiry = parseInt(now) + 120;
     console.log("        * now: " + new Date(parseInt(now) * 1000).toLocaleTimeString() + ", expiry: " + new Date(parseInt(expiry) * 1000).toLocaleTimeString());
 
-    return { tokenAgentFactory, tokenAgents, weth, erc20Token, erc721Token, erc1155Token, accounts, now, expiry };
+    return { demodex, weth, erc20Token, erc721Token, erc1155Token, accounts, now, expiry };
   }
 
   describe("Demodex", function () {
 
-    it.only("Test Demodex secondary functions", async function () {
+    it("Test Demodex secondary functions", async function () {
       const d = await loadFixture(deployContracts);
-      // await expect(d.tokenAgentFactory.newTokenAgent())
-      //   .to.be.revertedWithCustomError(d.tokenAgentFactory, "AlreadyDeployed")
-      //   .withArgs(anyValue);
-      // expect(await d.tokenAgentFactory.tokenAgentsLength()).to.equal(4);
-      // const getTokenAgentByOwnerInfo = await d.tokenAgentFactory.getTokenAgentByOwnerInfo(d.accounts[0].address);
-      // const tokenAgentAddress = getTokenAgentByOwnerInfo[1];
-      // const TokenAgent = await ethers.getContractFactory("TokenAgent");
-      // const tokenAgent = TokenAgent.attach(tokenAgentAddress);
-      // await expect(tokenAgent.connect(d.accounts[1]).init(d.weth, d.accounts[1]))
-      //   .to.be.revertedWithCustomError(tokenAgent, "AlreadyInitialised");
-      // expect(await tokenAgent.owner()).to.equal(d.accounts[0].address);
-      // expect((await d.tokenAgentFactory.getTokenTypes([d.weth, d.erc20Token, d.erc721Token, d.erc1155Token, d.accounts[0]])).toString()).to.equal("1,1,2,3,4");
+      expect((await d.demodex.getTokenTypes([d.weth, d.erc20Token, d.erc721Token, d.erc1155Token, d.accounts[0]])).toString()).to.equal("1,1,2,3,4");
     });
 
     it("Test TokenAgent invalid offers", async function () {
       const d = await loadFixture(deployContracts);
-      const tokenAgentByOwnerInfo = await d.tokenAgentFactory.getTokenAgentByOwnerInfo(d.accounts[0].address);
-      const tokenAgentAddress = tokenAgentByOwnerInfo[1];
-      const TokenAgent = await ethers.getContractFactory("TokenAgent");
-      const tokenAgent = TokenAgent.attach(tokenAgentAddress);
       const invalidOffer1 = [[d.accounts[0].address, SELL, d.expiry, [888], [], ["999999999999999999999999999999999997"]]];
-      await expect(tokenAgent.addOffers(invalidOffer1))
-        .to.be.revertedWithCustomError(tokenAgent, "InvalidToken")
+      await expect(d.demodex.addOffers(invalidOffer1))
+        .to.be.revertedWithCustomError(d.demodex, "InvalidToken")
         .withArgs(0, d.accounts[0].address);
       const invalidOffer2 = [
         [d.weth.target, SELL, d.expiry, [888], [], ["999999999999999999999999999999999997"]],
       ];
-      await expect(tokenAgent.addOffers(invalidOffer2))
-        .to.be.revertedWithCustomError(tokenAgent, "CannotOfferWETH");
+      await expect(d.demodex.addOffers(invalidOffer2))
+        .to.be.revertedWithCustomError(d.demodex, "CannotOfferWETH");
     });
 
     // TODO: Test TokenAgent error conditions
@@ -420,15 +358,15 @@ describe("TokenAgentFactory", function () {
       ];
       // console.log("        * offers1: " + JSON.stringify(offers1.map(e => e.toString())));
       console.log("        * offers1: " + JSON.stringify(offers1, (k, v) => typeof v === 'bigint' ? ethers.formatEther(v) : v));
-      const addOffers1Tx = await d.tokenAgents[1].connect(d.accounts[1]).addOffers(offers1);
+      const addOffers1Tx = await d.demodex.connect(d.accounts[1]).addOffers(offers1);
 
       const addOffers1TxReceipt = await addOffers1Tx.wait();
       const indices = [];
       addOffers1TxReceipt.logs.forEach((event) => {
-        const log = d.tokenAgents[1].interface.parseLog(event);
+        const log = d.demodex.interface.parseLog(event);
         indices.push(parseInt(log.args[0]));
       });
-      printLogs(d, "accounts[1]->tokenAgents[1].addOffers(offers1) => [" + indices.join(", ") + "]", addOffers1TxReceipt);
+      printLogs(d, "accounts[1]->demodex.addOffers(offers1) => [" + indices.join(", ") + "]", addOffers1TxReceipt);
       await printState(d);
 
       if (true) {
@@ -437,19 +375,19 @@ describe("TokenAgentFactory", function () {
           // [indices[1], ethers.parseUnits("0.104761904761904761", 18).toString(), FILLORKILL, [], [ethers.parseUnits("1.05", 18).toString()]],
         ];
         console.log("        * trades1: " + JSON.stringify(trades1));
-        const trades1Tx = await d.tokenAgents[1].connect(d.accounts[2]).trade(trades1, PAYMENTTYPE_WETH, {value: ethers.parseEther("10.0")});
+        const trades1Tx = await d.demodex.connect(d.accounts[2]).trade(trades1, PAYMENTTYPE_WETH, {value: ethers.parseEther("10.0")});
         const trades1TxReceipt = await trades1Tx.wait();
-        printLogs(d, "accounts[2]->tokenAgents[1].trade(trades1, PAYMENTTYPE_WETH)", trades1TxReceipt);
+        printLogs(d, "accounts[2]->demodex.trade(trades1, PAYMENTTYPE_WETH)", trades1TxReceipt);
         await printState(d);
       }
-      if (false) {
+      if (true) {
         const trades2 = [
-          [indices[0], ethers.parseUnits("0.209523809523809523", 18).toString(), FILLORKILL, [], [ethers.parseUnits("1.05", 18).toString()]],
+          [indices[0], ethers.parseUnits("0.190476190476190476", 18).toString(), FILLORKILL, [], [ethers.parseUnits("1.05", 18).toString()]],
         ];
         console.log("        * trades2: " + JSON.stringify(trades2));
-        const trades2Tx = await d.tokenAgents[1].connect(d.accounts[2]).trade(trades2, PAYMENTTYPE_WETH);
+        const trades2Tx = await d.demodex.connect(d.accounts[2]).trade(trades2, PAYMENTTYPE_WETH);
         const trades2TxReceipt = await trades2Tx.wait();
-        printLogs(d, "accounts[2]->tokenAgents[1].trade(trades2, PAYMENTTYPE_WETH)", trades2TxReceipt);
+        printLogs(d, "accounts[2]->demodex.trade(trades2, PAYMENTTYPE_WETH)", trades2TxReceipt);
         await printState(d);
       }
     });
@@ -479,14 +417,14 @@ describe("TokenAgentFactory", function () {
         ],
       ];
       console.log("        * offers1: " + JSON.stringify(offers1.map(e => e.toString())));
-      const addOffers1Tx = await d.tokenAgents[1].connect(d.accounts[1]).addOffers(offers1);
+      const addOffers1Tx = await d.demodex.connect(d.accounts[1]).addOffers(offers1);
       const addOffers1TxReceipt = await addOffers1Tx.wait();
       const indices = [];
       addOffers1TxReceipt.logs.forEach((event) => {
-        const log = d.tokenAgents[1].interface.parseLog(event);
+        const log = d.demodex.interface.parseLog(event);
         indices.push(parseInt(log.args[0]));
       });
-      printLogs(d, "accounts[1]->tokenAgents[1].addOffers(offers1) => [" + indices.join(", ") + "]", addOffers1TxReceipt);
+      printLogs(d, "accounts[1]->demodex.addOffers(offers1) => [" + indices.join(", ") + "]", addOffers1TxReceipt);
       await printState(d);
 
       if (true) {
@@ -496,9 +434,9 @@ describe("TokenAgentFactory", function () {
           // [indices[2], ethers.parseUnits("1", 18).toString(), FILLORKILL, [4, 5, 6, 7]],
         ];
         console.log("        * trades1: " + JSON.stringify(trades1));
-        const trades1Tx = await d.tokenAgents[1].connect(d.accounts[2]).trade(trades1, PAYMENTTYPE_WETH, {value: ethers.parseEther("10.0")});
+        const trades1Tx = await d.demodex.connect(d.accounts[2]).trade(trades1, PAYMENTTYPE_WETH, {value: ethers.parseEther("10.0")});
         const trades1TxReceipt = await trades1Tx.wait();
-        printLogs(d, "accounts[2]->tokenAgents[1].trade(trades1, PAYMENTTYPE_WETH)", trades1TxReceipt);
+        printLogs(d, "accounts[2]->demodex.trade(trades1, PAYMENTTYPE_WETH)", trades1TxReceipt);
         await printState(d);
       }
     });
@@ -527,14 +465,14 @@ describe("TokenAgentFactory", function () {
         ],
       ];
       console.log("        * offers1: " + JSON.stringify(offers1.map(e => e.toString())));
-      const addOffers1Tx = await d.tokenAgents[1].connect(d.accounts[1]).addOffers(offers1);
+      const addOffers1Tx = await d.demodex.connect(d.accounts[1]).addOffers(offers1);
       const addOffers1TxReceipt = await addOffers1Tx.wait();
       const indices = [];
       addOffers1TxReceipt.logs.forEach((event) => {
-        const log = d.tokenAgents[1].interface.parseLog(event);
+        const log = d.demodex.interface.parseLog(event);
         indices.push(parseInt(log.args[0]));
       });
-      printLogs(d, "accounts[1]->tokenAgents[1].addOffers(offers1) => [" + indices.join(", ") + "]", addOffers1TxReceipt);
+      printLogs(d, "accounts[1]->demodex.addOffers(offers1) => [" + indices.join(", ") + "]", addOffers1TxReceipt);
       await printState(d);
 
       if (true) {
@@ -546,9 +484,9 @@ describe("TokenAgentFactory", function () {
           // [indices[2], ethers.parseUnits("1", 18).toString(), FILLORKILL, [4, 5, 6, 7]],
         ];
         console.log("        * trades1: " + JSON.stringify(trades1));
-        const trades1Tx = await d.tokenAgents[1].connect(d.accounts[2]).trade(trades1, PAYMENTTYPE_WETH, {value: ethers.parseEther("10.0")});
+        const trades1Tx = await d.demodex.connect(d.accounts[2]).trade(trades1, PAYMENTTYPE_WETH, {value: ethers.parseEther("10.0")});
         const trades1TxReceipt = await trades1Tx.wait();
-        printLogs(d, "accounts[2]->tokenAgents[1].trade(trades1, PAYMENTTYPE_WETH)", trades1TxReceipt);
+        printLogs(d, "accounts[2]->demodex.trade(trades1, PAYMENTTYPE_WETH)", trades1TxReceipt);
         await printState(d);
       }
     });
