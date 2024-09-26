@@ -1807,6 +1807,8 @@ const dataModule = {
 
       const tokenSet = {
         chainId: parameter.chainId,
+        demodex: parameter.demodex,
+        demodexIndex: parameter.demodexIndex,
         token: parameter.token,
         tokenIndex: parameter.tokenIndex,
         symbol: parameter.symbol,
@@ -1823,7 +1825,7 @@ const dataModule = {
       context.commit('setState', { name: 'tokenSet', data: tokenSet });
       await context.dispatch('saveData', ['tokenSet']);
       // console.log(now() + " INFO dataModule:actions.collateTokenSet END - tokenAgents: " + JSON.stringify(tokenAgents));
-      console.log(now() + " INFO dataModule:actions.collateTokenSet END - tokenSet: " + JSON.stringify(tokenSet));
+      console.log(now() + " INFO dataModule:actions.collateTokenSet END - tokenSet: " + JSON.stringify(tokenSet, null, 2));
     },
 
 
