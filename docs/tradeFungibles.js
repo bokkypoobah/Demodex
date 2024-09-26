@@ -951,7 +951,7 @@ modalBuyOffer: {{ modalBuyOffer }}
                         <b-form-input size="sm" plaintext id="modalselloffer-wethapproved" :value="tokenSet.wethIndex && tokenSet.approvals[tokenSet.wethIndex] && tokenSet.approvals[tokenSet.wethIndex][tokenSet.coinbaseIndex] && tokenSet.approvals[tokenSet.wethIndex][tokenSet.coinbaseIndex][tokenSet.demodexIndex] && formatDecimals(tokenSet.approvals[tokenSet.wethIndex][tokenSet.coinbaseIndex][tokenSet.demodexIndex].tokens, 18) || '0'" class="pl-2 w-75"></b-form-input>
                       </b-form-group>
                       <b-form-group label="" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
-                        <b-button size="sm" :disabled="!networkSupported || !newSellOffers.filled.tokens || !settings.sellOffers.select.tokenAgent" @click="newSellOffersTrade" variant="warning">Trade</b-button>
+                        <b-button size="sm" :disabled="!networkSupported || !newSellOffers.filled.tokens" @click="newSellOffersTrade" variant="warning">Trade</b-button>
                       </b-form-group>
                     </b-card-text>
                   </b-tab>
@@ -2993,47 +2993,40 @@ data: {{ data }}
       console.log(now() + " INFO TradeFungibles:methods.newSellOffersTrade - this.newSellOffers.trades: " + JSON.stringify(this.newSellOffers.trades));
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const network = this.chainId && NETWORKS[this.chainId.toString()] || {};
-      const tokenAgent = this.indexToAddress[this.settings.sellOffers.select.tokenAgent];
-      const maker = this.indexToAddress[this.settings.sellOffers.select.owner];
-      console.log("tokenAgent: " + tokenAgent);
+      // const tokenAgent = this.indexToAddress[this.settings.sellOffers.select.tokenAgent];
+      // const maker = this.indexToAddress[this.settings.sellOffers.select.owner];
+      // console.log("tokenAgent: " + tokenAgent);
       console.log("token: " + this.tokenSet.token);
       console.log("WETH: " + this.tokenSet.weth);
-      console.log("maker: " + this.indexToAddress[this.settings.sellOffers.select.owner]);
+      // console.log("maker: " + this.indexToAddress[this.settings.sellOffers.select.owner]);
       console.log("taker: " + this.coinbase);
 
-      if (network.tokenAgentFactory) {
-        const contract = new ethers.Contract(tokenAgent, network.tokenAgent.abi, provider);
+      if (network.demodex) {
+        const contract = new ethers.Contract(network.demodex.address, network.demodex.abi, provider);
         const contractWithSigner = contract.connect(provider.getSigner());
 
         const token = new ethers.Contract(this.tokenSet.token, ERC20ABI, provider);
         const weth = new ethers.Contract(this.tokenSet.weth, ERC20ABI, provider);
 
-        const makerTokenBalance = await token.balanceOf(maker);
-        console.log("makerTokenBalance: " + ethers.utils.formatEther(makerTokenBalance));
-        const makerTokenApproved = await token.allowance(maker, tokenAgent);
-        console.log("makerTokenApproved: " + ethers.utils.formatEther(makerTokenApproved));
+        // const makerTokenBalance = await token.balanceOf(maker);
+        // console.log("makerTokenBalance: " + ethers.utils.formatEther(makerTokenBalance));
+        // const makerTokenApproved = await token.allowance(maker, tokenAgent);
+        // console.log("makerTokenApproved: " + ethers.utils.formatEther(makerTokenApproved));
 
-        const makerWethBalance = await weth.balanceOf(maker);
-        console.log("makerWethBalance: " + ethers.utils.formatEther(makerWethBalance));
-        const makerWethApproved = await weth.allowance(maker, tokenAgent);
-        console.log("makerWethApproved: " + ethers.utils.formatEther(makerWethApproved));
+        // const makerWethBalance = await weth.balanceOf(maker);
+        // console.log("makerWethBalance: " + ethers.utils.formatEther(makerWethBalance));
+        // const makerWethApproved = await weth.allowance(maker, tokenAgent);
+        // console.log("makerWethApproved: " + ethers.utils.formatEther(makerWethApproved));
 
         const takerTokenBalance = await token.balanceOf(this.coinbase);
         console.log("takerTokenBalance: " + ethers.utils.formatEther(takerTokenBalance));
-        const takerTokenApproved = await token.allowance(this.coinbase, tokenAgent);
+        const takerTokenApproved = await token.allowance(this.coinbase, network.demodex.address);
         console.log("takerTokenApproved: " + ethers.utils.formatEther(takerTokenApproved));
 
         const takerWethBalance = await weth.balanceOf(this.coinbase);
         console.log("takerWethBalance: " + ethers.utils.formatEther(takerWethBalance));
-        const takerWethApproved = await weth.allowance(this.coinbase, tokenAgent);
+        const takerWethApproved = await weth.allowance(this.coinbase, network.demodex.address);
         console.log("takerWethApproved: " + ethers.utils.formatEther(takerWethApproved));
-
-        // const maker = this.modalSellOffer.maker;
-        // const makerTokenBalance = maker && this.tokenBalances[maker] && this.tokenBalances[maker].tokens && ethers.BigNumber.from(this.tokenBalances[maker].tokens) || 0;
-        // // const makerTokenBalance = ethers.BigNumber.from("5100000000000000000");
-        // const tokenAgent = maker && this.modalSellOffer.tokenAgent || null;
-        // const tokenAgentTokenApproval = maker && this.tokenApprovals[maker] && this.tokenApprovals[maker][tokenAgent] && ethers.BigNumber.from(this.tokenApprovals[maker][tokenAgent].tokens) || 0;
-
 
         try {
           const tx = await contractWithSigner.trade(this.newSellOffers.trades, this.settings.sellOffers.paymentType == 'eth' ? 1 : 0, { value: this.settings.sellOffers.paymentType == 'eth' ? this.newSellOffers.filled.weth : 0 });
