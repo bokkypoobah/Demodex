@@ -755,7 +755,7 @@ modalBuyOffer: {{ modalBuyOffer }}
                     <!-- <b-button size="sm" @click="filterSellOffersByTokenAgent(data.item)" variant="link" v-b-popover.hover.ds500="'Filter by Token Agent: ' + indexToAddress[data.item.tokenAgent]" class="m-0 p-0">
                       <b-icon-filter shift-v="+2" font-scale="1.1"></b-icon-filter>
                     </b-button> -->
-                    {{ (indexToAddress[data.item.owner] && indexToAddress[data.item.owner].substring(0, 12) || '') }}
+                    {{ (indexToAddress[data.item.maker] && indexToAddress[data.item.maker].substring(0, 12) || '') }}
                     <!-- <font size="-1">
                       <b-link size="sm" :href="explorer + 'token/' + settings.tokenContractAddress + '?a=' + data.item.maker" variant="link" v-b-popover.hover.ds500="data.item.maker" target="_blank">
                         {{ data.item.maker.substring(0, 8) + '...' + data.item.maker.slice(-6) }}
@@ -1582,7 +1582,7 @@ data: {{ data }}
           wethDisplayDecimals: 9,
         },
 
-        version: 0,
+        version: 1,
       },
 
       tokenAgentFactoryEvents: [],
@@ -2068,7 +2068,7 @@ data: {{ data }}
     },
 
     newSellOffers() {
-      // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - this.tokenSet: " + JSON.stringify(this.tokenSet, null, 2));
+      console.log(now() + " INFO TradeFungibles:computed.newSellOffers - this.tokenSet: " + JSON.stringify(this.tokenSet, null, 2));
       // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - tokenSet.timestamp: " + this.formatTimestamp(this.tokenSet.timestamp) + ", token.symbol: " + this.tokenSet.symbol + ", token.decimals: " + this.tokenSet.decimals);
       const TENPOW18 = ethers.BigNumber.from("1000000000000000000");
 
@@ -2139,13 +2139,13 @@ data: {{ data }}
           }
         }
       }
-      // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - prices: " + JSON.stringify(prices, null, 2));
+      console.log(now() + " INFO TradeFungibles:computed.newSellOffers - prices: " + JSON.stringify(prices, null, 2));
 
       if (simulate && this.tokenSet.timestamp) {
         for (const [i, point] of points.entries()) {
           prices.push({
             txHash: null, logIndex: null,
-            maker: coinbaseIndex,
+            maker: this.tokenSet.coinbaseIndex,
             offerIndex: null, nonce: null, expiry: null,
             priceIndex: i, price: ethers.utils.parseEther(point[0].toString()).toString(),
             tokens: ethers.utils.parseUnits(point[1].toString(), this.tokenSet.decimals).toString(),
@@ -2153,6 +2153,7 @@ data: {{ data }}
           });
         }
       }
+      console.log(now() + " INFO TradeFungibles:computed.newSellOffers - prices: " + JSON.stringify(prices, null, 2));
 
       prices.sort((a, b) => {
         if (a.valid && !b.valid) {

@@ -1807,6 +1807,8 @@ const dataModule = {
 
       const tokenSet = {
         chainId: parameter.chainId,
+        coinbase: parameter.coinbase,
+        coinbaseIndex: parameter.coinbaseIndex,
         demodex: parameter.demodex,
         demodexIndex: parameter.demodexIndex,
         token: parameter.token,
