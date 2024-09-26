@@ -1207,10 +1207,10 @@ buyOffers: {{ buyOffers }}
                     Event
                   </b-col>
                   <b-col cols="2">
-                    From / Maker
+                    Maker / From / Owner
                   </b-col>
                   <b-col cols="2">
-                    To / Taker
+                    Taker / To / Spender
                   </b-col>
                   <b-col cols="1">
                     Token
@@ -1232,39 +1232,53 @@ buyOffers: {{ buyOffers }}
                       {{ data1.item.eventType }}
                     </b-col>
                     <b-col cols="2">
-                      <b-link v-if="data1.item.from" size="sm" :href="explorer + 'address/' + data1.item.from" variant="link" v-b-popover.hover.ds500="data1.item.from" target="_blank">
-                        {{ data1.item.from.substring(0, 8) + '...' + data1.item.from.slice(-6) }}
-                      </b-link>
+                      <div v-if="data1.item.eventType == 'Transfer'">
+                        <b-link size="sm" :href="explorer + 'address/' + indexToAddress[data1.item.events[0].from]" variant="link" v-b-popover.hover.ds500="'From: ' + indexToAddress[data1.item.events[0].from]" target="_blank">
+                          {{ indexToAddress[data1.item.events[0].from].substring(0, 8) + '...' + indexToAddress[data1.item.events[0].from].slice(-6) }}
+                        </b-link>
+                      </div>
+                      <div v-else>
+                        <b-link size="sm" :href="explorer + 'address/' + indexToAddress[data1.item.events[0].owner]" variant="link" v-b-popover.hover.ds500="'Owner: ' + indexToAddress[data1.item.events[0].owner]" target="_blank">
+                          {{ indexToAddress[data1.item.events[0].owner].substring(0, 8) + '...' + indexToAddress[data1.item.events[0].owner].slice(-6) }}
+                        </b-link>
+                      </div>
                     </b-col>
                     <b-col cols="2">
-                      <b-link v-if="data1.item.to" size="sm" :href="explorer + 'address/' + data1.item.to" variant="link" v-b-popover.hover.ds500="data1.item.to" target="_blank">
-                        {{ data1.item.to.substring(0, 8) + '...' + data1.item.to.slice(-6) }}
-                      </b-link>
+                      <div v-if="data1.item.eventType == 'Transfer'">
+                        <b-link size="sm" :href="explorer + 'address/' + indexToAddress[data1.item.events[0].to]" variant="link" v-b-popover.hover.ds500="'To: ' + indexToAddress[data1.item.events[0].to]" target="_blank">
+                          {{ indexToAddress[data1.item.events[0].to].substring(0, 8) + '...' + indexToAddress[data1.item.events[0].to].slice(-6) }}
+                        </b-link>
+                      </div>
+                      <div v-else>
+                        <b-link size="sm" :href="explorer + 'address/' + indexToAddress[data1.item.events[0].spender]" variant="link" v-b-popover.hover.ds500="'Spender: ' + indexToAddress[data1.item.events[0].spender]" target="_blank">
+                          {{ indexToAddress[data1.item.events[0].spender].substring(0, 8) + '...' + indexToAddress[data1.item.events[0].spender].slice(-6) }}
+                        </b-link>
+                      </div>
                     </b-col>
                     <b-col cols="1">
-                      <b-link v-if="data1.item.contract" size="sm" :href="explorer + 'token/' + data1.item.contract" variant="link" v-b-popover.hover.ds500="data1.item.contract" target="_blank">
-                        <span v-if="data1.item.contract == data.token">
+                      <b-link size="sm" :href="explorer + 'token/' + indexToAddress[data1.item.events[0].contract]" variant="link" v-b-popover.hover.ds500="indexToAddress[data1.item.events[0].contract]" target="_blank">
+                        <span v-if="data1.item.events[0].contract == tokenSet.tokenIndex">
                           {{ settings.symbol }}
                         </span>
-                        <span v-else-if="data1.item.contract == data.weth">
+                        <span v-else-if="data1.item.events[0].contract == tokenSet.wethIndex">
                           WETH
                         </span>
                         <span v-else>
-                          {{ data1.item.contract.substring(0, 8) + '...' + data1.item.contract.slice(-6) }}
+                          {{ indexToAddress[data1.item.events[0].contract].substring(0, 8) + '...' + indexToAddress[data1.item.events[0].contract].slice(-6) }}
                         </span>
                       </b-link>
                     </b-col>
                     <b-col cols="5" class="text-left">
-                      {{ formatDecimals(data1.item.tokens, 18) }}
+                      {{ formatDecimals(data1.item.events[0].tokens, 18) }}
                     </b-col>
                   </b-row>
                 </div>
                 <div v-else-if="data1.item.eventType == 'Offered'">
-                  <div v-for="(info, logIndex) in data1.item.events"  v-bind:key="logIndex" class="m-0 p-0">
+                  <div v-for="(info, i) in data1.item.events"  v-bind:key="i" class="m-0 p-0">
                     <b-row>
                       <b-col cols="1">
-                        <b-link size="sm" :href="explorer + 'tx/' + indexToTxHash[data1.item.txHash] + '#eventlog#' + logIndex" variant="link" v-b-popover.hover.ds500="logIndex" target="_blank">
-                          {{ logIndex }}
+                        <b-link size="sm" :href="explorer + 'tx/' + indexToTxHash[data1.item.txHash] + '#eventlog#' + info.logIndex" variant="link" v-b-popover.hover.ds500="'Log index: ' + info.logIndex" target="_blank">
+                          {{ info.logIndex }}
                         </b-link>
                       </b-col>
                       <b-col cols="1">
@@ -1303,19 +1317,20 @@ buyOffers: {{ buyOffers }}
                   </div>
                 </div>
                 <div v-else-if="data1.item.eventType == 'Traded'">
-                  <div v-for="(info, logIndex) in data1.item.events"  v-bind:key="logIndex" class="m-0 p-0">
+                  <div v-for="(info, i) in data1.item.events"  v-bind:key="i" class="m-0 p-0">
                     <!-- {{ logIndex }} . {{ info }} -->
                     <b-row>
                       <b-col cols="1">
-                        <b-link size="sm" :href="explorer + 'tx/' + indexToTxHash[data1.item.txHash] + '#eventlog#' + logIndex" variant="link" v-b-popover.hover.ds500="logIndex" target="_blank">
-                          {{ logIndex }}
+                        <b-link size="sm" :href="explorer + 'tx/' + indexToTxHash[data1.item.txHash] + '#eventlog#' + info.logIndex" variant="link" v-b-popover.hover.ds500="info.logIndex" target="_blank">
+                          {{ info.logIndex }}
                         </b-link>
                       </b-col>
                       <b-col cols="1">
-                        {{ info.eventType == 'InternalTransfer' ? 'Transfer' : info.eventType }}
+                        {{ info.eventType == 10 ? 'Traded' : 'Transfer' }}
                       </b-col>
                       <b-col cols="2">
-                        <div v-if="info.eventType == 'Transfer' || info.eventType == 'InternalTransfer' || info.eventType == 'Deposit' || info.eventType == 'Withdrawal'">
+                        <!-- <div v-if="info.eventType == 'Transfer' || info.eventType == 'InternalTransfer' || info.eventType == 'Deposit' || info.eventType == 'Withdrawal'"> -->
+                        <div v-if="info.eventType == 0 || info.eventType == 6 || info.eventType == 1 || info.eventType == 2">
                           <b-link v-if="info.from" size="sm" :href="explorer + 'address/' + info.from" variant="link" v-b-popover.hover.ds500="info.from" target="_blank">
                             <span v-if="info.from == data.wethIndex">
                               WETH
@@ -1332,9 +1347,10 @@ buyOffers: {{ buyOffers }}
                         </div>
                       </b-col>
                       <b-col cols="2">
-                        <div v-if="info.eventType == 'Transfer' || info.eventType == 'InternalTransfer' || info.eventType == 'Deposit' || info.eventType == 'Withdrawal'">
-                          <b-link v-if="info.to" size="sm" :href="explorer + 'address/' + indexToAddress[info.to]" variant="link" v-b-popover.hover.ds500="info.to" target="_blank">
-                            <span v-if="info.to == data.wethIndex">
+                        <!-- <div v-if="info.eventType == 'Transfer' || info.eventType == 'InternalTransfer' || info.eventType == 'Deposit' || info.eventType == 'Withdrawal'"> -->
+                        <div v-if="info.eventType == 0 || info.eventType == 6 || info.eventType == 1 || info.eventType == 2">
+                          <b-link v-if="info.to" size="sm" :href="explorer + 'address/' + indexToAddress[info.to]" variant="link" v-b-popover.hover.ds500="indexToAddress[info.to]" target="_blank">
+                            <span v-if="info.to == tokenSet.wethIndex">
                               WETH
                             </span>
                             <span v-else>
@@ -1343,13 +1359,14 @@ buyOffers: {{ buyOffers }}
                           </b-link>
                         </div>
                         <div v-else>
-                          <b-link v-if="info.taker" size="sm" :href="explorer + 'address/' + indexToAddress[info.taker]" variant="link" v-b-popover.hover.ds500="'Taker ' + info.taker" target="_blank">
+                          <b-link v-if="info.taker" size="sm" :href="explorer + 'address/' + indexToAddress[info.taker]" variant="link" v-b-popover.hover.ds500="'Taker ' + indexToAddress[info.taker]" target="_blank">
                             {{ indexToAddress[info.taker].substring(0, 8) + '...' + indexToAddress[info.taker].slice(-6) }}
                           </b-link>
                         </div>
                       </b-col>
                       <b-col cols="1">
-                        <div v-if="info.eventType == 'Transfer' || info.eventType == 'Deposit' || info.eventType == 'Withdrawal'">
+                        <!-- <div v-if="info.eventType == 'Transfer' || info.eventType == 'Deposit' || info.eventType == 'Withdrawal'"> -->
+                        <div v-if="info.eventType == 0 || info.eventType == 1 || info.eventType == 2">
                           <b-link size="sm" :href="explorer + 'contract/' + info.contract" variant="link" v-b-popover.hover.ds500="info.contract" target="_blank">
                             <span v-if="info.contract == data.tokenIndex">
                               {{ settings.symbol }}
@@ -1358,11 +1375,12 @@ buyOffers: {{ buyOffers }}
                               WETH
                             </span>
                             <span v-else>
-                              {{ info.contract.substring(0, 8) + '...' + info.contract.slice(-6) }}
+                              {{ indexToAddress[info.contract].substring(0, 8) + '...' + indexToAddress[info.contract].slice(-6) }}
                             </span>
                           </b-link>
                         </div>
-                        <div v-else-if="info.eventType == 'InternalTransfer'">
+                        <!-- <div v-else-if="info.eventType == 'InternalTransfer'"> -->
+                        <div v-else-if="info.eventType == 6">
                           ETH
                         </div>
                         <div v-else>
@@ -1380,10 +1398,12 @@ buyOffers: {{ buyOffers }}
                         </div>
                       </b-col>
                       <b-col cols="5" class="text-left">
-                        <div v-if="info.eventType == 'Transfer' || info.eventType == 'Deposit' || info.eventType == 'Withdrawal'">
+                        <!-- <div v-if="info.eventType == 'Transfer' || info.eventType == 'Deposit' || info.eventType == 'Withdrawal'"> -->
+                        <div v-if="info.eventType == 0 || info.eventType == 1 || info.eventType == 2">
                           {{ formatDecimals(info.tokens, 18) }}
                         </div>
-                        <div v-else-if="info.eventType == 'InternalTransfer'">
+                        <!-- <div v-else-if="info.eventType == 'InternalTransfer'"> -->
+                        <div v-else-if="info.eventType == 6">
                           {{ formatDecimals(info.ethers, 18) }}
                         </div>
                         <div v-else>
@@ -1397,57 +1417,58 @@ buyOffers: {{ buyOffers }}
                   </div>
                 </div>
                 <div v-else>
-                  <div v-for="(info, logIndex) in data1.item.events"  v-bind:key="logIndex" class="m-0 p-0">
+                  <div v-for="(info, i) in data1.item.events"  v-bind:key="i" class="m-0 p-0">
                     <b-row>
                       <b-col cols="1">
-                        <b-link size="sm" :href="explorer + 'tx/' + indexToTxHash[data1.item.txHash] + '#eventlog#' + logIndex" variant="link" v-b-popover.hover.ds500="logIndex" target="_blank">
-                          {{ logIndex }}
+                        <b-link size="sm" :href="explorer + 'tx/' + indexToTxHash[data1.item.txHash] + '#eventlog#' + info.logIndex" variant="link" v-b-popover.hover.ds500="info.logIndex" target="_blank">
+                          {{ info.logIndex }}
                         </b-link>
                       </b-col>
                       <b-col cols="1">
-                        {{ info.eventType }}
+                        {{ info.eventType == 0 ? 'Transfer' : 'Huh?' }}
                       </b-col>
                       <b-col cols="2">
-                        <div v-if="info.eventType == 'Transfer'">
-                          <b-link v-if="info.from" size="sm" :href="explorer + 'address/' + info.from" variant="link" v-b-popover.hover.ds500="info.from" target="_blank">
-                            <span v-if="info.from == data.weth">
+                        <!-- <div v-if="info.eventType == 'Transfer'"> -->
+                        <div v-if="info.eventType == 0">
+                          <b-link size="sm" :href="explorer + 'address/' + indexToAddress[info.from]" variant="link" v-b-popover.hover.ds500="indexToAddress[info.from]" target="_blank">
+                            <span v-if="info.from == tokenSet.wethIndex">
                               WETH
                             </span>
                             <span v-else>
-                              {{ info.from.substring(0, 8) + '...' + info.from.slice(-6) }}
+                              {{ indexToAddress[info.from].substring(0, 8) + '...' + indexToAddress[info.from].slice(-6) }}
                             </span>
                           </b-link>
                         </div>
                       </b-col>
                       <b-col cols="2">
-                        <div v-if="info.eventType == 'Transfer'">
-                          <b-link v-if="info.to" size="sm" :href="explorer + 'address/' + info.to" variant="link" v-b-popover.hover.ds500="info.to" target="_blank">
+                        <div v-if="info.eventType == 0">
+                          <b-link size="sm" :href="explorer + 'address/' + indexToAddress[info.to]" variant="link" v-b-popover.hover.ds500="indexToAddress[info.to]" target="_blank">
                             <span v-if="info.to == data.weth">
                               WETH
                             </span>
                             <span v-else>
-                              {{ info.to.substring(0, 8) + '...' + info.to.slice(-6) }}
+                              {{ indexToAddress[info.to].substring(0, 8) + '...' + indexToAddress[info.to].slice(-6) }}
                             </span>
                           </b-link>
                         </div>
                       </b-col>
                       <b-col cols="1">
-                        <div v-if="info.eventType == 'Transfer'">
-                          <b-link size="sm" :href="explorer + 'contract/' + info.contract" variant="link" v-b-popover.hover.ds500="info.contract" target="_blank">
-                            <span v-if="info.contract == data.token">
+                        <div v-if="info.eventType == 0">
+                          <b-link size="sm" :href="explorer + 'contract/' + indexToAddress[info.contract]" variant="link" v-b-popover.hover.ds500="indexToAddress[info.contract]" target="_blank">
+                            <span v-if="info.contract == tokenSet.tokenIndex">
                               {{ settings.symbol }}
                             </span>
-                            <span v-else-if="info.contract == data.weth">
+                            <span v-else-if="info.contract == tokenSet.wethIndex">
                               WETH
                             </span>
                             <span v-else>
-                              {{ info.contract.substring(0, 8) + '...' + info.contract.slice(-6) }}
+                              {{ indexToAddress[info.contract].substring(0, 8) + '...' + indexToAddress[info.contract].slice(-6) }}
                             </span>
                           </b-link>
                         </div>
                       </b-col>
                       <b-col cols="5" class="text-left">
-                        <div v-if="info.eventType == 'Transfer'">
+                        <div v-if="info.eventType == 0">
                           {{ formatDecimals(info.tokens, 18) }}
                         </div>
                       </b-col>
@@ -1461,6 +1482,7 @@ buyOffers: {{ buyOffers }}
 
         <font v-if="settings.tabIndex == 2 || settings.tabIndex == 3" size="-2">
           <pre>
+tokenSet: {{ tokenSet }}
 events: {{ events }}
 balances: {{ balances }}
 approvals: {{ approvals }}
