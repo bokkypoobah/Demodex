@@ -957,7 +957,55 @@ modalBuyOffer: {{ modalBuyOffer }}
                   </b-tab>
                   <b-tab title="Make Offer">
                     <b-card-text>
-                      Tab contents 2
+                      <b-form-group label="Points:" label-size="sm" label-cols-sm="4" label-align-sm="right" :state="!sellOfferPointsFeedback" :invalid-feedback="sellOfferPointsFeedback" class="mx-0 my-1 p-0">
+                        <font size="-1">
+                          <b-table ref="addSellOfferPointsTable" small fixed striped sticky-header="600px" responsive hover :fields="addSellOfferPointsFields" :items="settings.addSellOffer.points" show-empty head-variant="light" class="m-0 mt-1">
+                            <template #empty="scope">
+                              Click [+] below to add a new row
+                            </template>
+                            <template #cell(price)="data">
+                              <b-form-input size="sm" type="number" v-model.trim="data.item.price" @change="saveSettings();" debounce="600" class="text-right"></b-form-input>
+                            </template>
+                            <template #cell(tokens)="data">
+                              <b-form-input size="sm" type="number" v-model.trim="data.item.tokens" @change="saveSettings();" debounce="600" class="text-right"></b-form-input>
+                            </template>
+                            <!-- <template #cell(wethAmount)="data">
+                              <b-form-input size="sm" readonly :value="formatNumber(bigNumberMultiply(data.item.price, data.item.tokens))" class="text-right"></b-form-input>
+                            </template> -->
+                            <template #cell(option)="data">
+                              <b-button size="sm" @click="settings.addSellOffer.points.splice(data.index, 1); saveSettings();" variant="link" v-b-popover.hover.ds500="'Add new row'"><b-icon-dash shift-v="+1" font-scale="1.2"></b-icon-dash></b-button>
+                            </template>
+                            <template #bottom-row="data">
+                              <b-td>
+                                <b-form-checkbox size="sm" v-model="settings.addSellOffer.simulate" @input="saveSettings" v-b-popover.hover.ds500="'Simulate in offers table above?'" class="ml-1 mt-1">
+                                  Simulate
+                                </b-form-checkbox>
+                              </b-td>
+                              <b-td>
+                              </b-td>
+                              <b-td class="text-right">
+                                <b-button size="sm" @click="settings.addSellOffer.points.push({ price: null, tokens: null }); saveSettings();" variant="link" v-b-popover.hover.ds500="'Add new row'"><b-icon-plus shift-v="+1" font-scale="1.2"></b-icon-plus></b-button>
+                              </b-td>
+                            </template>
+                          </b-table>
+                        </font>
+                      </b-form-group>
+                      <!-- <b-form-group v-if="myTokenAgentOptions.length == 1" label="Deploy Token Agent:" label-size="sm" label-cols-sm="4" label-align-sm="right" description="Refresh after deployment" class="mx-0 my-1 p-0">
+                        <b-button size="sm" @click="deployNewTokenAgent" variant="warning">Deploy</b-button>
+                      </b-form-group> -->
+                      <!-- <b-form-group v-if="myTokenAgentOptions.length > 1" label="Token Agent:" label-for="modaladdselloffer-tokenagent" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+                        <b-form-select size="sm" v-model="settings.addSellOffer.tokenAgent" @change="saveSettings" :options="myTokenAgentOptions""></b-form-select>
+                      </b-form-group> -->
+                      <b-form-group label="Expiry:" label-for="modaladdselloffer-expirytime" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+                        <b-form-datepicker size="sm" id="modaladdselloffer-expirydate" v-model="expiryDate" :date-format-options="{ year: 'numeric', month: 'short', day: '2-digit', weekday: 'short' }" reset-button today-button close-button label-reset-button="No Expiry" label-no-date-selected="No Expiry" class="w-75"></b-form-datepicker>
+                      </b-form-group>
+                      <b-form-group v-if="expiryDate" label="" label-for="modaladdselloffer-expirytime" label-size="sm" label-cols-sm="4" label-align-sm="right" :description="formatTimestampUTC(settings.addSellOffer.expiry)" class="mx-0 my-1 p-0">
+                        <b-form-timepicker size="sm" id="modaladdselloffer-expirytime" v-model="expiryTime" minutes-step="15" now-button label-no-time-selected="Select" class="w-50"></b-form-timepicker>
+                      </b-form-group>
+                      <b-form-group label="" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+                        <b-button size="sm" :disabled="myTokenAgentOptions.length == 1 || !settings.addSellOffer.tokenAgent || settings.addSellOffer.points.length == 0 || !!sellOfferPointsFeedback" @click="execAddSellOffer" variant="warning">Add Sell Offer</b-button>
+                      </b-form-group>
+
                     </b-card-text>
                   </b-tab>
                 </b-tabs>
@@ -1774,7 +1822,7 @@ data: {{ data }}
       addSellOfferPointsFields: [
         { key: 'price', label: 'Price', sortable: false, thStyle: 'width: 30%;', thClass: 'text-right', tdClass: 'text-right' },
         { key: 'tokens', label: 'Tokens', sortable: false, thStyle: 'width: 30%;', thClass: 'text-right', tdClass: 'text-right' },
-        { key: 'wethAmount', label: 'WETH', sortable: false, thStyle: 'width: 30%;', thClass: 'text-right', tdClass: 'text-right' },
+        // { key: 'wethAmount', label: 'WETH', sortable: false, thStyle: 'width: 30%;', thClass: 'text-right', tdClass: 'text-right' },
         { key: 'option', label: '', sortable: false, thStyle: 'width: 10%;', thClass: 'text-right', tdClass: 'text-right' },
       ],
       sellOfferFields: [
