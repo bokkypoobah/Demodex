@@ -213,6 +213,66 @@ function parseTokenAgentFactoryEventLogsOld(logs, chainId, tokenAgentFactoryAddr
   return records;
 }
 
+function parseDemodexEventLogs(logs, chainId, demodexAbi) {
+  // console.log(now() + " INFO functions:parseDemodexEventLogs - logs: " + JSON.stringify(logs, null, 2));
+  const interface = new ethers.utils.Interface(demodexAbi);
+  const records = [];
+  for (const log of logs) {
+    if (!log.removed) {
+      const logData = interface.parseLog(log);
+      const contract = log.address;
+      let eventRecord = null;
+      if (logData.eventFragment.name == "Offered") {
+        // event Offered(Index index, Token indexed token, TokenType tokenType, Account indexed maker, BuySell buySell, Unixtime expiry, Nonce nonce, Price[] prices, TokenId[] tokenIds, Tokens[] tokenss, Unixtime timestamp);
+        const [index, token, tokenType, maker, buySell, expiry, nonce, prices, tokenIds, tokenss, timestamp] = logData.args;
+        eventRecord = {
+          eventType: EVENTTYPE_OFFERED, index, token, tokenType, maker, buySell, expiry, nonce,
+          prices: prices.map(e => ethers.BigNumber.from(e).toString()),
+          tokenIds: tokenIds.map(e => ethers.BigNumber.from(e).toString()),
+          tokenss: tokenss.map(e => ethers.BigNumber.from(e).toString()),
+          timestamp,
+        };
+      } else if (logData.eventFragment.name == "Traded") {
+        // event Traded(Index index, Token indexed token, TokenType tokenType, Account indexed maker, Account indexed taker, BuySell makerBuySell, uint[] prices, uint[] tokenIds, uint[] tokenss, Tokens[] remainingTokenss, Price price, Unixtime timestamp);
+        const [index, token, tokenType, maker, taker, makerBuySell, prices, tokenIds, tokenss, remainingTokenss, price, timestamp] = logData.args;
+        eventRecord = {
+          eventType: EVENTTYPE_TRADED, index, token, tokenType, maker, taker, makerBuySell,
+          prices: prices.map(e => ethers.BigNumber.from(e).toString()),
+          tokenIds: tokenIds.map(e => ethers.BigNumber.from(e).toString()),
+          tokenss: tokenss.map(e => ethers.BigNumber.from(e).toString()),
+          remainingTokenss: remainingTokenss.map(e => ethers.BigNumber.from(e).toString()),
+          price: price.toString(),
+          timestamp,
+        };
+
+      } else if (logData.eventFragment.name == "InternalTransfer") {
+        // event InternalTransfer(address indexed from, address indexed to, uint ethers, Unixtime timestamp);
+        const [from, to, ethers, timestamp] = logData.args;
+        eventRecord = { eventType: EVENTTYPE_INTERNALTRANSFER, from, to, ethers: ethers.toString(), timestamp };
+      } else if (logData.eventFragment.name == "OffersInvalidated") {
+        // event OffersInvalidated(Nonce newNonce, Unixtime timestamp);
+        const [newNonce, timestamp] = logData.args;
+        eventRecord = { eventType: EVENTTYPE_OFFERSINVALIDATED, newNonce, timestamp };
+      } else {
+        // console.log(now() + " INFO functions:parseDemodexEventLogs - UNHANDLED log: " + JSON.stringify(log));
+      }
+      if (eventRecord) {
+        records.push( {
+          chainId,
+          blockNumber: parseInt(log.blockNumber),
+          logIndex: parseInt(log.logIndex),
+          txIndex: parseInt(log.transactionIndex),
+          txHash: log.transactionHash,
+          contract,
+          ...eventRecord,
+        });
+      }
+    }
+  }
+  // console.log(now() + " INFO functions:parseDemodexEventLogs - records: " + JSON.stringify(records, null, 2));
+  return records;
+}
+
 // TokenAgent
 // type Account is address;  // 2^160
 // type Index is uint32;     // 2^32  = 4,294,967,296

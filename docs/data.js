@@ -1009,14 +1009,19 @@ const dataModule = {
         }
       }
       const network = chainId && NETWORKS[chainId.toString()] || {};
-      if (network.tokenAgentFactory) {
+      if (network.demodex) {
+        options.demodex = network.demodex.address;
+        if (!(network.demodex.address in context.state.addressToIndex)) {
+          context.commit('addAddressIndex', network.demodex.address);
+        }
+        options.demodexIndex = context.state.addressToIndex[network.demodex.address];
         options.weth = network.weth.address;
         if (!(options.weth in context.state.addressToIndex)) {
           context.commit('addAddressIndex', options.weth);
         }
         options.wethIndex = context.state.addressToIndex[options.weth];
       }
-      // console.log(now() + " INFO dataModule:actions.syncIt - options: " + JSON.stringify(options));
+      console.log(now() + " INFO dataModule:actions.syncIt - options: " + JSON.stringify(options));
 
       context.dispatch('saveData', ['indexToAddress', 'indexToTxHash']);
 
@@ -1037,9 +1042,9 @@ const dataModule = {
       // if (!devMode) {
       //   await context.dispatch('collateTokenAgentGeneralEvents', parameter);
       // }
-      // if (options.token && !devMode) {
-      //   await context.dispatch('syncTokenSetTokenAgentEvents', parameter);
-      // }
+      if (options.token && !devMode) {
+        await context.dispatch('syncTokenSetDemodexEvents', parameter);
+      }
       // if (options.token && !devMode) {
       //   await context.dispatch('collateTokenSetTokenAgentEvents', parameter);
       // }
@@ -1263,22 +1268,22 @@ const dataModule = {
       console.log(now() + " INFO dataModule:actions.collateTokenAgentGeneralEvents END - rows: " + rows);
     },
 
-    async syncTokenSetTokenAgentEvents(context, parameter) {
-      console.log(now() + " INFO dataModule:actions.syncTokenSetTokenAgentEvents BEGIN - token: " + parameter.token);
+    async syncTokenSetDemodexEvents(context, parameter) {
+      console.log(now() + " INFO dataModule:actions.syncTokenSetDemodexEvents BEGIN - token: " + parameter.token);
       const db = new Dexie(context.state.db.name);
       db.version(context.state.db.version).stores(context.state.db.schemaDefinition);
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const network = parameter.chainId && NETWORKS[parameter.chainId.toString()] || {};
       let [startBlock, deleteAcount, addCount] = [0, 0, 0];
-      if (network.tokenAgentFactory) {
+      if (network.demodex) {
         async function getLogs(fromBlock, toBlock) {
-          // console.log(now() + " INFO dataModule:actions.syncTokenSetTokenAgentEvents.getLogs: " + fromBlock + " - " + toBlock);
+          // console.log(now() + " INFO dataModule:actions.syncTokenSetDemodexEvents.getLogs: " + fromBlock + " - " + toBlock);
           let split = false;
           const maxLogScrapingSize = NETWORKS['' + parameter.chainId].maxLogScrapingSize || null;
           if (!maxLogScrapingSize || (toBlock - fromBlock) <= maxLogScrapingSize) {
             try {
               const filter = {
-                address: null, fromBlock, toBlock,
+                address: network.demodex.address, fromBlock, toBlock,
                 topics: [[
                   // event Offered(Index index, Token indexed token, TokenType tokenType, Account indexed maker, BuySell buySell, Unixtime expiry, Nonce nonce, Price[] prices, TokenId[] tokenIds, Tokens[] tokenss, Unixtime timestamp);
                   ethers.utils.id("Offered(uint32,address,uint8,address,uint8,uint40,uint24,uint128[],uint256[],uint128[],uint40)"),
@@ -1291,58 +1296,61 @@ const dataModule = {
                 ],
               };
               const eventLogs = await provider.getLogs(filter);
-              const records = parseTokenAgentEventLogs(eventLogs, parameter.chainId, network.tokenAgent.abi);
+              // console.log("eventLogs: " + JSON.stringify(eventLogs, null, 2));
+              const records = parseDemodexEventLogs(eventLogs, parameter.chainId, network.demodex.abi);
+              // console.log("records: " + JSON.stringify(records, null, 2));
               const newRecords = [];
               for (const record of records) {
-                const contractIndex = context.state.addressToIndex[record.contract];
-                if (contractIndex in (context.state.tokenAgents[parameter.chainId] || {})) {
-                  if (!(record.txHash in context.state.txHashToIndex)) {
-                    context.commit('addTxHashIndex', record.txHash);
-                  }
-                  let addresses = [];
-                  if (record.eventType == EVENTTYPE_OFFERED) {
-                    addresses = [record.contract, record.token, record.maker];
-                  } else if (record.eventType == EVENTTYPE_TRADED) {
-                    addresses = [record.contract, record.token, record.maker, record.taker];
-                  }
-                  for (const address of addresses) {
-                    if (!(address in context.state.addressToIndex)) {
-                      context.commit('addAddressIndex', address);
-                    }
-                  }
-                  let newRecord = {};
-                  if (record.eventType == EVENTTYPE_OFFERED) {
-                    addresses = [record.contract, record.token, record.maker];
-                    newRecord = {
-                      tokenSet: parameter.tokenIndex,
-                      ...record,
-                      txHash: context.state.txHashToIndex[record.txHash],
-                      contract: context.state.addressToIndex[record.contract],
-                      token: context.state.addressToIndex[record.token],
-                      maker: context.state.addressToIndex[record.maker],
-                    };
-                  } else if (record.eventType == EVENTTYPE_TRADED) {
-                    addresses = [record.contract, record.token, record.maker, record.taker];
-                    newRecord = {
-                      tokenSet: parameter.tokenIndex,
-                      ...record,
-                      txHash: context.state.txHashToIndex[record.txHash],
-                      contract: context.state.addressToIndex[record.contract],
-                      token: context.state.addressToIndex[record.token],
-                      maker: context.state.addressToIndex[record.maker],
-                      taker: context.state.addressToIndex[record.taker],
-                    };
-                  }
-                  newRecords.push(newRecord);
+                console.log("record: " + JSON.stringify(record, null, 2));
+                // const contractIndex = context.state.addressToIndex[record.contract];
+                // console.log("contractIndex: " + contractIndex);
+                if (!(record.txHash in context.state.txHashToIndex)) {
+                  context.commit('addTxHashIndex', record.txHash);
                 }
+                let addresses = [];
+                if (record.eventType == EVENTTYPE_OFFERED) {
+                  addresses = [record.contract, record.token, record.maker];
+                } else if (record.eventType == EVENTTYPE_TRADED) {
+                  addresses = [record.contract, record.token, record.maker, record.taker];
+                }
+                for (const address of addresses) {
+                  if (!(address in context.state.addressToIndex)) {
+                    context.commit('addAddressIndex', address);
+                  }
+                }
+                let newRecord = {};
+                if (record.eventType == EVENTTYPE_OFFERED) {
+                  // addresses = [record.contract, record.token, record.maker];
+                  newRecord = {
+                    tokenSet: parameter.tokenIndex,
+                    ...record,
+                    txHash: context.state.txHashToIndex[record.txHash],
+                    contract: context.state.addressToIndex[record.contract],
+                    token: context.state.addressToIndex[record.token],
+                    maker: context.state.addressToIndex[record.maker],
+                  };
+                } else if (record.eventType == EVENTTYPE_TRADED) {
+                  // addresses = [record.contract, record.token, record.maker, record.taker];
+                  newRecord = {
+                    tokenSet: parameter.tokenIndex,
+                    ...record,
+                    txHash: context.state.txHashToIndex[record.txHash],
+                    contract: context.state.addressToIndex[record.contract],
+                    token: context.state.addressToIndex[record.token],
+                    maker: context.state.addressToIndex[record.maker],
+                    taker: context.state.addressToIndex[record.taker],
+                  };
+                }
+                newRecords.push(newRecord);
               }
               if (newRecords.length) {
+                console.log("newRecords: " + JSON.stringify(newRecords, null, 2));
                 addCount += newRecords.length;
                 context.dispatch('saveData', ['indexToAddress', 'indexToTxHash']);
-                await db.tokenSetTokenAgentEvents.bulkAdd(newRecords).then(function(lastKey) {
-                  // console.log(now() + " INFO dataModule:actions.syncTokenSetTokenAgentEvents.bulkAdd - lastKey: " + JSON.stringify(lastKey));
+                await db.tokenSetDemodexEvents.bulkAdd(newRecords).then(function(lastKey) {
+                  // console.log(now() + " INFO dataModule:actions.syncTokenSetDemodexEvents.bulkAdd - lastKey: " + JSON.stringify(lastKey));
                 }).catch(Dexie.BulkError, function(e) {
-                  // console.log(now() + " INFO dataModule:actions.syncTokenSetTokenAgentEvents bulkAdd error: " + JSON.stringify(e.failures, null, 2));
+                  // console.log(now() + " INFO dataModule:actions.syncTokenSetDemodexEvents bulkAdd error: " + JSON.stringify(e.failures, null, 2));
                 });
               }
             } catch (e) {
@@ -1357,17 +1365,17 @@ const dataModule = {
             await getLogs(parseInt(mid) + 1, toBlock);
           }
         }
-        context.commit('setSyncSection', { section: 'TokenSet TokenAgent events', total: null });
-        const data = await db.cache.where("objectName").equals('tokenSetTokenAgent.' + parameter.chainId + '.' + parameter.tokenIndex).toArray();
+        context.commit('setSyncSection', { section: 'TokenSet Demodex events', total: null });
+        const data = await db.cache.where("objectName").equals('tokenSetDemodex.' + parameter.chainId + '.' + parameter.tokenIndex).toArray();
         startBlock = data.length == 1 ? data[0].object - parameter.confirmations : 0;
-        deleteCount = await db.tokenSetTokenAgentEvents.where("[tokenSet+blockNumber+logIndex]").between([parameter.tokenIndex, startBlock, Dexie.minKey],[parameter.tokenIndex, Dexie.maxKey, Dexie.maxKey]).delete();
+        deleteCount = await db.tokenSetDemodexEvents.where("[tokenSet+blockNumber+logIndex]").between([parameter.tokenIndex, startBlock, Dexie.minKey],[parameter.tokenIndex, Dexie.maxKey, Dexie.maxKey]).delete();
         await getLogs(startBlock, parameter.blockNumber);
-        await db.cache.put({ objectName: 'tokenSetTokenAgent.' + parameter.chainId + '.' + parameter.tokenIndex, object: parameter.blockNumber }).then(function() {
+        await db.cache.put({ objectName: 'tokenSetDemodex.' + parameter.chainId + '.' + parameter.tokenIndex, object: parameter.blockNumber }).then(function() {
         }).catch(function(error) {
           console.log("error: " + error);
         });
       }
-      console.log(now() + " INFO dataModule:actions.syncTokenSetTokenAgentEvents END - startBlock: " + startBlock + ", blockNumber: " + parameter.blockNumber+ ", deleteCount: " + deleteCount + ", addCount: " + addCount);
+      console.log(now() + " INFO dataModule:actions.syncTokenSetDemodexEvents END - startBlock: " + startBlock + ", blockNumber: " + parameter.blockNumber+ ", deleteCount: " + deleteCount + ", addCount: " + addCount);
     },
 
     async collateTokenSetTokenAgentEvents(context, parameter) {
