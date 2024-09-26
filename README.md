@@ -6,6 +6,14 @@ Decentralised ERC-20/721/1155 token exchange.
 
 ---
 
+#### Deployments
+
+* v0.8.0 [Demodex](https://sepolia.etherscan.io/address/0x2e5D59C1b7da9324eD29891BA060866948dd6b88#code) using [WETH](https://sepolia.etherscan.io/address/0x07391dbE03e7a0DEa0fce6699500da081537B6c3#code) - [deployed/Demodex_Sepolia_0x2e5D59C1b7da9324eD29891BA060866948dd6b88.sol](deployed/Demodex_Sepolia_0x2e5D59C1b7da9324eD29891BA060866948dd6b88.sol)
+
+<br />
+
+---
+
 #### Testing
 
 ##### First Install
