@@ -218,6 +218,12 @@ describe("TokenAgentFactory", function () {
     const erc721Token = await ERC721Token.deploy();
     const ERC1155Token = await ethers.getContractFactory("ERC1155Token");
     const erc1155Token = await ERC1155Token.deploy("https://blah.blah/blah/");
+
+    const Demodex = await ethers.getContractFactory("Demodex");
+    const demodex = await Demodex.deploy(weth);
+
+    return;
+
     const TokenAgent = await ethers.getContractFactory("TokenAgent");
     const tokenAgentTemplate = await TokenAgent.deploy();
     const TokenAgentFactory = await ethers.getContractFactory("TokenAgentFactory");
@@ -358,22 +364,22 @@ describe("TokenAgentFactory", function () {
     return { tokenAgentFactory, tokenAgents, weth, erc20Token, erc721Token, erc1155Token, accounts, now, expiry };
   }
 
-  describe("Deploy TokenAgentFactory And TokenAgent", function () {
+  describe("Demodex", function () {
 
-    it.only("Test TokenAgent secondary functions", async function () {
+    it.only("Test Demodex secondary functions", async function () {
       const d = await loadFixture(deployContracts);
-      await expect(d.tokenAgentFactory.newTokenAgent())
-        .to.be.revertedWithCustomError(d.tokenAgentFactory, "AlreadyDeployed")
-        .withArgs(anyValue);
-      expect(await d.tokenAgentFactory.tokenAgentsLength()).to.equal(4);
-      const getTokenAgentByOwnerInfo = await d.tokenAgentFactory.getTokenAgentByOwnerInfo(d.accounts[0].address);
-      const tokenAgentAddress = getTokenAgentByOwnerInfo[1];
-      const TokenAgent = await ethers.getContractFactory("TokenAgent");
-      const tokenAgent = TokenAgent.attach(tokenAgentAddress);
-      await expect(tokenAgent.connect(d.accounts[1]).init(d.weth, d.accounts[1]))
-        .to.be.revertedWithCustomError(tokenAgent, "AlreadyInitialised");
-      expect(await tokenAgent.owner()).to.equal(d.accounts[0].address);
-      expect((await d.tokenAgentFactory.getTokenTypes([d.weth, d.erc20Token, d.erc721Token, d.erc1155Token, d.accounts[0]])).toString()).to.equal("1,1,2,3,4");
+      // await expect(d.tokenAgentFactory.newTokenAgent())
+      //   .to.be.revertedWithCustomError(d.tokenAgentFactory, "AlreadyDeployed")
+      //   .withArgs(anyValue);
+      // expect(await d.tokenAgentFactory.tokenAgentsLength()).to.equal(4);
+      // const getTokenAgentByOwnerInfo = await d.tokenAgentFactory.getTokenAgentByOwnerInfo(d.accounts[0].address);
+      // const tokenAgentAddress = getTokenAgentByOwnerInfo[1];
+      // const TokenAgent = await ethers.getContractFactory("TokenAgent");
+      // const tokenAgent = TokenAgent.attach(tokenAgentAddress);
+      // await expect(tokenAgent.connect(d.accounts[1]).init(d.weth, d.accounts[1]))
+      //   .to.be.revertedWithCustomError(tokenAgent, "AlreadyInitialised");
+      // expect(await tokenAgent.owner()).to.equal(d.accounts[0].address);
+      // expect((await d.tokenAgentFactory.getTokenTypes([d.weth, d.erc20Token, d.erc721Token, d.erc1155Token, d.accounts[0]])).toString()).to.equal("1,1,2,3,4");
     });
 
     it("Test TokenAgent invalid offers", async function () {

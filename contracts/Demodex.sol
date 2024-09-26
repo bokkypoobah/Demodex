@@ -206,8 +206,8 @@ contract TokenInfo {
     }
 }
 
-/// @notice User owned TokenAgent
-contract TokenAgent is TokenInfo, NonReentrancy {
+/// @notice Demodex
+contract Demodex is TokenInfo, NonReentrancy {
 
     struct AddOffer {
         Token token;             // 160 bits
