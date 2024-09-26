@@ -13,7 +13,7 @@ Connect to the Sepolia network
 
 ##### Setup Token Contract
 
-Go to the Token Contracts tab. Click on [+] to add a new token contract.
+Go to the Token Contracts tab. Click on [+] to add a new token contract
 
 <kbd><img src="images/TokenContracts_1_20240926.png" width="600"/></kbd>
 
@@ -21,7 +21,7 @@ Select `0x7439E9Bb6D8a84dd3A23fe621A30F95403F87fB9` `WEENUS` from the dropdown l
 
 <kbd><img src="images/TokenContracts_2_20240926.png" width="600"/></kbd>
 
-Click on the [->] icon to permit usage of this token.
+Click on the [->] icon to permit usage of this token
 
 <kbd><img src="images/TokenContracts_3_20240926.png" width="600"/></kbd>
 
@@ -29,9 +29,37 @@ Click on the [->] icon to permit usage of this token.
 
 ##### Trade Fungibles
 
-Go to the Trade Fungibles tab. Select the `WEENUS` token from the dropdown
+Go to the Trade Fungibles tab. Select the `WEENUS` token from the dropdown. Click on the [circular-arrow] icon to Sync
 
 <kbd><img src="images/TradeFungibles_1_20240926.png" width="600"/></kbd>
+
+Click on the [right arrow] in the Sell Offers pane to expand the Sell Offers table. Enter an amount in ETH, with Payment in ETH
+
+<kbd><img src="images/TradeFungibles_2_20240926.png" width="600"/></kbd>
+
+Click [Trade] and [Confirm] in your web3 wallet
+
+<kbd><img src="images/TradeFungibles_3_20240926.png" width="600"/></kbd>
+
+Click on the transaction hash link to view the transaction in the block explorer
+
+<kbd><img src="images/TradeFungibles_4_20240926.png" width="600"/></kbd>
+
+https://sepolia.etherscan.io/tx/0x3c30a916386af60e3566e3ecbfce41aae2d40d5d92ab5ba8f7c217f70f826c45
+
+<kbd><img src="images/TradeFungibles_5_20240926.png" width="600"/></kbd>
+
+The Trade event log
+
+<kbd><img src="images/TradeFungibles_6_20240926.png" width="600"/></kbd>
+
+Click on the [circular-arrow] icon to Sync
+
+<kbd><img src="images/TradeFungibles_7_20240926.png" width="600"/></kbd>
+
+View the Offered, Traded, Transfer and Approval events in the Events tab
+
+<kbd><img src="images/TradeFungibles_8_20240926.png" width="600"/></kbd>
 
 <br />
 
