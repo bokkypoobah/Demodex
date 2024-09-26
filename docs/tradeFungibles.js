@@ -771,6 +771,9 @@ modalBuyOffer: {{ modalBuyOffer }}
                       </b-badge>
                     </font> -->
                   </template>
+                  <template #head(totalWeth)="data">
+                    {{ settings.sellOffers.paymentType == 'eth' ? '∑ ETH' : '∑ WETH' }}
+                  </template>
                   <template #cell(totalWeth)="data">
                     <span v-b-popover.hover.ds500="formatDecimals(data.item.totalWeth, 18)">
                       {{ formatWeth(data.item.totalWeth) }}
@@ -784,10 +787,16 @@ modalBuyOffer: {{ modalBuyOffer }}
                       {{ formatWeth(data.item.wethAmount) }}
                     </span>
                   </template>
+                  <template #head(totalTokens)="data">
+                    {{ '∑ ' + settings.symbol }}
+                  </template>
                   <template #cell(totalTokens)="data">
                     <span v-b-popover.hover.ds500="formatDecimals(data.item.totalTokens, settings.decimals)">
                       {{ formatTokens(data.item.totalTokens) }}
                     </span>
+                  </template>
+                  <template #head(tokens)="data">
+                    {{ settings.symbol }}
                   </template>
                   <template #cell(tokens)="data">
                     <span v-b-popover.hover.ds500="formatDecimals(data.item.tokens, settings.decimals)">
@@ -1846,8 +1855,10 @@ data: {{ data }}
         { key: 'number', label: '#', sortable: false, thStyle: 'width: 5%;', tdClass: 'text-left' },
         { key: 'expiry', label: 'Expiry', sortable: false, thStyle: 'width: 10%;', thClass: 'text-right', tdClass: 'text-right' },
         { key: 'maker', label: 'Maker', sortable: false, thStyle: 'width: 20%;', thClass: 'text-right', tdClass: 'text-right' },
-        { key: 'wethAmount', label: 'WETH', sortable: false, thStyle: 'width: 25%;', thClass: 'text-right', tdClass: 'text-right' },
-        { key: 'tokens', label: 'Tokens', sortable: false, thStyle: 'width: 25%;', thClass: 'text-right', tdClass: 'text-right' },
+        { key: 'totalWeth', label: '∑ WETH', sortable: false, thStyle: 'width: 25%;', thClass: 'text-right', tdClass: 'text-right' },
+        // { key: 'wethAmount', label: 'WETH', sortable: false, thStyle: 'width: 25%;', thClass: 'text-right', tdClass: 'text-right' },
+        { key: 'totalTokens', label: '∑ Tokens', sortable: false, thStyle: 'width: 25%;', thClass: 'text-right', tdClass: 'text-right' },
+        // { key: 'tokens', label: 'Tokens', sortable: false, thStyle: 'width: 25%;', thClass: 'text-right', tdClass: 'text-right' },
         { key: 'price', label: 'Price', sortable: false, thStyle: 'width: 20%;', thClass: 'text-right', tdClass: 'text-right' },
       ],
       extendedSellOffersFields: [
