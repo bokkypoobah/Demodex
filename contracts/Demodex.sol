@@ -240,6 +240,7 @@ contract TokenAgent is TokenInfo, NonReentrancy {
         uint index;
         Token token;
         TokenType tokenType;
+        Account maker;
         BuySell buySell;
         Unixtime expiry;
         Nonce nonce;
@@ -256,14 +257,14 @@ contract TokenAgent is TokenInfo, NonReentrancy {
     }
 
     WETH public weth;
-    Nonce public nonce;
+    mapping(Account => Nonce) nonces;
     mapping(Token => TokenType) tokenTypes;
     Offer[] public offers;
 
     event InternalTransfer(address indexed from, address indexed to, uint ethers, Unixtime timestamp);
     event Offered(Index index, Token indexed token, TokenType tokenType, Account indexed maker, BuySell buySell, Unixtime expiry, Nonce nonce, Price[] prices, TokenId[] tokenIds, Tokens[] tokenss, Unixtime timestamp);
     event OfferUpdated(Index index, Token indexed token, TokenType tokenType, Account indexed maker, BuySell buySell, Unixtime expiry, Nonce nonce, Price[] prices, TokenId[] tokenIds, Tokens[] tokenss, Unixtime timestamp);
-    event OffersInvalidated(Nonce newNonce, Unixtime timestamp);
+    event OffersInvalidated(Account indexed maker, Nonce newNonce, Unixtime timestamp);
     event Traded(Index index, Token indexed token, TokenType tokenType, Account indexed maker, Account indexed taker, BuySell makerBuySell, uint[] prices, uint[] tokenIds, uint[] tokenss, Tokens[] remainingTokenss, Price price, Unixtime timestamp);
 
     error CannotOfferWETH();
@@ -289,9 +290,8 @@ contract TokenAgent is TokenInfo, NonReentrancy {
     }
 
     function invalidateOffers() external {
-        // TODO: Check ownership
-        nonce = Nonce.wrap(Nonce.unwrap(nonce) + 1);
-        emit OffersInvalidated(nonce, Unixtime.wrap(uint40(block.timestamp)));
+        nonces[Account.wrap(msg.sender)] = Nonce.wrap(Nonce.unwrap(nonces[Account.wrap(msg.sender)]) + 1);
+        emit OffersInvalidated(Account.wrap(msg.sender), nonces[Account.wrap(msg.sender)], Unixtime.wrap(uint40(block.timestamp)));
     }
 
     // AddOffer:
@@ -322,18 +322,15 @@ contract TokenAgent is TokenInfo, NonReentrancy {
             offer.maker = Account.wrap(msg.sender);
             offer.buySell = input.buySell;
             offer.expiry = input.expiry;
-            offer.nonce = nonce;
+            offer.nonce = nonces[Account.wrap(msg.sender)];
             if (input.prices.length == 0) {
                 revert InvalidInputData(i, "all: prices array must contain at least one price");
-
             } else if (tokenType == TokenType.ERC20 && input.tokenss.length != input.prices.length) {
                 revert InvalidInputData(i, "ERC-20: tokenss array length must match prices array length");
-
             } else if (tokenType == TokenType.ERC721 && input.tokenss.length != 1) {
                 revert InvalidInputData(i, "ERC-721: tokenss array length must contain exactly one number");
             } else if (tokenType == TokenType.ERC721 && input.prices.length != 1 && input.tokenIds.length != input.prices.length) {
                 revert InvalidInputData(i, "ERC-721: tokenIds array length must match prices array length");
-
             } else if (tokenType == TokenType.ERC1155 && input.tokenIds.length != input.tokenss.length) {
                 revert InvalidInputData(i, "ERC-1155: tokenIds and tokenss array length must match");
             } else if (tokenType == TokenType.ERC1155 && input.prices.length != 1 && input.tokenIds.length != input.prices.length) {
@@ -378,7 +375,7 @@ contract TokenAgent is TokenInfo, NonReentrancy {
                 }
             }
             offer.tokenss = input.tokenss;
-            emit Offered(Index.wrap(uint32(offers.length - 1)), offer.token, tokenType, Account.wrap(msg.sender), offer.buySell, offer.expiry, nonce, input.prices, input.tokenIds, input.tokenss, Unixtime.wrap(uint40(block.timestamp)));
+            emit Offered(Index.wrap(uint32(offers.length - 1)), offer.token, tokenType, Account.wrap(msg.sender), offer.buySell, offer.expiry, nonces[Account.wrap(msg.sender)], input.prices, input.tokenIds, input.tokenss, Unixtime.wrap(uint40(block.timestamp)));
         }
     }
 
@@ -391,19 +388,16 @@ contract TokenAgent is TokenInfo, NonReentrancy {
             Offer storage offer = offers[index];
             require(Account.unwrap(offer.maker) == msg.sender, NotMaker(i, offer.maker));
             offer.expiry = input.expiry;
-            offer.nonce = nonce;
+            offer.nonce = nonces[Account.wrap(msg.sender)];
             TokenType tokenType = tokenTypes[offer.token];
             if (input.prices.length == 0) {
                 revert InvalidInputData(i, "all: prices array must contain at least one price");
-
             } else if (tokenType == TokenType.ERC20 && input.tokenss.length != input.prices.length) {
                 revert InvalidInputData(i, "ERC-20: tokenss array length must match prices array length");
-
             } else if (tokenType == TokenType.ERC721 && input.tokenss.length != 1) {
                 revert InvalidInputData(i, "ERC-721: tokenss array length must contain exactly one number");
             } else if (tokenType == TokenType.ERC721 && input.prices.length != 1 && input.tokenIds.length != input.prices.length) {
                 revert InvalidInputData(i, "ERC-721: tokenIds array length must match prices array length");
-
             } else if (tokenType == TokenType.ERC1155 && input.tokenIds.length != input.tokenss.length) {
                 revert InvalidInputData(i, "ERC-1155: tokenIds and tokenss array length must match");
             } else if (tokenType == TokenType.ERC1155 && input.prices.length != 1 && input.tokenIds.length != input.prices.length) {
@@ -436,7 +430,7 @@ contract TokenAgent is TokenInfo, NonReentrancy {
                 }
             }
             offer.tokenss = input.tokenss;
-            emit OfferUpdated(Index.wrap(uint32(index)), offer.token, tokenType, Account.wrap(msg.sender), offer.buySell, offer.expiry, nonce, input.prices, input.tokenIds, input.tokenss, Unixtime.wrap(uint40(block.timestamp)));
+            emit OfferUpdated(Index.wrap(uint32(index)), offer.token, tokenType, Account.wrap(msg.sender), offer.buySell, offer.expiry, nonces[Account.wrap(msg.sender)], input.prices, input.tokenIds, input.tokenss, Unixtime.wrap(uint40(block.timestamp)));
         }
     }
 
@@ -459,7 +453,7 @@ contract TokenAgent is TokenInfo, NonReentrancy {
             Offer storage offer = offers[Index.unwrap(input.index)];
             require(Account.unwrap(offer.maker) != msg.sender, CannotExecuteOwnOffer(i));
             TokenType tokenType = tokenTypes[offer.token];
-            require(Nonce.unwrap(offer.nonce) == Nonce.unwrap(nonce), InvalidOffer(i, offer.nonce, nonce));
+            require(Nonce.unwrap(offer.nonce) == Nonce.unwrap(nonces[offer.maker]), InvalidOffer(i, offer.nonce, nonces[offer.maker]));
             require(Unixtime.unwrap(offer.expiry) == 0 || block.timestamp <= Unixtime.unwrap(offer.expiry), OfferExpired(i, input.index, offer.expiry));
             uint price;
             uint[] memory prices_;
@@ -683,7 +677,7 @@ contract TokenAgent is TokenInfo, NonReentrancy {
                 } else {
                     tokenIds = offer.tokenIds;
                 }
-                results[k++] = OfferInfo(i, offer.token, tokenTypes[offer.token], offer.buySell, offer.expiry, offer.nonce, offer.prices, tokenIds, offer.tokenss);
+                results[k++] = OfferInfo(i, offer.token, tokenTypes[offer.token], offer.maker, offer.buySell, offer.expiry, offer.nonce, offer.prices, tokenIds, offer.tokenss);
             }
         }
     }
