@@ -2,6 +2,8 @@
 
 Decentralised ERC-20/721/1155 token exchange.
 
+<kbd><img src="images/demodex-4x.png" width="100"/></kbd>
+
 #### UI URL
 [https://bokkypoobah.github.io/Demodex/](https://bokkypoobah.github.io/Demodex/)
 
