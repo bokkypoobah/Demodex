@@ -2099,22 +2099,17 @@ data: {{ data }}
             collator[e.maker].offers[e.index] = e;
           }
         } else if (e.eventType == EVENTTYPE_TRADED) {
-          // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - TRADED e: " + JSON.stringify(e));
-          //         // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - TRADED e: " + JSON.stringify(e));
-          //         if (!(e.maker in collator)) {
-          //           collator[e.maker] = {};
-          //         }
-          //         if (!(tokenAgent in collator[e.maker])) {
-          //           collator[e.maker][tokenAgent] = {
-          //             nonce: d.nonce,
-          //             offers: {},
-          //             trades: [],
-          //           };
-          //         }
-          //         collator[e.maker][tokenAgent].trades.push(e);
-          //         if (e.index in collator[e.maker][tokenAgent].offers) {
-          //           collator[e.maker][tokenAgent].offers[e.index].tokenss = e.remainingTokenss;
-          //         }
+          console.log(now() + " INFO TradeFungibles:computed.newSellOffers - TRADED e: " + JSON.stringify(e));
+          if (!(e.maker in collator)) {
+            collator[e.maker] = {
+              nonce: 0, // TODO
+              offers: {},
+            };
+          }
+          // collator[e.maker][tokenAgent].trades.push(e);
+          if (e.index in collator[e.maker].offers) {
+            collator[e.maker].offers[e.index].tokenss = e.remainingTokenss;
+          }
         } else {
           console.log(now() + " INFO TradeFungibles:computed.newSellOffers - OTHER e: " + JSON.stringify(e));
         }
