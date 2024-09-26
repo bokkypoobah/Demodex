@@ -1676,27 +1676,26 @@ const dataModule = {
         // WETH approvals to Demodex
         await getLogs(startBlock, parameter.blockNumber, 1, [parameter.demodexIndex]);
 
-        // for (let i = 0; i < 6; i++) {
-        //   const lastAddresses = i < 2 ? Object.keys(lastAgents) : Object.keys(lastOwners);
-        //   const newAddresses = i < 2 ? Object.keys(newAgents) : Object.keys(newOwners);
-        //   console.log(now() + " INFO dataModule:actions.syncTokenSetTokenEvents - part: " + i + " lastAddresses: " + JSON.stringify(lastAddresses) + ", newAddresses: " + JSON.stringify(newAddresses));
-        //   if (lastAddresses.length > 0) {
-        //     for (let j = 0; j < lastAddresses.length; j += BATCHSIZE) {
-        //       const batch = lastAddresses.slice(j, parseInt(j) + BATCHSIZE);
-        //       await getLogs(startBlock, parameter.blockNumber, i, batch);
-        //     }
-        //   }
-        //   if (newAddresses.length > 0) {
-        //     for (let j = 0; j < newAddresses.length; j += BATCHSIZE) {
-        //       const batch = newAddresses.slice(j, parseInt(j) + BATCHSIZE);
-        //       await getLogs(0, parameter.blockNumber, i, batch);
-        //     }
-        //   }
-        // }
+        for (let i = 2; i < 6; i++) {
+          const lastAddresses = Object.keys(lastOwners);
+          const newAddresses = Object.keys(newOwners);
+          console.log(now() + " INFO dataModule:actions.syncTokenSetTokenEvents - part: " + i + " lastAddresses: " + JSON.stringify(lastAddresses) + ", newAddresses: " + JSON.stringify(newAddresses));
+          if (lastAddresses.length > 0) {
+            for (let j = 0; j < lastAddresses.length; j += BATCHSIZE) {
+              const batch = lastAddresses.slice(j, parseInt(j) + BATCHSIZE);
+              await getLogs(startBlock, parameter.blockNumber, i, batch);
+            }
+          }
+          if (newAddresses.length > 0) {
+            for (let j = 0; j < newAddresses.length; j += BATCHSIZE) {
+              const batch = newAddresses.slice(j, parseInt(j) + BATCHSIZE);
+              await getLogs(0, parameter.blockNumber, i, batch);
+            }
+          }
+        }
         await db.cache.put({ objectName: 'tokenSetTokenEvents.' + parameter.chainId + '.' + parameter.tokenIndex,
           object: {
             blockNumber: parameter.blockNumber,
-            // agents: Object.keys(context.state.tokenSetAgents).map(e => parseInt(e)),
             owners: Object.keys(context.state.tokenSetOwners).map(e => parseInt(e)),
           }
         }).then(function() {

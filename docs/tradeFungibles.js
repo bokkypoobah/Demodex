@@ -2069,7 +2069,7 @@ data: {{ data }}
 
     newSellOffers() {
       // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - this.tokenSet: " + JSON.stringify(this.tokenSet, null, 2));
-      console.log(now() + " INFO TradeFungibles:computed.newSellOffers - tokenSet.timestamp: " + this.formatTimestamp(this.tokenSet.timestamp) + ", token.symbol: " + this.tokenSet.symbol + ", token.decimals: " + this.tokenSet.decimals);
+      // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - tokenSet.timestamp: " + this.formatTimestamp(this.tokenSet.timestamp) + ", token.symbol: " + this.tokenSet.symbol + ", token.decimals: " + this.tokenSet.decimals);
       const TENPOW18 = ethers.BigNumber.from("1000000000000000000");
 
       const mineOnly = this.settings.sellOffers.mineOnly;
@@ -2082,7 +2082,7 @@ data: {{ data }}
       const selectedTokenAgent = this.settings.sellOffers.select.tokenAgent;
       let maxTokens = this.settings.sellOffers.amount != null && this.settings.sellOffers.amount.trim().length != 0 && this.settings.sellOffers.amountType == 'tokens' ? ethers.utils.parseEther(this.settings.sellOffers.amount) : null;
       let maxWeth = this.settings.sellOffers.amount != null && this.settings.sellOffers.amount.trim().length != 0 && this.settings.sellOffers.amountType != 'tokens' ? ethers.utils.parseEther(this.settings.sellOffers.amount) : null;
-      console.log(now() + " INFO TradeFungibles:computed.newSellOffers - maxTokens: " + (maxTokens && ethers.utils.formatEther(maxTokens) || 'null') + ", maxWeth: " + (maxWeth && ethers.utils.formatEther(maxWeth) || 'null'));
+      // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - maxTokens: " + (maxTokens && ethers.utils.formatEther(maxTokens) || 'null') + ", maxWeth: " + (maxWeth && ethers.utils.formatEther(maxWeth) || 'null'));
 
       const collator = {};
       for (const [tokenAgent, d] of Object.entries(this.tokenSet.tokenAgents || {})) {
