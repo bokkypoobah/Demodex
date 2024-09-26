@@ -1051,9 +1051,9 @@ const dataModule = {
       // if (options.token && !devMode) {
       //   await context.dispatch('syncTokenSetTokenAgentInternalEvents', parameter);
       // }
-      // if (options.token && !devMode) {
-      //   await context.dispatch('syncTokenSetTokenEvents', parameter);
-      // }
+      if (options.token && !devMode) {
+        await context.dispatch('syncTokenSetTokenEvents', parameter);
+      }
       // if (options.token && !devMode) {
       //   await context.dispatch('collateTokenSet', parameter);
       // }
@@ -1515,8 +1515,8 @@ const dataModule = {
       db.version(context.state.db.version).stores(context.state.db.schemaDefinition);
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const network = parameter.chainId && NETWORKS[parameter.chainId.toString()] || {};
-      let [startBlock, deleteAcount, addCount] = [0, 0, 0];
-      if (network.tokenAgentFactory) {
+      let [startBlock, deleteCount, addCount] = [0, 0, 0];
+      if (network.demodex) {
         async function getLogs(fromBlock, toBlock, part, addresses) {
           console.log(now() + " INFO dataModule:actions.syncTokenSetTokenEvents.getLogs: " + fromBlock + " - " + toBlock + ", part: " + part + ", addresses: " + JSON.stringify(addresses));
           const addressesInBytes = addresses.map(e => '0x000000000000000000000000' + context.state.indexToAddress[e].substring(2, 42).toLowerCase());
@@ -1651,48 +1651,52 @@ const dataModule = {
             await getLogs(parseInt(mid) + 1, toBlock, part, addresses);
           }
         }
-        context.commit('setSyncSection', { section: 'TokenSet TokenAgent events', total: null });
+        context.commit('setSyncSection', { section: 'TokenSet Token events', total: null });
         const data = await db.cache.where("objectName").equals('tokenSetTokenEvents.' + parameter.chainId + '.' + parameter.tokenIndex).toArray();
-        let [startBlock, lastAgentList, lastOwnerList] = [0, [], []];
+        const BATCHSIZE = 100;
+        let lastOwnerList;
         if (data.length == 1) {
           startBlock = data[0].object.blockNumber - parameter.confirmations;
-          lastAgentList = data[0].object.agents || [];
           lastOwnerList = data[0].object.owners || [];
+        } else {
+          startBlock = 0;
+          lastOwnerList = []
         }
-        // lastAgentList = [5, 6, 7];
         // lastOwnerList = [10];
-        const lastAgents = {};
-        lastAgentList.forEach(e => { lastAgents[e] = 1; });
-        const newAgents = {};
-        Object.keys(context.state.tokenSetAgents).forEach(e => { if (!(e in lastAgents)) { newAgents[e] = 1; } });
         const lastOwners = {};
         lastOwnerList.forEach(e => { lastOwners[e] = 1; });
         const newOwners = {};
         Object.keys(context.state.tokenSetOwners).forEach(e => { if (!(e in lastOwners)) { newOwners[e] = 1; } });
-        // console.log(now() + " INFO dataModule:actions.syncTokenSetTokenEvents - startBlock: " + startBlock + ", lastAgents: " + JSON.stringify(Object.keys(lastAgents)) + ", newAgents: " + JSON.stringify(Object.keys(newAgents)) + ", lastOwners: " + JSON.stringify(Object.keys(lastOwners)) + ", newOwners: " + JSON.stringify(Object.keys(newOwners)));
+        console.log(now() + " INFO dataModule:actions.syncTokenSetTokenEvents - startBlock: " + startBlock + ", lastOwners: " + JSON.stringify(Object.keys(lastOwners)) + ", newOwners: " + JSON.stringify(Object.keys(newOwners)));
         deleteCount = await db.tokenSetTokenEvents.where("[tokenSet+blockNumber+logIndex]").between([parameter.tokenIndex, startBlock, Dexie.minKey],[parameter.tokenIndex, Dexie.maxKey, Dexie.maxKey]).delete();
-        const BATCHSIZE = 100;
-        for (let i = 0; i < 6; i++) {
-          const lastAddresses = i < 2 ? Object.keys(lastAgents) : Object.keys(lastOwners);
-          const newAddresses = i < 2 ? Object.keys(newAgents) : Object.keys(newOwners);
-          console.log(now() + " INFO dataModule:actions.syncTokenSetTokenEvents - part: " + i + " lastAddresses: " + JSON.stringify(lastAddresses) + ", newAddresses: " + JSON.stringify(newAddresses));
-          if (lastAddresses.length > 0) {
-            for (let j = 0; j < lastAddresses.length; j += BATCHSIZE) {
-              const batch = lastAddresses.slice(j, parseInt(j) + BATCHSIZE);
-              await getLogs(startBlock, parameter.blockNumber, i, batch);
-            }
-          }
-          if (newAddresses.length > 0) {
-            for (let j = 0; j < newAddresses.length; j += BATCHSIZE) {
-              const batch = newAddresses.slice(j, parseInt(j) + BATCHSIZE);
-              await getLogs(0, parameter.blockNumber, i, batch);
-            }
-          }
-        }
+
+        // Token approvals to Demodex
+        await getLogs(startBlock, parameter.blockNumber, 0, [parameter.demodexIndex]);
+
+        // WETH approvals to Demodex
+        await getLogs(startBlock, parameter.blockNumber, 1, [parameter.demodexIndex]);
+
+        // for (let i = 0; i < 6; i++) {
+        //   const lastAddresses = i < 2 ? Object.keys(lastAgents) : Object.keys(lastOwners);
+        //   const newAddresses = i < 2 ? Object.keys(newAgents) : Object.keys(newOwners);
+        //   console.log(now() + " INFO dataModule:actions.syncTokenSetTokenEvents - part: " + i + " lastAddresses: " + JSON.stringify(lastAddresses) + ", newAddresses: " + JSON.stringify(newAddresses));
+        //   if (lastAddresses.length > 0) {
+        //     for (let j = 0; j < lastAddresses.length; j += BATCHSIZE) {
+        //       const batch = lastAddresses.slice(j, parseInt(j) + BATCHSIZE);
+        //       await getLogs(startBlock, parameter.blockNumber, i, batch);
+        //     }
+        //   }
+        //   if (newAddresses.length > 0) {
+        //     for (let j = 0; j < newAddresses.length; j += BATCHSIZE) {
+        //       const batch = newAddresses.slice(j, parseInt(j) + BATCHSIZE);
+        //       await getLogs(0, parameter.blockNumber, i, batch);
+        //     }
+        //   }
+        // }
         await db.cache.put({ objectName: 'tokenSetTokenEvents.' + parameter.chainId + '.' + parameter.tokenIndex,
           object: {
             blockNumber: parameter.blockNumber,
-            agents: Object.keys(context.state.tokenSetAgents).map(e => parseInt(e)),
+            // agents: Object.keys(context.state.tokenSetAgents).map(e => parseInt(e)),
             owners: Object.keys(context.state.tokenSetOwners).map(e => parseInt(e)),
           }
         }).then(function() {
