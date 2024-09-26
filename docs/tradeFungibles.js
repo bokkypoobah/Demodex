@@ -2867,7 +2867,37 @@ data: {{ data }}
     },
 
     eventsList() {
+      // console.log(now() + " INFO TradeFungibles:computed.eventsList - this.tokenSet: " + JSON.stringify(this.tokenSet, null, 2));
       const results = [];
+
+      const collator = {};
+      for (const e of (this.tokenSet.events || [])) {
+        // console.log(JSON.stringify(e));
+        if (!(e.txHash in collator)) {
+          collator[e.txHash] = {
+            type: null,
+            blockNumber: e.blockNumber,
+            txIndex: e.txIndex,
+            logIndex: e.logIndex,
+            timestamp: null,
+            events: [],
+          };
+        }
+        if (e.eventType == EVENTTYPE_OFFERED) {
+          collator[e.txHash].type = "Offered";
+          collator[e.txHash].timestamp = e.timestamp;
+        } else if (e.eventType == EVENTTYPE_TRADED) {
+          collator[e.txHash].type = "Traded";
+          collator[e.txHash].timestamp = e.timestamp;
+        }
+        collator[e.txHash].events.push({ ...e, tokenSet: undefined, chainId: undefined, blockNumber: undefined, txHash: undefined, txIndex: undefined, timestamp: undefined });
+      }
+      // console.log(now() + " INFO TradeFungibles:computed.eventsList - collator: " + JSON.stringify(collator, null, 2));
+
+      for (const [txHash, d1] of Object.entries(collator)) {
+        console.log(txHash + " => " + JSON.stringify(d1));
+      }
+
       for (const [txHash, d1] of Object.entries(this.events)) {
         let record = null;
 

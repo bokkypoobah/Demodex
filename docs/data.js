@@ -1788,6 +1788,7 @@ const dataModule = {
                 approvals[e.contract][e.from][exchange].spends.push({ txHash: e.txHash, logIndex: e.logIndex, tokens: e.tokens });
               }
             }
+            events.push(e);
           } else if (e.eventType == EVENTTYPE_APPROVAL) {
             // console.log(now() + " INFO dataModule:actions.collateTokenSet - Approval: " + JSON.stringify(e));
             if (!(e.contract in approvals)) {
@@ -1797,6 +1798,7 @@ const dataModule = {
               approvals[e.contract][e.owner] = {};
             }
             approvals[e.contract][e.owner][e.spender] = { tokens: e.tokens, originalTokens: e.tokens, txHash: e.txHash, logIndex: e.logIndex, spent: 0, spends: [] };
+            events.push(e);
           } else {
             console.log(now() + " INFO dataModule:actions.collateTokenSet - e: " + JSON.stringify(e));
           }
