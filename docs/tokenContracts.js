@@ -359,7 +359,7 @@ const TokenContracts = {
           slug: null,
           image: null,
         },
-        version: 1,
+        version: 0,
       },
       defaultPhrase: "I want to login into my stealth wallet on Ethereum mainnet.",
       addressTypeInfo: {
@@ -671,8 +671,8 @@ const TokenContracts = {
       return e != null ? ethers.utils.formatUnits(e, decimals).replace(/(?<!(\.\d*|^.{0}))(?=(\d{3})+(?!\d))/g, ',') : null;
     },
     saveSettings() {
-      console.log(now() + " INFO TokenContracts:methods.saveSettings - tokenAgentTokenContractsSettings: " + JSON.stringify(this.settings, null, 2));
-      localStorage.tokenAgentTokenContractsSettings = JSON.stringify(this.settings);
+      console.log(now() + " INFO TokenContracts:methods.saveSettings - demodexTokenContractsSettings: " + JSON.stringify(this.settings, null, 2));
+      localStorage.demodexTokenContractsSettings = JSON.stringify(this.settings);
     },
 
     newTransfer(stealthMetaAddress = null) {
@@ -846,8 +846,8 @@ const TokenContracts = {
   mounted() {
     logDebug("TokenContracts", "mounted() $route: " + JSON.stringify(this.$route.params));
     store.dispatch('data/restoreState');
-    if ('tokenAgentTokenContractsSettings' in localStorage) {
-      const tempSettings = JSON.parse(localStorage.tokenAgentTokenContractsSettings);
+    if ('demodexTokenContractsSettings' in localStorage) {
+      const tempSettings = JSON.parse(localStorage.demodexTokenContractsSettings);
       if ('version' in tempSettings && tempSettings.version == this.settings.version) {
         this.settings = tempSettings;
         this.settings.currentPage = 1;

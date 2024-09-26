@@ -1582,7 +1582,7 @@ data: {{ data }}
           wethDisplayDecimals: 9,
         },
 
-        version: 26,
+        version: 0,
       },
 
       tokenAgentFactoryEvents: [],
@@ -3424,7 +3424,7 @@ data: {{ data }}
         Vue.set(this.data, 'wethTransfers', wethTransfers);
         // console.log(now() + " INFO TradeFungibles:methods.loadData - this.data: " + JSON.stringify(this.data));
       }
-      localStorage.tokenAgentTradeFungiblesData = JSON.stringify(this.data);
+      localStorage.demodexTradeFungiblesData = JSON.stringify(this.data);
 
       this.computeState();
     },
@@ -3951,7 +3951,7 @@ data: {{ data }}
     },
     saveSettings() {
       // console.log(now() + " INFO TradeFungibles:methods.saveSettings - tokenAgentAgentSettings: " + JSON.stringify(this.settings, null, 2));
-      localStorage.tokenAgentTradeFungiblesSettings = JSON.stringify(this.settings);
+      localStorage.demodexTradeFungiblesSettings = JSON.stringify(this.settings);
     },
     async viewSyncOptions() {
       store.dispatch('syncOptions/viewSyncOptions');
@@ -3980,13 +3980,13 @@ data: {{ data }}
   mounted() {
     // console.log(now() + " DEBUG TradeFungibles:mounted - $route: " + JSON.stringify(this.$route.params));
     store.dispatch('data/restoreState');
-    if ('tokenAgentTradeFungiblesSettings' in localStorage) {
-      const tempSettings = JSON.parse(localStorage.tokenAgentTradeFungiblesSettings);
+    if ('demodexTradeFungiblesSettings' in localStorage) {
+      const tempSettings = JSON.parse(localStorage.demodexTradeFungiblesSettings);
       if ('version' in tempSettings && tempSettings.version == this.settings.version) {
         this.settings = tempSettings;
         // this.settings.currentPage = 1;
-        if ('tokenAgentTradeFungiblesData' in localStorage) {
-          this.data = JSON.parse(localStorage.tokenAgentTradeFungiblesData);
+        if ('demodexTradeFungiblesData' in localStorage) {
+          this.data = JSON.parse(localStorage.demodexTradeFungiblesData);
           this.computeState();
         }
       }

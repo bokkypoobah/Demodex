@@ -296,7 +296,7 @@ const Addresses = {
         currentPage: 1,
         pageSize: 10,
         sortOption: 'typenameasc',
-        version: 1,
+        version: 0,
       },
       defaultPhrase: "I want to login into my stealth wallet on Ethereum mainnet.",
       addressTypeInfo: {
@@ -463,8 +463,8 @@ const Addresses = {
   },
   methods: {
     saveSettings() {
-      console.log(now() + " INFO Addresses:methods.saveSettings - tokenAgentAddressesSettings: " + JSON.stringify(this.settings, null, 2));
-      localStorage.tokenAgentAddressesSettings = JSON.stringify(this.settings);
+      console.log(now() + " INFO Addresses:methods.saveSettings - demodexAddressesSettings: " + JSON.stringify(this.settings, null, 2));
+      localStorage.demodexAddressesSettings = JSON.stringify(this.settings);
     },
 
     newTransfer(stealthMetaAddress = null) {
@@ -638,8 +638,8 @@ const Addresses = {
   mounted() {
     logDebug("Addresses", "mounted() $route: " + JSON.stringify(this.$route.params));
     store.dispatch('data/restoreState');
-    if ('tokenAgentAddressesSettings' in localStorage) {
-      const tempSettings = JSON.parse(localStorage.tokenAgentAddressesSettings);
+    if ('demodexAddressesSettings' in localStorage) {
+      const tempSettings = JSON.parse(localStorage.demodexAddressesSettings);
       if ('version' in tempSettings && tempSettings.version == this.settings.version) {
         this.settings = tempSettings;
         this.settings.currentPage = 1;

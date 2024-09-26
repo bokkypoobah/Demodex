@@ -167,7 +167,7 @@ const dataModule = {
       halt: false,
     },
     db: {
-      name: "tokenagentdata085a",
+      name: "demodexdata080a",
       version: 1,
       schemaDefinition: {
         tokenAgentFactoryEvents: '[chainId+blockNumber+logIndex],[blockNumber+contract],contract',
