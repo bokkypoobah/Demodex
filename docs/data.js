@@ -1710,6 +1710,7 @@ const dataModule = {
       console.log(now() + " INFO dataModule:actions.collateTokenSet BEGIN - token: " + parameter.token);
       const db = new Dexie(context.state.db.name);
       db.version(context.state.db.version).stores(context.state.db.schemaDefinition);
+      const events = [];
       const approvals = {};
       const balances = {};
       // const tokenAgents = {};
@@ -1717,9 +1718,11 @@ const dataModule = {
       let rows = 0;
       let done = false;
       const tradeHashes = {};
-      // do {
-      //   let data = await db.tokenSetTokenAgentEvents.where('[tokenSet+blockNumber+logIndex]').between([parameter.tokenIndex, Dexie.minKey, Dexie.minKey],[parameter.tokenIndex, Dexie.maxKey, Dexie.maxKey]).offset(rows).limit(context.state.DB_PROCESSING_BATCH_SIZE).toArray();
-      //   for (const e of data) {
+      do {
+        let data = await db.tokenSetDemodexEvents.where('[tokenSet+blockNumber+logIndex]').between([parameter.tokenIndex, Dexie.minKey, Dexie.minKey],[parameter.tokenIndex, Dexie.maxKey, Dexie.maxKey]).offset(rows).limit(context.state.DB_PROCESSING_BATCH_SIZE).toArray();
+        for (const e of data) {
+          // console.log(JSON.stringify(e));
+          events.push(e);
       //     if (!(e.contract in tokenAgents)) {
       //       const ta = context.state.tokenAgents[parameter.chainId] && context.state.tokenAgents[parameter.chainId][e.contract];
       //       tokenAgents[e.contract] = {
@@ -1742,10 +1745,10 @@ const dataModule = {
       //       // console.log("Traded: " + JSON.stringify(e));
       //       tradeHashes[e.txHash] = e.contract;
       //     }
-      //   }
-      //   rows = parseInt(rows) + data.length;
-      //   done = data.length < context.state.DB_PROCESSING_BATCH_SIZE;
-      // } while (!done);
+        }
+        rows = parseInt(rows) + data.length;
+        done = data.length < context.state.DB_PROCESSING_BATCH_SIZE;
+      } while (!done);
       // console.log("tradeHashes: " + JSON.stringify(Object.keys(tradeHashes), null, 2));
       rows = 0;
       done = false;
@@ -1815,7 +1818,7 @@ const dataModule = {
         timestamp: parameter.timestamp,
         approvals,
         balances,
-        // tokenAgents,
+        events,
       };
       context.commit('setState', { name: 'tokenSet', data: tokenSet });
       await context.dispatch('saveData', ['tokenSet']);
