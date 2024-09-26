@@ -945,10 +945,10 @@ modalBuyOffer: {{ modalBuyOffer }}
                         <b-form-input size="sm" plaintext id="modalselloffer-ethbalance" :value="formatDecimals(balance, 18)" class="pl-2 w-75"></b-form-input>
                       </b-form-group>
                       <b-form-group v-if="settings.sellOffers.paymentType == 'weth'" label="WETH Balance:" label-for="modalselloffer-wethbalance" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
-                        <b-form-input size="sm" plaintext id="modalselloffer-wethbalance" :value="tokenSet.balances[tokenSet.wethIndex] && tokenSet.balances[tokenSet.wethIndex][tokenSet.coinbaseIndex] && formatDecimals(tokenSet.balances[tokenSet.wethIndex][tokenSet.coinbaseIndex].tokens, 18) || '0'" class="pl-2 w-75"></b-form-input>
+                        <b-form-input size="sm" plaintext id="modalselloffer-wethbalance" :value="tokenSet.wethIndex && tokenSet.balances[tokenSet.wethIndex] && tokenSet.balances[tokenSet.wethIndex][tokenSet.coinbaseIndex] && formatDecimals(tokenSet.balances[tokenSet.wethIndex][tokenSet.coinbaseIndex].tokens, 18) || '0'" class="pl-2 w-75"></b-form-input>
                       </b-form-group>
                       <b-form-group v-if="settings.sellOffers.paymentType == 'weth'" label="WETH Approved:" label-for="modalselloffer-wethapproved" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
-                        <b-form-input size="sm" plaintext id="modalselloffer-wethapproved" :value="tokenSet.approvals[tokenSet.wethIndex] && tokenSet.approvals[tokenSet.wethIndex][tokenSet.coinbaseIndex] && tokenSet.approvals[tokenSet.wethIndex][tokenSet.coinbaseIndex][tokenSet.demodexIndex] && formatDecimals(tokenSet.approvals[tokenSet.wethIndex][tokenSet.coinbaseIndex][tokenSet.demodexIndex].tokens, 18) || '0'" class="pl-2 w-75"></b-form-input>
+                        <b-form-input size="sm" plaintext id="modalselloffer-wethapproved" :value="tokenSet.wethIndex && tokenSet.approvals[tokenSet.wethIndex] && tokenSet.approvals[tokenSet.wethIndex][tokenSet.coinbaseIndex] && tokenSet.approvals[tokenSet.wethIndex][tokenSet.coinbaseIndex][tokenSet.demodexIndex] && formatDecimals(tokenSet.approvals[tokenSet.wethIndex][tokenSet.coinbaseIndex][tokenSet.demodexIndex].tokens, 18) || '0'" class="pl-2 w-75"></b-form-input>
                       </b-form-group>
                       <b-form-group label="" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
                         <b-button size="sm" :disabled="!networkSupported || !newSellOffers.filled.tokens || !settings.sellOffers.select.tokenAgent" @click="newSellOffersTrade" variant="warning">Trade</b-button>
@@ -3840,7 +3840,7 @@ data: {{ data }}
         } else if (s >= 0) {
           return parseInt(s) + "s";
         } else {
-          return "exp";
+          return "sim";
         }
       }
     },
