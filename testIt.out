@@ -1,0 +1,22 @@
+
+
+  TokenAgentFactory
+    Deploy TokenAgentFactory And TokenAgent
+      1) Test TokenAgent secondary functions
+
+
+  0 passing (536ms)
+  1 failing
+
+  1) TokenAgentFactory
+       Deploy TokenAgentFactory And TokenAgent
+         Test TokenAgent secondary functions:
+     Error: incorrect number of arguments to constructor
+      at ContractFactory.getDeployTransaction (node_modules/ethers/src.ts/contract/factory.ts:87:19)
+      at ContractFactory.deploy (node_modules/ethers/src.ts/contract/factory.ts:105:31)
+      at deployContracts (test/Demodex.js:222:49)
+      at loadFixture (node_modules/@nomicfoundation/hardhat-network-helpers/src/loadFixture.ts:59:18)
+      at Context.<anonymous> (test/Demodex.js:364:17)
+
+
+
