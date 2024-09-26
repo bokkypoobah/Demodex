@@ -1045,9 +1045,9 @@ const dataModule = {
       if (options.token && !devMode) {
         await context.dispatch('syncTokenSetDemodexEvents', parameter);
       }
-      // if (options.token && !devMode) {
-      //   await context.dispatch('collateTokenSetTokenAgentEvents', parameter);
-      // }
+      if (options.token && !devMode) {
+        await context.dispatch('collateTokenSetDemodexEvents', parameter);
+      }
       // if (options.token && !devMode) {
       //   await context.dispatch('syncTokenSetTokenAgentInternalEvents', parameter);
       // }
@@ -1378,11 +1378,10 @@ const dataModule = {
       console.log(now() + " INFO dataModule:actions.syncTokenSetDemodexEvents END - startBlock: " + startBlock + ", blockNumber: " + parameter.blockNumber+ ", deleteCount: " + deleteCount + ", addCount: " + addCount);
     },
 
-    async collateTokenSetTokenAgentEvents(context, parameter) {
-      console.log(now() + " INFO dataModule:actions.collateTokenSetTokenAgentEvents BEGIN - token: " + parameter.token);
+    async collateTokenSetDemodexEvents(context, parameter) {
+      console.log(now() + " INFO dataModule:actions.collateTokenSetDemodexEvents BEGIN - token: " + parameter.token);
       const db = new Dexie(context.state.db.name);
       db.version(context.state.db.version).stores(context.state.db.schemaDefinition);
-      const tokenSetAgents = {};
       const tokenSetOwners = {};
       const newAddress = false;
       for (const [address, d] of Object.entries(context.state.addresses)) {
@@ -1401,12 +1400,9 @@ const dataModule = {
       let rows = 0;
       let done = false;
       do {
-        let data = await db.tokenSetTokenAgentEvents.where('[tokenSet+blockNumber+logIndex]').between([parameter.tokenIndex, Dexie.minKey, Dexie.minKey],[parameter.tokenIndex, Dexie.maxKey, Dexie.maxKey]).offset(rows).limit(context.state.DB_PROCESSING_BATCH_SIZE).toArray();
+        let data = await db.tokenSetDemodexEvents.where('[tokenSet+blockNumber+logIndex]').between([parameter.tokenIndex, Dexie.minKey, Dexie.minKey],[parameter.tokenIndex, Dexie.maxKey, Dexie.maxKey]).offset(rows).limit(context.state.DB_PROCESSING_BATCH_SIZE).toArray();
         for (const e of data) {
-          // console.log(now() + " INFO dataModule:actions.collateTokenSetTokenAgentEvents - e: " + JSON.stringify(e));
-          if (!(e.contract in tokenSetAgents)) {
-            tokenSetAgents[e.contract] = 1;
-          }
+          // console.log(now() + " INFO dataModule:actions.collateTokenSetDemodexEvents - e: " + JSON.stringify(e));
           if (('maker' in e) && !(e.maker in tokenSetOwners)) {
             tokenSetOwners[e.maker] = 1;
           }
@@ -1417,12 +1413,10 @@ const dataModule = {
         rows = parseInt(rows) + data.length;
         done = data.length < context.state.DB_PROCESSING_BATCH_SIZE;
       } while (!done);
-      context.commit('setState', { name: 'tokenSetAgents', data: tokenSetAgents });
       context.commit('setState', { name: 'tokenSetOwners', data: tokenSetOwners });
-      // console.log("tokenSetAgents: " + JSON.stringify(Object.keys(context.state.tokenSetAgents).map(e => context.state.indexToAddress[e])));
       // console.log("tokenSetOwners: " + JSON.stringify(Object.keys(context.state.tokenSetOwners).map(e => context.state.indexToAddress[e])));
-      await context.dispatch('saveData', ['tokenSetAgents', 'tokenSetOwners']);
-      console.log(now() + " INFO dataModule:actions.collateTokenSetTokenAgentEvents END - tokenSetAgents: " + Object.keys(tokenSetAgents).length + ", tokenSetOwners: " + Object.keys(tokenSetOwners).length);
+      await context.dispatch('saveData', ['tokenSetOwners']);
+      console.log(now() + " INFO dataModule:actions.collateTokenSetDemodexEvents END - tokenSetOwners: " + Object.keys(tokenSetOwners).length);
     },
 
     async syncTokenSetTokenAgentInternalEvents(context, parameter) {
