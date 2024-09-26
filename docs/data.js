@@ -170,11 +170,16 @@ const dataModule = {
       name: "demodexdata080a",
       version: 1,
       schemaDefinition: {
+        demodexEvents: '[chainId+blockNumber+logIndex],[blockNumber+contract],contract',
+        tokenSetDemodexEvents: '[tokenSet+blockNumber+logIndex],[blockNumber+contract],contract',
+        tokenSetDemodexInternalEvents: '[tokenSet+blockNumber+logIndex],[blockNumber+contract],contract',
+        tokenSetTokenEvents: '[tokenSet+blockNumber+logIndex],[blockNumber+contract],contract',
+
         tokenAgentFactoryEvents: '[chainId+blockNumber+logIndex],[blockNumber+contract],contract',
         tokenAgentEvents: '[chainId+blockNumber+logIndex],[blockNumber+contract],contract',
         tokenSetTokenAgentEvents: '[tokenSet+blockNumber+logIndex],[blockNumber+contract],contract',
         tokenSetTokenAgentInternalEvents: '[tokenSet+blockNumber+logIndex],[blockNumber+contract],contract',
-        tokenSetTokenEvents: '[tokenSet+blockNumber+logIndex],[blockNumber+contract],contract',
+        // tokenSetTokenEvents: '[tokenSet+blockNumber+logIndex],[blockNumber+contract],contract',
 
         announcements: '[chainId+blockNumber+logIndex],[blockNumber+contract],contract,confirmations,stealthAddress',
         registrations: '[chainId+blockNumber+logIndex],[blockNumber+contract],contract,confirmations',
@@ -1020,33 +1025,33 @@ const dataModule = {
       // const devMode = true;
       const devMode = false;
 
-      if (!devMode) {
-        await context.dispatch('syncTokenAgentFactoryEvents', parameter);
-      }
-      if (!devMode) {
-        await context.dispatch('collateTokenAgentFactoryEvents', parameter);
-      }
-      if (!devMode) {
-        await context.dispatch('syncTokenAgentGeneralEvents', parameter);
-      }
-      if (!devMode) {
-        await context.dispatch('collateTokenAgentGeneralEvents', parameter);
-      }
-      if (options.token && !devMode) {
-        await context.dispatch('syncTokenSetTokenAgentEvents', parameter);
-      }
-      if (options.token && !devMode) {
-        await context.dispatch('collateTokenSetTokenAgentEvents', parameter);
-      }
-      if (options.token && !devMode) {
-        await context.dispatch('syncTokenSetTokenAgentInternalEvents', parameter);
-      }
-      if (options.token && !devMode) {
-        await context.dispatch('syncTokenSetTokenEvents', parameter);
-      }
-      if (options.token && !devMode) {
-        await context.dispatch('collateTokenSet', parameter);
-      }
+      // if (!devMode) {
+      //   await context.dispatch('syncTokenAgentFactoryEvents', parameter);
+      // }
+      // if (!devMode) {
+      //   await context.dispatch('collateTokenAgentFactoryEvents', parameter);
+      // }
+      // if (!devMode) {
+      //   await context.dispatch('syncTokenAgentGeneralEvents', parameter);
+      // }
+      // if (!devMode) {
+      //   await context.dispatch('collateTokenAgentGeneralEvents', parameter);
+      // }
+      // if (options.token && !devMode) {
+      //   await context.dispatch('syncTokenSetTokenAgentEvents', parameter);
+      // }
+      // if (options.token && !devMode) {
+      //   await context.dispatch('collateTokenSetTokenAgentEvents', parameter);
+      // }
+      // if (options.token && !devMode) {
+      //   await context.dispatch('syncTokenSetTokenAgentInternalEvents', parameter);
+      // }
+      // if (options.token && !devMode) {
+      //   await context.dispatch('syncTokenSetTokenEvents', parameter);
+      // }
+      // if (options.token && !devMode) {
+      //   await context.dispatch('collateTokenSet', parameter);
+      // }
 
       // console.log("context.state.addressToIndex AFTER: " + JSON.stringify(context.state.addressToIndex));
       // console.log("context.state.indexToAddress AFTER: " + JSON.stringify(context.state.indexToAddress));
