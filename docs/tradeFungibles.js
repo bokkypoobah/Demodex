@@ -1415,6 +1415,23 @@ data: {{ data }}
       },
     },
 
+    coinbaseTokenBalance() {
+      let result =
+        this.tokenSet.tokenIndex &&
+        this.tokenSet.balances[this.tokenSet.tokenIndex] &&
+        this.tokenSet.balances[this.tokenSet.tokenIndex][this.tokenSet.coinbaseIndex] &&
+        this.tokenSet.balances[this.tokenSet.tokenIndex][this.tokenSet.coinbaseIndex].tokens || '0';
+      return result;
+    },
+    coinbaseTokenApproval() {
+      let result =
+        this.tokenSet.tokenIndex &&
+        this.tokenSet.approvals[this.tokenSet.tokenIndex] &&
+        this.tokenSet.approvals[this.tokenSet.tokenIndex][this.tokenSet.coinbaseIndex] &&
+        this.tokenSet.approvals[this.tokenSet.tokenIndex][this.tokenSet.coinbaseIndex][this.tokenSet.demodexIndex] &&
+        this.tokenSet.approvals[this.tokenSet.tokenIndex][this.tokenSet.coinbaseIndex][this.tokenSet.demodexIndex].tokens || '0';
+      return result;
+    },
     coinbaseWethBalance() {
       let result =
         this.tokenSet.wethIndex &&
