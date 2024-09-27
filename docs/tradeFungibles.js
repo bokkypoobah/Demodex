@@ -17,7 +17,7 @@ const TradeFungibles = {
         </b-modal>
 
         <!-- <b-modal ref="modaladdselloffer" hide-footer header-class="m-0 px-3 py-2" body-class="m-0 p-0" body-bg-variant="light" size="xl"> -->
-        <b-modal ref="modaladdselloffer" hide-footer header-class="m-0 px-3 py-2" body-class="m-0 p-0" size="xl">
+        <!-- <b-modal ref="modaladdselloffer" hide-footer header-class="m-0 px-3 py-2" body-class="m-0 p-0" size="xl">
           <template #modal-title>Add Sell Offer - Fungibles</template>
           <div class="m-0 p-1 bg-light">
             <div class="d-flex flex-wrap m-0 p-0">
@@ -51,9 +51,6 @@ const TradeFungibles = {
                   </b-badge>
                 </b-link>
               </div>
-              <!-- <div class="mt-0 pr-0">
-                {{ formatDecimals(balances[data.token] && balances[data.token][coinbase] && balances[data.token][coinbase].tokens || 0, settings.decimals) }}
-              </div> -->
               <div class="mt-0 flex-grow-1">
               </div>
               <div class="mt-0 pl-1">
@@ -88,20 +85,15 @@ const TradeFungibles = {
               </div>
               <div class="mt-0 flex-grow-1">
               </div>
-              <div class="mt-0 pr-1">
-                <!-- <b-button size="sm" :disabled="!networkSupported" @click="viewAddSellOffer" variant="link" v-b-popover.hover.ds500="'Add Sell Offer'"><b-icon-plus shift-v="+1" font-scale="1.2"></b-icon-plus></b-button> -->
-              </div>
-              <div class="mt-0 flex-grow-1">
-              </div>
               <div class="mt-0 pl-1">
                 <b-form-select size="sm" v-model="settings.addSellOffer.sortOption" @change="saveSettings" :options="sortOptions" v-b-popover.hover.ds500="'Yeah. Sort'"></b-form-select>
               </div>
               <div class="mt-0 pl-1">
                 <font size="-2" v-b-popover.hover.ds500="'# filtered entries'">{{ addSellOffer.records.length }}</font>
               </div>
-              <!-- <div class="mt-0 pl-1">
+              <div class="mt-0 pl-1">
                 <b-pagination size="sm" v-model="settings.sellOffers.currentPage" @input="saveSettings" :total-rows="addSellOffer.records" :per-page="settings.sellOffers.pageSize" style="height: 0;"></b-pagination>
-              </div> -->
+              </div>
               <div class="mt-0 pl-1">
                 <b-form-select size="sm" v-model="settings.addSellOffer.pageSize" @change="saveSettings" :options="pageSizes" v-b-popover.hover.ds500="'Page size'"></b-form-select>
               </div>
@@ -254,11 +246,6 @@ const TradeFungibles = {
                         </font>
                       </b-form-group>
                     </div>
-                    <!-- <font size="-2">
-                      <pre>
-{{ settings.addSellOffer.selectedItem }}
-                      </pre>
-                    </font> -->
                   </b-card-text>
                 </b-card>
               </b-col>
@@ -319,15 +306,10 @@ const TradeFungibles = {
                 </b-card>
               </b-col>
             </b-row>
-            <!-- <font size="-2">
-              <pre>
-{{ addSellOffer }}
-              </pre>
-            </font> -->
           </div>
-        </b-modal>
+        </b-modal> -->
 
-        <b-modal ref="modalselloffer" hide-footer header-class="m-0 px-3 py-2" body-class="m-0 p-0" body-bg-variant="light" size="xl">
+        <!-- <b-modal ref="modalselloffer" hide-footer header-class="m-0 px-3 py-2" body-class="m-0 p-0" body-bg-variant="light" size="xl">
           <template #modal-title>Take Sell Offer - Fungibles</template>
           <div class="m-0 p-1">
             <div class="d-flex flex-wrap m-0 p-0">
@@ -385,9 +367,7 @@ const TradeFungibles = {
                 <b-button size="sm" v-b-modal.config variant="link" v-b-popover.hover.ds500="'Config'" class="m-0 ml-2 mr-2 p-0"><b-icon-tools shift-v="+2" font-scale="0.9"></b-icon-tools></b-button>
               </div>
             </div>
-
             <font size="-1">
-              <!-- <b-table ref="sellOfferTable" small fixed striped responsive hover sticky-header="400px" selectable select-mode="single" @row-selected='sellOffersRowSelected' :fields="sellOfferFields" :items="sellOffer.prices" show-empty head-variant="light" class="m-0 mt-1"> -->
               <b-table ref="sellOfferTable" small fixed striped responsive hover sticky-header="400px" :fields="sellOfferFields" :items="sellOffer.prices" show-empty head-variant="light" class="m-0 mt-1">
                 <template #cell(price)="data">
                   <span v-b-popover.hover.ds500="formatDecimals(data.item.price, 18)">
@@ -492,20 +472,8 @@ const TradeFungibles = {
                 </b-card>
               </b-col>
             </b-row>
-            <!-- <font size="-2">
-              <pre>
-wethApprovals: {{ wethApprovals }}
-wethBalances: {{ wethBalances }}
-              </pre>
-              <pre>
-sellOffer: {{ sellOffer }}
-              </pre>
-              <pre>
-modalSellOffer: {{ modalSellOffer }}
-              </pre>
-            </font> -->
           </div>
-        </b-modal>
+        </b-modal> -->
 
         <b-modal ref="modalbuyoffer" hide-footer header-class="m-0 px-3 py-2" body-class="m-0 p-0" body-bg-variant="light" size="lg">
           <template #modal-title>Trade Fungibles - Buy Offer</template>
@@ -712,11 +680,6 @@ modalBuyOffer: {{ modalBuyOffer }}
                 </div>
                 <div class="mt-0 flex-grow-1">
                 </div>
-                <div class="mt-0 pr-1">
-                  <b-button size="sm" :disabled="!networkSupported" @click="viewAddSellOffer" variant="link" v-b-popover.hover.ds500="'Add Sell Offer'"><b-icon-plus shift-v="+1" font-scale="1.2"></b-icon-plus></b-button>
-                </div>
-                <div class="mt-0 flex-grow-1">
-                </div>
                 <!-- <div class="mt-0 pr-1">
                   <b-form-select size="sm" v-model="settings.sellOffers.sortOption" @change="saveSettings" :options="sortOptions" v-b-popover.hover.ds500="'Yeah. Sort'"></b-form-select>
                 </div> -->
@@ -749,9 +712,9 @@ modalBuyOffer: {{ modalBuyOffer }}
                     </span>
                   </template>
                   <template #cell(maker)="data">
-                    <b-button size="sm" @click="viewOldTakeSellOffer([data.item]);" variant="link" v-b-popover.hover.ds500="'Old Take Sell Offer'" class="m-0 p-0">
+                    <!-- <b-button size="sm" @click="viewOldTakeSellOffer([data.item]);" variant="link" v-b-popover.hover.ds500="'Old Take Sell Offer'" class="m-0 p-0">
                       <b-icon-asterisk shift-v="+10" font-scale="0.6"></b-icon-asterisk>
-                    </b-button>
+                    </b-button> -->
                     <!-- <b-button size="sm" @click="filterSellOffersByTokenAgent(data.item)" variant="link" v-b-popover.hover.ds500="'Filter by Token Agent: ' + indexToAddress[data.item.tokenAgent]" class="m-0 p-0">
                       <b-icon-filter shift-v="+2" font-scale="1.1"></b-icon-filter>
                     </b-button> -->
@@ -858,11 +821,11 @@ modalBuyOffer: {{ modalBuyOffer }}
                 </div>
                 <div class="mt-0 flex-grow-1">
                 </div>
-                <div class="mt-0 pr-1">
+                <!-- <div class="mt-0 pr-1">
                   <b-button size="sm" :disabled="!networkSupported" @click="addBuyOffer" variant="link" v-b-popover.hover.ds500="'Add Buy Offer'"><b-icon-plus shift-v="+1" font-scale="1.2"></b-icon-plus></b-button>
-                </div>
-                <div class="mt-0 flex-grow-1">
-                </div>
+                </div> -->
+                <!-- <div class="mt-0 flex-grow-1">
+                </div> -->
                 <!-- <div class="mt-0 pr-1">
                   <b-form-select size="sm" v-model="settings.buyOffers.sortOption" @change="saveSettings" :options="sortOptions" v-b-popover.hover.ds500="'Yeah. Sort'"></b-form-select>
                 </div> -->
@@ -1547,6 +1510,7 @@ data: {{ data }}
           includeExpired: false, // false,
           simulate: false, // false,
           points: [],
+          expiry: null,
           expiryDate: null,
           expiryTime: null,
 
@@ -1569,18 +1533,19 @@ data: {{ data }}
         buyOffers: {
           mineOnly: false,
           ignoreMyApprovals: false,
-          includeInvalidated: false, // false,
-          includeExpired: false, // false,
-          simulate: false, // false,
+          includeInvalidated: false,
+          includeExpired: false,
+          simulate: false,
           points: [],
+          expiry: null,
           expiryDate: null,
           expiryTime: null,
 
-          select: {
-            tokenAgent: null,
-            owner: null,
-            indexByOwner: null,
-          },
+          // select: {
+          //   tokenAgent: null,
+          //   owner: null,
+          //   indexByOwner: null,
+          // },
 
           tabIndex: 0,
           amountType: 'tokens',
@@ -1600,40 +1565,40 @@ data: {{ data }}
           sortOption: 'txorderdsc',
         },
 
-        addSellOffer: {
-          tokenAgent: null,
-          mineOnly: true,
-          includeExpired: false,
-          includeInvalidated: false,
-          ignoreMyApprovals: false,
-          selectedItem: null,
-          expiryDate: null,
-          expiryTime: null,
-          points: [],
-          simulate: true,
-          currentPage: 1,
-          pageSize: 10,
-          sortOption: 'txorderdsc',
-        },
+        // addSellOffer: {
+        //   tokenAgent: null,
+        //   mineOnly: true,
+        //   includeExpired: false,
+        //   includeInvalidated: false,
+        //   ignoreMyApprovals: false,
+        //   selectedItem: null,
+        //   expiryDate: null,
+        //   expiryTime: null,
+        //   points: [],
+        //   simulate: true,
+        //   currentPage: 1,
+        //   pageSize: 10,
+        //   sortOption: 'txorderdsc',
+        // },
 
-        tokenAgentAddress: null,
-        tokenAgentOwner: null,
-        addOffers: {
-          offers: [],
-          token: null,
-          type: null,
-          symbol: null,
-          decimals: null,
-          buySell: 0,
-          expiry: null,
-          count: null,
-          pricing: 0,
-          price: null,
-          tokens: null,
-          prices: [],
-          tokenIds: [],
-          tokenss: [],
-        },
+        // tokenAgentAddress: null,
+        // tokenAgentOwner: null,
+        // addOffers: {
+        //   offers: [],
+        //   token: null,
+        //   type: null,
+        //   symbol: null,
+        //   decimals: null,
+        //   buySell: 0,
+        //   expiry: null,
+        //   count: null,
+        //   pricing: 0,
+        //   price: null,
+        //   tokens: null,
+        //   prices: [],
+        //   tokenIds: [],
+        //   tokenss: [],
+        // },
 
         config: {
           priceDisplayDecimals: 6,
@@ -1641,7 +1606,7 @@ data: {{ data }}
           wethDisplayDecimals: 9,
         },
 
-        version: 2,
+        version: 3,
       },
 
       tokenAgentFactoryEvents: [],
@@ -1930,32 +1895,32 @@ data: {{ data }}
     },
     expiryDate: {
       get: function () {
-        return this.settings.addSellOffer.expiryDate;
+        return this.settings.sellOffers.expiryDate;
       },
       set: function (d) {
-        this.settings.addSellOffer.expiryDate = d;
-        if (this.settings.addSellOffer.expiryDate == null || this.settings.addSellOffer.expiryDate == '') {
-          this.settings.addSellOffer.expiry = null;
-        } else if (this.settings.addSellOffer.expiryTime == null || this.settings.addSellOffer.expiryTime == '') {
-          this.settings.addSellOffer.expiry = moment(this.settings.addSellOffer.expiryDate + 'T00:00:00');
+        this.settings.sellOffers.expiryDate = d;
+        if (this.settings.sellOffers.expiryDate == null || this.settings.sellOffers.expiryDate == '') {
+          this.settings.sellOffers.expiry = null;
+        } else if (this.settings.sellOffers.expiryTime == null || this.settings.sellOffers.expiryTime == '') {
+          this.settings.sellOffers.expiry = moment(this.settings.sellOffers.expiryDate + 'T00:00:00');
         } else {
-          this.settings.addSellOffer.expiry = moment(this.settings.addSellOffer.expiryDate + 'T' + this.settings.addSellOffer.expiryTime).unix();
+          this.settings.sellOffers.expiry = moment(this.settings.sellOffers.expiryDate + 'T' + this.settings.sellOffers.expiryTime).unix();
         }
         this.saveSettings();
       },
     },
     expiryTime: {
       get: function () {
-        return this.settings.addSellOffer.expiryTime;
+        return this.settings.sellOffers.expiryTime;
       },
       set: function (t) {
-        this.settings.addSellOffer.expiryTime = t;
-        if (this.settings.addSellOffer.expiryDate == null || this.settings.addSellOffer.expiryDate == '') {
-          this.settings.addSellOffer.expiry = null;
-        } else if (this.settings.addSellOffer.expiryTime == null || this.settings.addSellOffer.expiryTime == '') {
-          this.settings.addSellOffer.expiry = moment(this.settings.addSellOffer.expiryDate + 'T00:00:00').unix();
+        this.settings.sellOffers.expiryTime = t;
+        if (this.settings.sellOffers.expiryDate == null || this.settings.sellOffers.expiryDate == '') {
+          this.settings.sellOffers.expiry = null;
+        } else if (this.settings.sellOffers.expiryTime == null || this.settings.sellOffers.expiryTime == '') {
+          this.settings.sellOffers.expiry = moment(this.settings.sellOffers.expiryDate + 'T00:00:00').unix();
         } else {
-          this.settings.addSellOffer.expiry = moment(this.settings.addSellOffer.expiryDate + 'T' + this.settings.addSellOffer.expiryTime).unix();
+          this.settings.sellOffers.expiry = moment(this.settings.sellOffers.expiryDate + 'T' + this.settings.sellOffers.expiryTime).unix();
         }
         this.saveSettings();
       },
@@ -3654,14 +3619,14 @@ data: {{ data }}
       Vue.set(this, 'approvals', approvals);
     },
 
-    viewAddSellOffer() {
-      console.log(now() + " INFO Addresses:methods.viewAddSellOffer BEGIN");
-      this.$refs.modaladdselloffer.show();
-    },
+    // viewAddSellOffer() {
+    //   console.log(now() + " INFO Addresses:methods.viewAddSellOffer BEGIN");
+    //   this.$refs.modaladdselloffer.show();
+    // },
 
-    addBuyOffer() {
-      console.log(now() + " INFO Addresses:methods.addBuyOffer TODO");
-    },
+    // addBuyOffer() {
+    //   console.log(now() + " INFO Addresses:methods.addBuyOffer TODO");
+    // },
 
     addSellOfferRowSelected(item) {
       console.log(now() + " INFO Addresses:methods.addSellOfferRowSelected BEGIN: " + JSON.stringify(item, null, 2));
@@ -3678,16 +3643,16 @@ data: {{ data }}
       }
     },
 
-    viewOldTakeSellOffer(item) {
-      console.log(now() + " INFO Addresses:methods.viewOldTakeSellOffer BEGIN: " + JSON.stringify(item, null, 2));
-      if (item && item.length > 0) {
-        this.modalSellOffer.txHash = item[0].txHash;
-        this.modalSellOffer.logIndex = item[0].logIndex;
-        this.modalSellOffer.maker = this.indexToAddress[item[0].owner];
-        this.modalSellOffer.tokenAgent = this.indexToAddress[item[0].tokenAgent];
-        this.$refs.modalselloffer.show();
-      }
-    },
+    // viewOldTakeSellOffer(item) {
+    //   console.log(now() + " INFO Addresses:methods.viewOldTakeSellOffer BEGIN: " + JSON.stringify(item, null, 2));
+    //   if (item && item.length > 0) {
+    //     this.modalSellOffer.txHash = item[0].txHash;
+    //     this.modalSellOffer.logIndex = item[0].logIndex;
+    //     this.modalSellOffer.maker = this.indexToAddress[item[0].owner];
+    //     this.modalSellOffer.tokenAgent = this.indexToAddress[item[0].tokenAgent];
+    //     this.$refs.modalselloffer.show();
+    //   }
+    // },
 
     filterSellOffersByTokenAgent(item) {
       console.log(now() + " INFO Addresses:methods.filterSellOffersByTokenAgent BEGIN: " + JSON.stringify(item, null, 2));
@@ -3738,25 +3703,21 @@ data: {{ data }}
     buyOffersRowSelected(item) {
       console.log(now() + " INFO Addresses:methods.buyOffersRowSelected BEGIN: " + JSON.stringify(item, null, 2));
       if (item && item.length > 0) {
-        // const tokenAgent = this.data.tokenAgents[item[0].tokenAgent];
-        // console.log(now() + " INFO Addresses:methods.buyOffersRowSelected tokenAgent: " + JSON.stringify(tokenAgent, null, 2));
-        // const offer = tokenAgent.offers[item[0].offerIndex];
-        // console.log(now() + " INFO Addresses:methods.buyOffersRowSelected offer: " + JSON.stringify(offer, null, 2));
-        this.modalBuyOffer = {
-          txHash: item[0].txHash,
-          logIndex: item[0].logIndex,
-          maker: item[0].maker,
-          tokenAgent: item[0].tokenAgent,
-          tokenAgentIndexByOwner: item[0].tokenAgentIndexByOwner,
-          offerIndex: item[0].offerIndex,
-          priceIndex: item[0].priceIndex,
-          price: item[0].price,
-          tokens: item[0].token,
-          expiry: item[0].expiry,
-          offer: this.data.tokenAgents[item[0].tokenAgent].offers[item[0].offerIndex],
-        };
-        this.$refs.modalbuyoffer.show();
-        this.$refs.buyOffersTable.clearSelected();
+        // this.modalBuyOffer = {
+        //   txHash: item[0].txHash,
+        //   logIndex: item[0].logIndex,
+        //   maker: item[0].maker,
+        //   tokenAgent: item[0].tokenAgent,
+        //   tokenAgentIndexByOwner: item[0].tokenAgentIndexByOwner,
+        //   offerIndex: item[0].offerIndex,
+        //   priceIndex: item[0].priceIndex,
+        //   price: item[0].price,
+        //   tokens: item[0].token,
+        //   expiry: item[0].expiry,
+        //   offer: this.data.tokenAgents[item[0].tokenAgent].offers[item[0].offerIndex],
+        // };
+        // this.$refs.modalbuyoffer.show();
+        // this.$refs.buyOffersTable.clearSelected();
       }
     },
 
