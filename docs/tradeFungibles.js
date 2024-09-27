@@ -966,9 +966,10 @@ modalBuyOffer: {{ modalBuyOffer }}
                   </b-tab>
                   <b-tab title="Make Offer">
                     <b-card-text>
+                      {{ settings.sellOffers.points }}
                       <b-form-group label="Points:" label-size="sm" label-cols-sm="4" label-align-sm="right" :state="!sellOfferPointsFeedback" :invalid-feedback="sellOfferPointsFeedback" class="mx-0 my-1 p-0">
                         <font size="-1">
-                          <b-table ref="addSellOfferPointsTable" small fixed striped sticky-header="600px" responsive hover :fields="addSellOfferPointsFields" :items="settings.addSellOffer.points" show-empty head-variant="light" class="m-0 mt-1">
+                          <b-table ref="addSellOfferPointsTable" small fixed striped sticky-header="600px" responsive hover :fields="addSellOfferPointsFields" :items="settings.sellOffers.points" show-empty head-variant="light" class="m-0 mt-1">
                             <template #empty="scope">
                               Click [+] below to add a new row
                             </template>
@@ -982,18 +983,19 @@ modalBuyOffer: {{ modalBuyOffer }}
                               <b-form-input size="sm" readonly :value="formatNumber(bigNumberMultiply(data.item.price, data.item.tokens))" class="text-right"></b-form-input>
                             </template> -->
                             <template #cell(option)="data">
-                              <b-button size="sm" @click="settings.addSellOffer.points.splice(data.index, 1); saveSettings();" variant="link" v-b-popover.hover.ds500="'Add new row'"><b-icon-dash shift-v="+1" font-scale="1.2"></b-icon-dash></b-button>
+                              <b-button size="sm" @click="settings.sellOffers.points.splice(data.index, 1); saveSettings();" variant="link" v-b-popover.hover.ds500="'Add new row'"><b-icon-dash shift-v="+1" font-scale="1.2"></b-icon-dash></b-button>
                             </template>
                             <template #bottom-row="data">
                               <b-td>
-                                <b-form-checkbox size="sm" v-model="settings.addSellOffer.simulate" @input="saveSettings" v-b-popover.hover.ds500="'Simulate in offers table above?'" class="ml-1 mt-1">
+                                <!-- <b-form-checkbox size="sm" v-model="settings.sellOffers.simulate" @input="saveSettings" v-b-popover.hover.ds500="'Simulate in offers table above?'" class="ml-1 mt-1"> -->
+                                <b-form-checkbox size="sm" v-model="settings.sellOffers.simulate" @input="saveSettings" class="ml-1 mt-1">
                                   Simulate
                                 </b-form-checkbox>
                               </b-td>
                               <b-td>
                               </b-td>
                               <b-td class="text-right">
-                                <b-button size="sm" @click="settings.addSellOffer.points.push({ price: null, tokens: null }); saveSettings();" variant="link" v-b-popover.hover.ds500="'Add new row'"><b-icon-plus shift-v="+1" font-scale="1.2"></b-icon-plus></b-button>
+                                <b-button size="sm" @click="settings.sellOffers.points.push({ price: null, tokens: null }); saveSettings();" variant="link" v-b-popover.hover.ds500="'Add new row'"><b-icon-plus shift-v="+1" font-scale="1.2"></b-icon-plus></b-button>
                               </b-td>
                             </template>
                           </b-table>
@@ -1003,16 +1005,16 @@ modalBuyOffer: {{ modalBuyOffer }}
                         <b-button size="sm" @click="deployNewTokenAgent" variant="warning">Deploy</b-button>
                       </b-form-group> -->
                       <!-- <b-form-group v-if="myTokenAgentOptions.length > 1" label="Token Agent:" label-for="modaladdselloffer-tokenagent" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
-                        <b-form-select size="sm" v-model="settings.addSellOffer.tokenAgent" @change="saveSettings" :options="myTokenAgentOptions""></b-form-select>
+                        <b-form-select size="sm" v-model="settings.sellOffers.tokenAgent" @change="saveSettings" :options="myTokenAgentOptions""></b-form-select>
                       </b-form-group> -->
                       <b-form-group label="Expiry:" label-for="modaladdselloffer-expirytime" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
                         <b-form-datepicker size="sm" id="modaladdselloffer-expirydate" v-model="expiryDate" :date-format-options="{ year: 'numeric', month: 'short', day: '2-digit', weekday: 'short' }" reset-button today-button close-button label-reset-button="No Expiry" label-no-date-selected="No Expiry" class="w-75"></b-form-datepicker>
                       </b-form-group>
-                      <b-form-group v-if="expiryDate" label="" label-for="modaladdselloffer-expirytime" label-size="sm" label-cols-sm="4" label-align-sm="right" :description="formatTimestampUTC(settings.addSellOffer.expiry)" class="mx-0 my-1 p-0">
+                      <b-form-group v-if="expiryDate" label="" label-for="modaladdselloffer-expirytime" label-size="sm" label-cols-sm="4" label-align-sm="right" :description="formatTimestampUTC(settings.sellOffers.expiry)" class="mx-0 my-1 p-0">
                         <b-form-timepicker size="sm" id="modaladdselloffer-expirytime" v-model="expiryTime" minutes-step="15" now-button label-no-time-selected="Select" class="w-50"></b-form-timepicker>
                       </b-form-group>
                       <b-form-group label="" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
-                        <b-button size="sm" :disabled="myTokenAgentOptions.length == 1 || !settings.addSellOffer.tokenAgent || settings.addSellOffer.points.length == 0 || !!sellOfferPointsFeedback" @click="execAddSellOffer" variant="warning">Add Sell Offer</b-button>
+                        <b-button size="sm" :disabled="settings.sellOffers.points.length == 0 || !!sellOfferPointsFeedback" @click="execAddSellOffer" variant="warning">Add Sell Offer</b-button>
                       </b-form-group>
 
                     </b-card-text>
@@ -1567,7 +1569,9 @@ data: {{ data }}
           includeInvalidated: false, // false,
           includeExpired: false, // false,
           simulate: false, // false,
-          points: [ [0.012, 10.123], [0.013, 10.234] ], // [];
+          points: [],
+          expiryDate: null,
+          expiryTime: null,
 
           select: {
             tokenAgent: null,
@@ -1591,7 +1595,9 @@ data: {{ data }}
           includeInvalidated: false, // false,
           includeExpired: false, // false,
           simulate: false, // false,
-          points: [ [0.012, 10.123], [0.013, 10.234] ], // [];
+          points: [],
+          expiryDate: null,
+          expiryTime: null,
 
           select: {
             tokenAgent: null,
@@ -1658,7 +1664,7 @@ data: {{ data }}
           wethDisplayDecimals: 9,
         },
 
-        version: 1,
+        version: 2,
       },
 
       tokenAgentFactoryEvents: [],
@@ -2034,7 +2040,7 @@ data: {{ data }}
 
     sellOfferPointsFeedback() {
       // console.log(now() + " INFO TradeFungibles:computed.sellOfferPointsFeedback - this.settings.addSellOffer.points: " + JSON.stringify(this.settings.addSellOffer.points));
-      for (const [i, point] of this.settings.addSellOffer.points.entries()) {
+      for (const [i, point] of this.settings.sellOffers.points.entries()) {
         // console.log(i + " => " + JSON.stringify(point));
         if (point.price == null || point.price == "") {
           return "Invalid price";
@@ -2043,8 +2049,8 @@ data: {{ data }}
           return "Invalid tokens";
         }
         if (i > 0) {
-          // console.log(i + " => " + JSON.stringify(point) + " vs prev: " + JSON.stringify(this.settings.addSellOffer.points[i - 1]));
-          if (parseFloat(point.price) <= parseFloat(this.settings.addSellOffer.points[i - 1].price)) {
+          // console.log(i + " => " + JSON.stringify(point) + " vs prev: " + JSON.stringify(this.settings.sellOffers.points[i - 1]));
+          if (parseFloat(point.price) <= parseFloat(this.settings.sellOffers.points[i - 1].price)) {
             return "Prices must be in descending order with no duplicates";
           }
         }
@@ -2216,17 +2222,22 @@ data: {{ data }}
 
       if (simulate && this.tokenSet.timestamp) {
         for (const [i, point] of points.entries()) {
-          prices.push({
-            txHash: null, logIndex: null,
-            maker: this.tokenSet.coinbaseIndex,
-            offerIndex: null, nonce: null, expiry: null,
-            priceIndex: i, price: ethers.utils.parseEther(point[0].toString()).toString(),
-            tokens: ethers.utils.parseUnits(point[1].toString(), this.tokenSet.decimals).toString(),
-            valid: true,
-          });
+          console.log(now() + " INFO TradeFungibles:computed.newSellOffers - point[" + i + "]: " + JSON.stringify(point));
+          try {
+            prices.push({
+              txHash: null, logIndex: null,
+              maker: this.tokenSet.coinbaseIndex,
+              offerIndex: null, nonce: null, expiry: 0,
+              priceIndex: i, price: ethers.utils.parseEther(point.price).toString(),
+              tokens: ethers.utils.parseUnits(point.tokens, this.tokenSet.decimals).toString(),
+              valid: true,
+            });
+          } catch (e) {
+            console.log(now() + " ERROR TradeFungibles:computed.newSellOffers - point[" + i + "]: " + JSON.stringify(point));
+          }
         }
       }
-      // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - prices: " + JSON.stringify(prices, null, 2));
+      console.log(now() + " INFO TradeFungibles:computed.newSellOffers - prices: " + JSON.stringify(prices, null, 2));
 
       prices.sort((a, b) => {
         if (a.valid && !b.valid) {
@@ -3820,9 +3831,10 @@ data: {{ data }}
     },
 
     async execAddSellOffer() {
-      console.log(now() + " INFO TradeFungibles:methods.execAddSellOffer - this.settings.addSellOffer: " + JSON.stringify(this.settings.addSellOffer));
+      console.log(now() + " INFO TradeFungibles:methods.execAddSellOffer - this.settings.sellOffers: " + JSON.stringify(this.settings.sellOffers));
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const network = this.chainId && NETWORKS[this.chainId.toString()] || {};
+      return;
       if (network.tokenAgentFactory) {
         const contract = new ethers.Contract(this.settings.addSellOffer.tokenAgent, network.tokenAgent.abi, provider);
         const contractWithSigner = contract.connect(provider.getSigner());
