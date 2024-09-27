@@ -938,7 +938,7 @@ modalBuyOffer: {{ modalBuyOffer }}
                       <b-form-group :label="'Receive ' + settings.symbol + ':'" label-for="modalselloffer-filledtokens" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
                         <b-form-input size="sm" plaintext id="modalselloffer-filledtokens" :value="newSellOffers.filled.tokens && formatDecimals(newSellOffers.filled.tokens, 18)" class="pl-2 w-75"></b-form-input>
                       </b-form-group>
-                      <b-form-group :label="'Pay [W]ETH'" label-for="modalselloffer-filledweth" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+                      <b-form-group :label="settings.sellOffers.paymentType == 'weth' ? 'Pay WETH:' : 'Pay ETH:'" label-for="modalselloffer-filledweth" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
                         <b-form-input size="sm" plaintext id="modalselloffer-filledweth" :value="newSellOffers.filled.weth && formatDecimals(newSellOffers.filled.weth, 18)" class="pl-2 w-75"></b-form-input>
                       </b-form-group>
                       <b-form-group label="Average Price:" label-for="modalselloffer-filledaverageprice" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
@@ -1252,9 +1252,6 @@ buyOffers: {{ buyOffers }}
               <template #head(info)="data">
                 <b-row>
                   <b-col cols="1">
-                    LogIx
-                  </b-col>
-                  <b-col cols="1">
                     Event
                   </b-col>
                   <b-col cols="2">
@@ -1266,7 +1263,7 @@ buyOffers: {{ buyOffers }}
                   <b-col cols="1">
                     Token
                   </b-col>
-                  <b-col cols="5" class="text-left">
+                  <b-col cols="6" class="text-left">
                     Tokens/Info
                   </b-col>
                 </b-row>
@@ -1275,12 +1272,9 @@ buyOffers: {{ buyOffers }}
                 <div v-if="data1.item.eventType == 'Transfer' || data1.item.eventType == 'Approval'">
                   <b-row>
                     <b-col cols="1">
-                      <b-link size="sm" :href="explorer + 'tx/' + indexToTxHash[data1.item.txHash] + '#eventlog#' + data1.item.logIndex" variant="link" v-b-popover.hover.ds500="data1.item.logIndex" target="_blank">
-                        {{ data1.item.logIndex }}
+                      <b-link size="sm" :href="explorer + 'tx/' + indexToTxHash[data1.item.txHash] + '#eventlog#' + data1.item.logIndex" variant="link" v-b-popover.hover.ds500="'Log index: ' + data1.item.logIndex" target="_blank">
+                        {{ data1.item.eventType }}
                       </b-link>
-                    </b-col>
-                    <b-col cols="1">
-                      {{ data1.item.eventType }}
                     </b-col>
                     <b-col cols="2">
                       <div v-if="data1.item.eventType == 'Transfer'">
@@ -1319,7 +1313,7 @@ buyOffers: {{ buyOffers }}
                         </span>
                       </b-link>
                     </b-col>
-                    <b-col cols="5" class="text-left">
+                    <b-col cols="6" class="text-left">
                       {{ formatDecimals(data1.item.events[0].tokens, 18) }}
                     </b-col>
                   </b-row>
@@ -1329,11 +1323,8 @@ buyOffers: {{ buyOffers }}
                     <b-row>
                       <b-col cols="1">
                         <b-link size="sm" :href="explorer + 'tx/' + indexToTxHash[data1.item.txHash] + '#eventlog#' + info.logIndex" variant="link" v-b-popover.hover.ds500="'Log index: ' + info.logIndex" target="_blank">
-                          {{ info.logIndex }}
+                          {{ data1.item.eventType }}
                         </b-link>
-                      </b-col>
-                      <b-col cols="1">
-                        {{ data1.item.eventType }}
                       </b-col>
                       <b-col cols="2">
                         <b-link size="sm" :href="explorer + 'address/' + indexToAddress[info.maker]" variant="link" v-b-popover.hover.ds500="'Maker ' + indexToAddress[info.maker]" target="_blank">
@@ -1355,7 +1346,7 @@ buyOffers: {{ buyOffers }}
                           </span>
                         </b-link>
                       </b-col>
-                      <b-col cols="5" class="text-left">
+                      <b-col cols="6" class="text-left">
                         {{ info.buySell == 0 ? 'BUY' : 'SELL' }} offerId: {{ info.index }}, nonce: {{ info.nonce }}, exp: {{ formatTimestamp(info.expiry )}}
                         <div v-for="(point, i) in info.prices"  v-bind:key="i" class="m-0 p-0">
                           <li>{{ formatDecimals(info.tokenss[i], settings.decimals) }} @ {{ formatDecimals(point, 18) }}</li>
@@ -1369,12 +1360,9 @@ buyOffers: {{ buyOffers }}
                     <!-- {{ logIndex }} . {{ info }} -->
                     <b-row>
                       <b-col cols="1">
-                        <b-link size="sm" :href="explorer + 'tx/' + indexToTxHash[data1.item.txHash] + '#eventlog#' + info.logIndex" variant="link" v-b-popover.hover.ds500="info.logIndex" target="_blank">
-                          {{ info.logIndex }}
+                        <b-link size="sm" :href="explorer + 'tx/' + indexToTxHash[data1.item.txHash] + '#eventlog#' + info.logIndex" variant="link" v-b-popover.hover.ds500="'Log index: ' + info.logIndex" target="_blank">
+                          {{ info.eventType == 10 ? 'Traded' : 'Transfer' }}
                         </b-link>
-                      </b-col>
-                      <b-col cols="1">
-                        {{ info.eventType == 10 ? 'Traded' : 'Transfer' }}
                       </b-col>
                       <b-col cols="2">
                         <!-- <div v-if="info.eventType == 'Transfer' || info.eventType == 'InternalTransfer' || info.eventType == 'Deposit' || info.eventType == 'Withdrawal'"> -->
@@ -1445,7 +1433,7 @@ buyOffers: {{ buyOffers }}
                           </b-link>
                         </div>
                       </b-col>
-                      <b-col cols="5" class="text-left">
+                      <b-col cols="6" class="text-left">
                         <!-- <div v-if="info.eventType == 'Transfer' || info.eventType == 'Deposit' || info.eventType == 'Withdrawal'"> -->
                         <div v-if="info.eventType == 0 || info.eventType == 1 || info.eventType == 2">
                           {{ formatDecimals(info.tokens, 18) }}
@@ -1468,12 +1456,9 @@ buyOffers: {{ buyOffers }}
                   <div v-for="(info, i) in data1.item.events"  v-bind:key="i" class="m-0 p-0">
                     <b-row>
                       <b-col cols="1">
-                        <b-link size="sm" :href="explorer + 'tx/' + indexToTxHash[data1.item.txHash] + '#eventlog#' + info.logIndex" variant="link" v-b-popover.hover.ds500="info.logIndex" target="_blank">
-                          {{ info.logIndex }}
+                        <b-link size="sm" :href="explorer + 'tx/' + indexToTxHash[data1.item.txHash] + '#eventlog#' + info.logIndex" variant="link" v-b-popover.hover.ds500="'Log index: ' + info.logIndex" target="_blank">
+                          {{ info.eventType == 0 ? 'Transfer' : 'Huh?' }}
                         </b-link>
-                      </b-col>
-                      <b-col cols="1">
-                        {{ info.eventType == 0 ? 'Transfer' : 'Huh?' }}
                       </b-col>
                       <b-col cols="2">
                         <!-- <div v-if="info.eventType == 'Transfer'"> -->
@@ -1515,7 +1500,7 @@ buyOffers: {{ buyOffers }}
                           </b-link>
                         </div>
                       </b-col>
-                      <b-col cols="5" class="text-left">
+                      <b-col cols="6" class="text-left">
                         <div v-if="info.eventType == 0">
                           {{ formatDecimals(info.tokens, 18) }}
                         </div>
@@ -1841,13 +1826,6 @@ data: {{ data }}
         { key: 'wethAmount', label: '[W]ETH', sortable: false, thStyle: 'width: 15%;', thClass: 'text-right', tdClass: 'text-right' },
         { key: 'totalWeth', label: '∑ [W]ETH', sortable: false, thStyle: 'width: 15%;', thClass: 'text-right', tdClass: 'text-right' },
         { key: 'expiry', label: 'Expiry', sortable: false, thStyle: 'width: 15%;', thClass: 'text-right', tdClass: 'text-right' },
-        // { key: 'number', label: '#', sortable: false, thStyle: 'width: 5%;', tdClass: 'text-left' },
-        // { key: 'expiry', label: 'Expiry', sortable: false, thStyle: 'width: 25%;', thClass: 'text-right', tdClass: 'text-right' },
-        // { key: 'maker', label: 'Maker', sortable: false, thStyle: 'width: 25%;', thClass: 'text-right', tdClass: 'text-right' },
-        // { key: 'token', label: 'Token', sortable: false, thStyle: 'width: 15%;', tdClass: 'text-left' },
-        // { key: 'tokenType', label: 'Type', sortable: false, thStyle: 'width: 5%;', tdClass: 'text-left' },
-        // { key: 'buySell', label: 'B/S', sortable: false, thStyle: 'width: 5%;', tdClass: 'text-left' },
-        // { key: 'expiry', label: 'Expiry', sortable: false, thStyle: 'width: 15%;', tdClass: 'text-left' },
       ],
       sellOffersFields: [
         { key: 'number', label: '#', sortable: false, thStyle: 'width: 5%;', tdClass: 'text-left' },
@@ -1888,26 +1866,10 @@ data: {{ data }}
         { key: 'number', label: '#', sortable: false, thStyle: 'width: 5%;', thClass: 'text-left', tdClass: 'text-left' },
       ],
       eventsFields: [
-        { key: 'number', label: '#', sortable: false, thStyle: 'width: 5%;', tdClass: 'text-left' },
-        // { key: 'nonce', label: 'Nonce', sortable: false, thStyle: 'width: 5%;', thClass: 'text-right', tdClass: 'text-right' },
-        { key: 'when', label: 'When', sortable: false, thStyle: 'width: 15%;', thClass: 'text-left', tdClass: 'text-left' },
-        { key: 'eventType', label: 'Type', sortable: false, thStyle: 'width: 10%;', thClass: 'text-left', tdClass: 'text-left' },
-        // { key: 'from', label: 'From', sortable: false, thStyle: 'width: 10%;', thClass: 'text-left', tdClass: 'text-left' },
-        // { key: 'to', label: 'To', sortable: false, thStyle: 'width: 10%;', thClass: 'text-left', tdClass: 'text-left' },
-        { key: 'info', label: 'Info', sortable: false, thStyle: 'width: 100%;', thClass: 'text-left', tdClass: 'text-left' },
-        // { key: 'offer', label: 'Offered', sortable: false, thStyle: 'width: 15%;', thClass: 'text-right', tdClass: 'text-right' },
-        // { key: 'tokens', label: 'Tokens', sortable: false, thStyle: 'width: 15%;', thClass: 'text-right', tdClass: 'text-right' },
-        // { key: 'totalTokens', label: '∑ Tokens', sortable: false, thStyle: 'width: 15%;', thClass: 'text-right', tdClass: 'text-right' },
-        // { key: 'wethAmount', label: '[W]ETH', sortable: false, thStyle: 'width: 15%;', thClass: 'text-right', tdClass: 'text-right' },
-        // { key: 'totalWeth', label: '∑ [W]ETH', sortable: false, thStyle: 'width: 15%;', thClass: 'text-right', tdClass: 'text-right' },
-        // { key: 'expiry', label: 'Expiry', sortable: false, thStyle: 'width: 15%;', thClass: 'text-right', tdClass: 'text-right' },
-        // { key: 'number', label: '#', sortable: false, thStyle: 'width: 5%;', tdClass: 'text-left' },
-        // { key: 'expiry', label: 'Expiry', sortable: false, thStyle: 'width: 25%;', thClass: 'text-right', tdClass: 'text-right' },
-        // { key: 'maker', label: 'Maker', sortable: false, thStyle: 'width: 25%;', thClass: 'text-right', tdClass: 'text-right' },
-        // { key: 'token', label: 'Token', sortable: false, thStyle: 'width: 15%;', tdClass: 'text-left' },
-        // { key: 'tokenType', label: 'Type', sortable: false, thStyle: 'width: 5%;', tdClass: 'text-left' },
-        // { key: 'buySell', label: 'B/S', sortable: false, thStyle: 'width: 5%;', tdClass: 'text-left' },
-        // { key: 'expiry', label: 'Expiry', sortable: false, thStyle: 'width: 15%;', tdClass: 'text-left' },
+        { key: 'number', label: '#', sortable: false, thStyle: 'width: 4%;', tdClass: 'text-left' },
+        { key: 'when', label: 'When', sortable: false, thStyle: 'width: 12%;', thClass: 'text-left', tdClass: 'text-left' },
+        { key: 'eventType', label: 'Type', sortable: false, thStyle: 'width: 7%;', thClass: 'text-left', tdClass: 'text-left' },
+        { key: 'info', label: 'Info', sortable: false, thStyle: 'width: 77%;', thClass: 'text-left', tdClass: 'text-left' },
       ],
     }
   },
