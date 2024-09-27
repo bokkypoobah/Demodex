@@ -2258,7 +2258,8 @@ data: {{ data }}
         }
         tokenApprovals[maker][this.tokenSet.demodexIndex] = { tokens: approval, originalTokens: approval };
       }
-      // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - tokenBalances: " + JSON.stringify(tokenBalances, null, 2));
+      console.log(now() + " INFO TradeFungibles:computed.newSellOffers - this.tokenSet.balances: " + JSON.stringify(this.tokenSet.balances, null, 2));
+      console.log(now() + " INFO TradeFungibles:computed.newSellOffers - tokenBalances: " + JSON.stringify(tokenBalances, null, 2));
       // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - tokenApprovals: " + JSON.stringify(tokenApprovals, null, 2));
 
       const records = [];

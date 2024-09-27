@@ -1383,7 +1383,7 @@ const dataModule = {
       const db = new Dexie(context.state.db.name);
       db.version(context.state.db.version).stores(context.state.db.schemaDefinition);
       const tokenSetOwners = {};
-      const newAddress = false;
+      let newAddress = false;
       for (const [address, d] of Object.entries(context.state.addresses)) {
         if (!(address in context.state.addressToIndex)) {
           context.commit('addAddressIndex', address);
@@ -1750,6 +1750,7 @@ const dataModule = {
         done = data.length < context.state.DB_PROCESSING_BATCH_SIZE;
       } while (!done);
       // console.log("tradeHashes: " + JSON.stringify(Object.keys(tradeHashes), null, 2));
+      // console.log("context.state.tokenSetOwners: " + JSON.stringify(context.state.tokenSetOwners, null, 2));
       rows = 0;
       done = false;
       do {
