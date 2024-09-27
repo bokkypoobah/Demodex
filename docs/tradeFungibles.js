@@ -2249,17 +2249,28 @@ data: {{ data }}
       // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - prices: " + JSON.stringify(prices, null, 2));
       const tokenBalances = {};
       const tokenApprovals = {};
-      for (const [maker, d1] of Object.entries(collator)) {
-        const balance = this.tokenSet.balances[this.tokenSet.tokenIndex] && this.tokenSet.balances[this.tokenSet.tokenIndex][maker].tokens || "0";
-        tokenBalances[maker] = { tokens: balance, originalTokens: balance };
-        const approval = this.tokenSet.approvals[this.tokenSet.tokenIndex] && this.tokenSet.approvals[this.tokenSet.tokenIndex][maker] && this.tokenSet.approvals[this.tokenSet.tokenIndex][maker][this.tokenSet.demodexIndex].tokens || "0";
-        if (!(maker in tokenApprovals)) {
-          tokenApprovals[maker] = {};
-        }
-        tokenApprovals[maker][this.tokenSet.demodexIndex] = { tokens: approval, originalTokens: approval };
+      for (const [maker, d1] of Object.entries(this.tokenSet.tokenIndex && this.tokenSet.balances[this.tokenSet.tokenIndex] || {})) {
+        tokenBalances[maker] = { tokens: d1.tokens, originalTokens: d1.tokens };
       }
-      console.log(now() + " INFO TradeFungibles:computed.newSellOffers - this.tokenSet.balances: " + JSON.stringify(this.tokenSet.balances, null, 2));
-      console.log(now() + " INFO TradeFungibles:computed.newSellOffers - tokenBalances: " + JSON.stringify(tokenBalances, null, 2));
+      for (const [owner, d1] of Object.entries(this.tokenSet.tokenIndex && this.tokenSet.approvals[this.tokenSet.tokenIndex] || {})) {
+        if (!(owner in tokenApprovals)) {
+          tokenApprovals[owner] = {};
+        }
+        for (const [spender, d2] of Object.entries(d1)) {
+          tokenApprovals[owner][spender] = { tokens: d2.tokens, originalTokens: d2.tokens };
+        }
+      }
+      // for (const [maker, d1] of Object.entries(collator)) {
+      //   const balance = this.tokenSet.balances[this.tokenSet.tokenIndex] && this.tokenSet.balances[this.tokenSet.tokenIndex][maker].tokens || "0";
+      //   tokenBalances[maker] = { tokens: balance, originalTokens: balance };
+      //   const approval = this.tokenSet.approvals[this.tokenSet.tokenIndex] && this.tokenSet.approvals[this.tokenSet.tokenIndex][maker] && this.tokenSet.approvals[this.tokenSet.tokenIndex][maker][this.tokenSet.demodexIndex].tokens || "0";
+      //   if (!(maker in tokenApprovals)) {
+      //     tokenApprovals[maker] = {};
+      //   }
+      //   tokenApprovals[maker][this.tokenSet.demodexIndex] = { tokens: approval, originalTokens: approval };
+      // }
+      // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - this.tokenSet.balances: " + JSON.stringify(this.tokenSet.balances, null, 2));
+      // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - tokenBalances: " + JSON.stringify(tokenBalances, null, 2));
       // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - tokenApprovals: " + JSON.stringify(tokenApprovals, null, 2));
 
       const records = [];
