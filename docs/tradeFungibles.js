@@ -966,7 +966,6 @@ modalBuyOffer: {{ modalBuyOffer }}
                   </b-tab>
                   <b-tab title="Make Offer">
                     <b-card-text>
-                      {{ settings.sellOffers.points }}
                       <b-form-group label="Points:" label-size="sm" label-cols-sm="4" label-align-sm="right" :state="!sellOfferPointsFeedback" :invalid-feedback="sellOfferPointsFeedback" class="mx-0 my-1 p-0">
                         <font size="-1">
                           <b-table ref="addSellOfferPointsTable" small fixed striped sticky-header="600px" responsive hover :fields="addSellOfferPointsFields" :items="settings.sellOffers.points" show-empty head-variant="light" class="m-0 mt-1">
@@ -1001,12 +1000,6 @@ modalBuyOffer: {{ modalBuyOffer }}
                           </b-table>
                         </font>
                       </b-form-group>
-                      <!-- <b-form-group v-if="myTokenAgentOptions.length == 1" label="Deploy Token Agent:" label-size="sm" label-cols-sm="4" label-align-sm="right" description="Refresh after deployment" class="mx-0 my-1 p-0">
-                        <b-button size="sm" @click="deployNewTokenAgent" variant="warning">Deploy</b-button>
-                      </b-form-group> -->
-                      <!-- <b-form-group v-if="myTokenAgentOptions.length > 1" label="Token Agent:" label-for="modaladdselloffer-tokenagent" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
-                        <b-form-select size="sm" v-model="settings.sellOffers.tokenAgent" @change="saveSettings" :options="myTokenAgentOptions""></b-form-select>
-                      </b-form-group> -->
                       <b-form-group label="Expiry:" label-for="modaladdselloffer-expirytime" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
                         <b-form-datepicker size="sm" id="modaladdselloffer-expirydate" v-model="expiryDate" :date-format-options="{ year: 'numeric', month: 'short', day: '2-digit', weekday: 'short' }" reset-button today-button close-button label-reset-button="No Expiry" label-no-date-selected="No Expiry" class="w-75"></b-form-datepicker>
                       </b-form-group>
@@ -1149,12 +1142,11 @@ modalBuyOffer: {{ modalBuyOffer }}
                   </b-form-group> -->
 
               </b-card-text>
-              <font v-if="settings.sellOffers.tabIndex != 0" size="-2">
+              <!-- <font v-if="settings.sellOffers.tabIndex != 0" size="-2">
                 <pre>
-<!-- settings.sellOffers: {{ settings.sellOffers }} -->
 newSellOffers: {{ newSellOffers }}
                 </pre>
-              </font>
+              </font> -->
             </b-col>
             <b-col v-if="settings.viewMode == 0 || settings.viewMode == 2" :cols="settings.viewMode == 0 ? null : 6" class="m-0 ml-1 p-0">
               <b-card no-body>
@@ -3834,21 +3826,20 @@ data: {{ data }}
       console.log(now() + " INFO TradeFungibles:methods.execAddSellOffer - this.settings.sellOffers: " + JSON.stringify(this.settings.sellOffers));
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const network = this.chainId && NETWORKS[this.chainId.toString()] || {};
-      return;
-      if (network.tokenAgentFactory) {
-        const contract = new ethers.Contract(this.settings.addSellOffer.tokenAgent, network.tokenAgent.abi, provider);
+      if (network.demodex) {
+        const contract = new ethers.Contract(network.demodex.address, network.demodex.abi, provider);
         const contractWithSigner = contract.connect(provider.getSigner());
         const prices = [];
         const tokenss = [];
-        for (const [i, point] of this.settings.addSellOffer.points.entries()) {
+        for (const [i, point] of this.settings.sellOffers.points.entries()) {
           prices.push(ethers.utils.parseEther(point.price).toString());
-          tokenss.push(ethers.utils.parseUnits(point.tokens, this.settings.decimals).toString());
+          tokenss.push(ethers.utils.parseUnits(point.tokens, this.tokenSet.decimals).toString());
         }
 
         try {
           const payload = [
             [
-              this.settings.tokenContractAddress,
+              this.tokenSet.token,
               1, // SELL
               this.settings.addSellOffer.expiry || 0,
               prices,
