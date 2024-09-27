@@ -2175,7 +2175,7 @@ data: {{ data }}
             collator[e.maker].offers[e.index] = e;
           }
         } else if (e.eventType == EVENTTYPE_TRADED) {
-          console.log(now() + " INFO TradeFungibles:computed.newSellOffers - TRADED e: " + JSON.stringify(e));
+          // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - TRADED e: " + JSON.stringify(e));
           if (!(e.maker in collator)) {
             collator[e.maker] = {
               nonce: 0, // TODO
@@ -2187,7 +2187,7 @@ data: {{ data }}
             collator[e.maker].offers[e.index].tokenss = e.remainingTokenss;
           }
         } else {
-          console.log(now() + " INFO TradeFungibles:computed.newSellOffers - OTHER e: " + JSON.stringify(e));
+          // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - OTHER e: " + JSON.stringify(e));
         }
       }
       // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - collator: " + JSON.stringify(collator, null, 2));
@@ -2229,7 +2229,7 @@ data: {{ data }}
           }
         }
       }
-      console.log(now() + " INFO TradeFungibles:computed.newSellOffers - prices: " + JSON.stringify(prices, null, 2));
+      // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - prices: " + JSON.stringify(prices, null, 2));
 
       prices.sort((a, b) => {
         if (a.valid && !b.valid) {
@@ -2275,6 +2275,9 @@ data: {{ data }}
         // console.log(i + " " + ignoreApproval + " " + ethers.utils.formatEther(tokenBalance) + " " + ethers.utils.formatEther(tokenApproval) + " " + JSON.stringify(price));
         let tokens = ethers.BigNumber.from(price.tokens);
         let wethAmount = null;
+        if (price.txHash == null) {
+          console.log("SIMULATED prices[" + i + "]: " + JSON.stringify(price));
+        }
         if (price.valid) {
           if (tokens.gt(tokenBalance)) {
             tokens = tokenBalance;
@@ -2303,7 +2306,7 @@ data: {{ data }}
             totalTokens = ethers.BigNumber.from(totalTokens).add(tokens);
             totalWeth = ethers.BigNumber.from(totalWeth).add(wethAmount);
             tokenBalances[price.maker].tokens = ethers.BigNumber.from(tokenBalances[price.maker].tokens).sub(tokens).toString();
-            if (!ignoreApproval && !price.simulated && tokenApprovals[price.maker] && tokenApprovals[price.maker][price.tokenAgent]) {
+            if (!ignoreApproval && price.txHash != null && tokenApprovals[price.maker] && tokenApprovals[price.maker][price.tokenAgent]) {
               tokenApprovals[price.maker][price.tokenAgent].tokens = ethers.BigNumber.from(tokenApprovals[price.maker][price.tokenAgent].tokens).sub(tokens).toString();
             }
             trades.push({ index: price.offerIndex, price: price.price, execution: 1, tokenIds: [], tokenss: [tokens.toString()] });
