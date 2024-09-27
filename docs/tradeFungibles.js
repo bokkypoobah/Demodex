@@ -94,7 +94,7 @@ modalBuyOffer: {{ modalBuyOffer }}
               <!-- <div class="mt-0 pr-1">
                 <b-button :disabled="!settings.contract || !validAddress(settings.contract)" @click="copyToClipboard(settings.contract);" variant="link" v-b-popover.hover.ds500="'Copy ERC-20 contract address to clipboard'" class="m-0 ml-2 p-0"><b-icon-clipboard shift-v="+1" font-scale="1.1"></b-icon-clipboard></b-button>
               </div> -->
-              <div class="mt-0 pr-1" style="width: 23.0rem;">
+              <div class="mt-0 pr-1" style="width: 18.0rem;">
                 <font size="-1">
                   <!-- <b-link v-if="false" :href="explorer + 'address/' + settings.tokenAgentOwner" v-b-popover.hover.ds500="'Token Agent owner ' + settings.tokenAgentOwner" target="_blank">
                     <b-badge v-if="settings.tokenAgentOwner" variant="link" class="m-0 mt-1">
@@ -131,11 +131,14 @@ modalBuyOffer: {{ modalBuyOffer }}
                 </font>
               </div>
 
-              <div class="mt-0 pr-5">
-                <b-button size="sm" v-b-modal.config variant="link" v-b-popover.hover.ds500="'Config'" class="m-0 ml-2 mr-2 p-0"><b-icon-tools shift-v="-1" font-scale="0.9"></b-icon-tools></b-button>
+              <div class="mt-0 pr-3">
+                <b-button size="sm" :disabled="!networkSupported || sync.completed != null || !validAddress(settings.tokenContractAddress)" @click="syncNow" v-b-popover.hover.ds500="'Sync'" variant="link"><b-icon-arrow-repeat shift-v="+1" font-scale="1.2"></b-icon-arrow-repeat></b-button>
+              </div>
+              <div class="mt-0 pr-3">
+                <b-button size="sm" :disabled="!networkSupported || sync.completed != null || !validAddress(settings.tokenContractAddress)" @click="invalidateAllOffers" v-b-popover.hover.ds500="'Invalidate all of my offers'" variant="transparent"><b-icon-stop-fill shift-v="+1" font-scale="1.2" variant="danger"></b-icon-stop-fill></b-button>
               </div>
               <div class="mt-0 pr-1">
-                <b-button size="sm" :disabled="!networkSupported || sync.completed != null || !validAddress(settings.tokenContractAddress)" @click="syncNow" v-b-popover.hover.ds500="'Sync'" variant="link"><b-icon-arrow-repeat shift-v="-1" font-scale="1.2"></b-icon-arrow-repeat></b-button>
+                <b-button size="sm" v-b-modal.config variant="link" v-b-popover.hover.ds500="'Config'" class="m-0 ml-2 mr-2 p-0"><b-icon-tools shift-v="-1" font-scale="0.9"></b-icon-tools></b-button>
               </div>
             </div>
           </template>
@@ -2560,16 +2563,51 @@ data: {{ data }}
       });
     },
 
+    async invalidateAllOffers() {
+      console.log(now() + " INFO TradeFungibles:methods.invalidateAllOffers - BEGIN");
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const network = this.chainId && NETWORKS[this.chainId.toString()] || {};
+      if (network.demodex) {
+        const contract = new ethers.Contract(network.demodex.address, network.demodex.abi, provider);
+        const contractWithSigner = contract.connect(provider.getSigner());
+        try {
+          const tx = await contractWithSigner.invalidateOffers();
+          // const tx = { hash: "blah" };
+          console.log(now() + " INFO TradeFungibles:methods.invalidateAllOffers - tx: " + JSON.stringify(tx));
+          const h = this.$createElement;
+          const vNodesMsg = h(
+            'p',
+            { class: ['text-left', 'mb-0'] },
+            [
+              h('a', { attrs: { href: this.explorer + 'tx/' + tx.hash, target: '_blank' } }, tx.hash.substring(0, 20) + '...' + tx.hash.slice(-18)),
+              h('br'),
+              h('br'),
+              'Resync after this tx has been included',
+            ]
+          );
+          this.$bvToast.toast([vNodesMsg], {
+            title: 'Transaction submitted',
+            autoHideDelay: 5000,
+          });
+          // this.$refs['modalnewtokenagent'].hide();
+          // this.settings.newTokenAgent.show = false;
+          // this.saveSettings();
+        } catch (e) {
+          console.log(now() + " ERROR TradeFungibles:methods.invalidateAllOffers: " + JSON.stringify(e));
+          this.$bvToast.toast(`${e.message}`, {
+            title: 'Error!',
+            autoHideDelay: 5000,
+          });
+        }
+      }
+    },
+
     async newSellOffersTrade() {
       console.log(now() + " INFO TradeFungibles:methods.newSellOffersTrade - this.newSellOffers.trades: " + JSON.stringify(this.newSellOffers.trades));
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const network = this.chainId && NETWORKS[this.chainId.toString()] || {};
-      // const tokenAgent = this.indexToAddress[this.settings.sellOffers.select.tokenAgent];
-      // const maker = this.indexToAddress[this.settings.sellOffers.select.owner];
-      // console.log("tokenAgent: " + tokenAgent);
       console.log("token: " + this.tokenSet.token);
       console.log("WETH: " + this.tokenSet.weth);
-      // console.log("maker: " + this.indexToAddress[this.settings.sellOffers.select.owner]);
       console.log("taker: " + this.coinbase);
 
       if (network.demodex) {
