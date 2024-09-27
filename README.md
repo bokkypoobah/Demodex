@@ -87,6 +87,10 @@ After syncing, and un-checking the Simulate checkbox
 
 <kbd><img src="images/TradeFungibles_MakerOffer_5_20240926.png" width="600"/></kbd>
 
+View your new offer in the Events tab
+
+<kbd><img src="images/TradeFungibles_MakerOffer_6_20240926.png" width="600"/></kbd>
+
 <br />
 
 ---
