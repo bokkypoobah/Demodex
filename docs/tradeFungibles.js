@@ -457,10 +457,10 @@ modalBuyOffer: {{ modalBuyOffer }}
                         <b-form-input size="sm" plaintext id="modalselloffer-ethbalance" :value="formatDecimals(balance, 18)" class="pl-2 w-75"></b-form-input>
                       </b-form-group>
                       <b-form-group v-if="settings.sellOffers.paymentType == 'weth'" label="WETH Balance:" label-for="modalselloffer-wethbalance" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
-                        <b-form-input size="sm" plaintext id="modalselloffer-wethbalance" :value="tokenSet.wethIndex && tokenSet.balances[tokenSet.wethIndex] && tokenSet.balances[tokenSet.wethIndex][tokenSet.coinbaseIndex] && formatDecimals(tokenSet.balances[tokenSet.wethIndex][tokenSet.coinbaseIndex].tokens, 18) || '0'" class="pl-2 w-75"></b-form-input>
+                        <b-form-input size="sm" plaintext id="modalselloffer-wethbalance" :value="formatDecimals(coinbaseWethBalance, 18)" class="pl-2 w-75"></b-form-input>
                       </b-form-group>
                       <b-form-group v-if="settings.sellOffers.paymentType == 'weth'" label="WETH Approved:" label-for="modalselloffer-wethapproved" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
-                        <b-form-input size="sm" plaintext id="modalselloffer-wethapproved" :value="tokenSet.wethIndex && tokenSet.approvals[tokenSet.wethIndex] && tokenSet.approvals[tokenSet.wethIndex][tokenSet.coinbaseIndex] && tokenSet.approvals[tokenSet.wethIndex][tokenSet.coinbaseIndex][tokenSet.demodexIndex] && formatDecimals(tokenSet.approvals[tokenSet.wethIndex][tokenSet.coinbaseIndex][tokenSet.demodexIndex].tokens, 18) || '0'" class="pl-2 w-75"></b-form-input>
+                        <b-form-input size="sm" plaintext id="modalselloffer-wethapproved" :value="formatDecimals(coinbaseWethApproval, 18)" class="pl-2 w-75"></b-form-input>
                       </b-form-group>
                       <b-form-group label="" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
                         <b-button size="sm" :disabled="!networkSupported || !newSellOffers.filled.tokens" @click="newSellOffersTrade" variant="warning">Trade</b-button>
@@ -1415,25 +1415,22 @@ data: {{ data }}
       },
     },
 
-    myTokenAgentOptions() {
-      const results = [];
-      results.push({ value: null, text: '(Select Token Agent)' });
-      for (const [tokenAgent, d] of Object.entries(this.data.tokenAgents)) {
-        if (d.owner == this.coinbase) {
-          results.push({ value: tokenAgent, text: '#' + d.indexByOwner + ' ' + tokenAgent.substring(0, 12) + '...' + tokenAgent.slice(-10) });
-        }
-      }
-      // console.log(now() + " INFO TradeFungibles:computed.myTokenAgentOptions - results: " + JSON.stringify(results, null, 2));
-      return results;
+    coinbaseWethBalance() {
+      let result =
+        this.tokenSet.wethIndex &&
+        this.tokenSet.balances[this.tokenSet.wethIndex] &&
+        this.tokenSet.balances[this.tokenSet.wethIndex][this.tokenSet.coinbaseIndex] &&
+        this.tokenSet.balances[this.tokenSet.wethIndex][this.tokenSet.coinbaseIndex].tokens || '0';
+      return result;
     },
-
-    tokenAgentsDropdownOptions() {
-      const results = (store.getters['data/forceRefresh'] % 2) == 0 ? [] : [];
-      for (const [tokenAgent, d] of Object.entries(this.tokenAgents[this.chainId] || {})) {
-        results.push({ tokenAgent, owner: d.owner, index: d.index });
-      }
-      // console.log(now() + " INFO TradeFungibles:computed.tokenAgentsDropdownOptions - results[0..9]: " + JSON.stringify(this.filteredSortedItems.slice(0, 10), null, 2));
-      return results;
+    coinbaseWethApproval() {
+      let result =
+        this.tokenSet.wethIndex &&
+        this.tokenSet.approvals[this.tokenSet.wethIndex] &&
+        this.tokenSet.approvals[this.tokenSet.wethIndex][this.tokenSet.coinbaseIndex] &&
+        this.tokenSet.approvals[this.tokenSet.wethIndex][this.tokenSet.coinbaseIndex][this.tokenSet.demodexIndex] &&
+        this.tokenSet.approvals[this.tokenSet.wethIndex][this.tokenSet.coinbaseIndex][this.tokenSet.demodexIndex].tokens || '0';
+      return result;
     },
 
     tokenContractsDropdownOptions() {
