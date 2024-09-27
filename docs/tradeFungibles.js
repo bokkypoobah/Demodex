@@ -16,466 +16,7 @@ const TradeFungibles = {
           </b-form-group>
         </b-modal>
 
-        <!-- <b-modal ref="modaladdselloffer" hide-footer header-class="m-0 px-3 py-2" body-class="m-0 p-0" body-bg-variant="light" size="xl"> -->
-        <!-- <b-modal ref="modaladdselloffer" hide-footer header-class="m-0 px-3 py-2" body-class="m-0 p-0" size="xl">
-          <template #modal-title>Add Sell Offer - Fungibles</template>
-          <div class="m-0 p-1 bg-light">
-            <div class="d-flex flex-wrap m-0 p-0">
-              <div class="mt-0 pl-1 pr-0">
-                <font size="-1">
-                  Maker:
-                </font>
-                <b-link v-if="coinbase" :href="explorer + 'address/' + coinbase" v-b-popover.hover.ds500="'Attached web3 account. View in explorer'" target="_blank">
-                  <b-badge variant="link" class="m-0 mt-1">
-                    {{ coinbase.substring(0, 10) + '...' + coinbase.slice(-8) }}
-                  </b-badge>
-                </b-link>
-              </div>
-              <div class="mt-0 pr-0">
-                <font size="-1">
-                  {{ settings.symbol }}:
-                </font>
-                <b-link :href="explorer + 'token/' + settings.tokenContractAddress + '?a=' + coinbase" v-b-popover.hover.ds500="settings.symbol +' token balance. View in explorer'" target="_blank">
-                  <b-badge variant="link" class="m-0 mt-1">
-                    {{ formatDecimals(balances[data.token] && balances[data.token][coinbase] && balances[data.token][coinbase].tokens || 0, settings.decimals) }}
-                  </b-badge>
-                </b-link>
-              </div>
-              <div class="mt-0 pr-0">
-                <font size="-1">
-                  WETH:
-                </font>
-                <b-link :href="explorer + 'token/' + data.weth + '?a=' + coinbase" v-b-popover.hover.ds500="'WETH token balance. View in explorer'" target="_blank">
-                  <b-badge variant="link" class="m-0 mt-1">
-                    {{ formatDecimals(balances[data.weth] && balances[data.weth][coinbase] && balances[data.weth][coinbase].tokens || 0, settings.decimals) }}
-                  </b-badge>
-                </b-link>
-              </div>
-              <div class="mt-0 flex-grow-1">
-              </div>
-              <div class="mt-0 pl-1">
-                <b-button size="sm" v-b-modal.config variant="link" v-b-popover.hover.ds500="'Config'" class="m-0 p-0"><b-icon-tools shift-v="-1" font-scale="0.9"></b-icon-tools></b-button>
-              </div>
-              <div class="mt-0 pl-1">
-                <b-button size="sm" :disabled="!networkSupported || sync.completed != null" @click="loadData(settings.tokenContractAddress);" variant="link"><b-icon-arrow-repeat shift-v="-1" font-scale="1.2"></b-icon-arrow-repeat></b-button>
-              </div>
-            </div>
-          </div>
-          <div class="m-0 p-0 px-1">
-            <div class="d-flex flex-wrap m-0 mt-1 p-0">
-              <div class="mt-1 pl-1 pr-1">
-                <b-form-checkbox size="sm" v-model="settings.addSellOffer.mineOnly" @input="saveSettings" v-b-popover.hover.ds500="'Show offers only from my Token Agents'">
-                  Mine Only
-                </b-form-checkbox>
-              </div>
-              <div class="mt-1 pr-1">
-                <b-form-checkbox size="sm" v-model="settings.addSellOffer.includeExpired" @input="saveSettings" v-b-popover.hover.ds500="'Show expired offers?'">
-                  Expired
-                </b-form-checkbox>
-              </div>
-              <div class="mt-1 pr-1">
-                <b-form-checkbox size="sm" v-model="settings.addSellOffer.includeInvalidated" @input="saveSettings" v-b-popover.hover.ds500="'Show invalidated offers?'">
-                  Invalidated
-                </b-form-checkbox>
-              </div>
-              <div class="mt-1 pr-1">
-                <b-form-checkbox size="sm" v-model="settings.addSellOffer.ignoreMyApprovals" @input="saveSettings" v-b-popover.hover.ds500="'Ignore approvals calculations for my offers? As approvals can be easily updated'">
-                  Ignore My Approvals
-                </b-form-checkbox>
-              </div>
-              <div class="mt-0 flex-grow-1">
-              </div>
-              <div class="mt-0 pl-1">
-                <b-form-select size="sm" v-model="settings.addSellOffer.sortOption" @change="saveSettings" :options="sortOptions" v-b-popover.hover.ds500="'Yeah. Sort'"></b-form-select>
-              </div>
-              <div class="mt-0 pl-1">
-                <font size="-2" v-b-popover.hover.ds500="'# filtered entries'">{{ addSellOffer.records.length }}</font>
-              </div>
-              <div class="mt-0 pl-1">
-                <b-pagination size="sm" v-model="settings.sellOffers.currentPage" @input="saveSettings" :total-rows="addSellOffer.records" :per-page="settings.sellOffers.pageSize" style="height: 0;"></b-pagination>
-              </div>
-              <div class="mt-0 pl-1">
-                <b-form-select size="sm" v-model="settings.addSellOffer.pageSize" @change="saveSettings" :options="pageSizes" v-b-popover.hover.ds500="'Page size'"></b-form-select>
-              </div>
-            </div>
-            <font size="-1">
-              <b-table ref="addSellOfferTable" small fixed striped sticky-header="400px" selectable select-mode="single" @row-selected='addSellOfferRowSelected' responsive hover :fields="addSellOfferFields" :items="addSellOffer.records" show-empty head-variant="light" class="m-0 mt-1" style="min-height: 200px;">
-                <template #cell(price)="data">
-                  <span v-b-popover.hover.ds500="formatDecimals(data.item.price, 18)">
-                    {{ formatPrice(data.item.price) }}
-                  </span>
-                </template>
-                <template #cell(offer)="data">
-                  <span v-if="data.item.nonce == data.item.currentNonce">
-                    {{ formatTokens(data.item.offer) }}
-                  </span>
-                  <span v-else v-b-popover.hover.ds500="'Invalid - nonce: ' + data.item.nonce + ', currentNonce: ' + data.item.currentNonce">
-                    <strike>{{ formatTokens(data.item.offer) }}</strike>
-                  </span>
-                </template>
-                <template #head(tokens)="data">
-                  {{ settings.symbol }}
-                </template>
-                <template #cell(tokens)="data">
-                  <span v-if="data.item.nonce == data.item.currentNonce" v-b-popover.hover.ds500="formatDecimals(data.item.tokens, settings.decimals)">
-                    {{ formatTokens(data.item.tokens) }}
-                  </span>
-                  <span v-else v-b-popover.hover.ds500="formatDecimals(data.item.tokens, settings.decimals) + ', invalid order - nonce: ' + data.item.nonce + ', currentNonce: ' + data.item.currentNonce">
-                    <strike>{{ formatTokens(data.item.tokens) }}</strike>
-                  </span>
-                </template>
-                <template #cell(totalTokens)="data">
-                  <span v-if="data.item.nonce == data.item.currentNonce" v-b-popover.hover.ds500="formatDecimals(data.item.totalTokens, settings.decimals)">
-                    {{ formatTokens(data.item.totalTokens) }}
-                  </span>
-                </template>
-                <template #cell(wethAmount)="data">
-                  <span v-if="data.item.nonce == data.item.currentNonce" v-b-popover.hover.ds500="formatDecimals(data.item.wethAmount, 18)">
-                    {{ formatWeth(data.item.wethAmount) }}
-                  </span>
-                </template>
-                <template #cell(totalWeth)="data">
-                  <span v-if="data.item.nonce == data.item.currentNonce" v-b-popover.hover.ds500="formatDecimals(data.item.totalWeth, 18)">
-                    {{ formatWeth(data.item.totalWeth) }}
-                  </span>
-                </template>
-                <template #cell(maker)="data">
-                  <b-link :href="explorer + 'address/' + data.item.owner" v-b-popover.hover.ds500="'Maker ' + data.item.owner" target="_blank">
-                    {{ data.item.owner.substring(0, 12) }}
-                  </b-link>
-                  <b-link v-if="data.item.indexByOwner != null" :href="explorer + 'address/' + data.item.tokenAgent" v-b-popover.hover.ds500="'Makers Token Agent #' + data.item.indexByOwner + ' ' + data.item.tokenAgent + ', nonce: ' + data.item.currentNonce" target="_blank">
-                    <b-badge variant="link" class="m-0 p-0 mt-1">
-                      {{ data.item.indexByOwner }}
-                    </b-badge>
-                  </b-link>
-                  <b-badge v-if="data.item.offerIndex != null" variant="light" v-b-popover.hover.ds500="'Offer index: ' + data.item.offerIndex" class="m-0 p-0 mt-1">
-                    {{ data.item.offerIndex }}
-                  </b-badge>
-                  <span v-if="data.item.nonce == data.item.currentNonce">
-                    <b-badge v-if="data.item.nonce != null" variant="light" v-b-popover.hover.ds500="'Valid - nonce: ' + data.item.nonce + ', currentNonce: ' + data.item.currentNonce" class="m-0 p-0 mt-1">
-                      {{ data.item.nonce }}
-                    </b-badge>
-                  </span>
-                  <span v-else>
-                    <b-badge v-if="data.item.nonce != null" variant="light" v-b-popover.hover.ds500="'Invalidated - nonce: ' + data.item.nonce + ', currentNonce: ' + data.item.currentNonce" class="m-0 p-0 mt-1">
-                      <strike>{{ data.item.nonce }}</strike>
-                    </b-badge>
-                  </span>
-                  <b-badge variant="light" v-b-popover.hover.ds500="'Price index: ' + data.item.priceIndex" class="m-0 p-0 mt-1">
-                    {{ data.item.priceIndex }}
-                  </b-badge>
-                </template>
-                <template #cell(expiry)="data1">
-                  <span v-if="data1.item.simulated">
-                    Simulated
-                  </span>
-                  <span v-else>
-                    <span v-if="data1.item.expiry == 0 || data1.item.expiry >= data.timestamp">
-                      <b-link :href="explorer + 'tx/' + data1.item.txHash + '#eventlog#' + data1.item.logIndex" v-b-popover.hover.ds500="'View log'" target="_blank">
-                        {{ formatTimestamp(data1.item.expiry) }}
-                      </b-link>
-                    </span>
-                    <span v-else>
-                      <b-link :href="explorer + 'tx/' + data1.item.txHash + '#eventlog#' + data1.item.logIndex" v-b-popover.hover.ds500="'Expired. View log'" target="_blank">
-                        <strike>{{ formatTimestamp(data1.item.expiry) }}</strike>
-                      </b-link>
-                    </span>
-                  </span>
-                </template>
-              </b-table>
-            </font>
-            <b-row class="m-0 mt-0 mb-1 p-0">
-              <b-col class="m-0 p-0">
-                <b-card sub-title="View Sell Offer" class="m-0 mr-1 p-1 border-1" body-class="m-1 p-1">
-                  <b-card-text class="m-0 p-0">
-                    <div v-if="!settings.addSellOffer.selectedItem || !settings.addSellOffer.selectedItem.owner">
-                      <p class="text-center">Select offer above</p>
-                    </div>
-                    <div v-if="settings.addSellOffer.selectedItem">
-                      <b-form-group label="Maker:" label-for="modaladdselloffer-tokenagent" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
-                        <b-link :href="explorer + 'address/' + settings.addSellOffer.selectedItem.owner" v-b-popover.hover.ds500="'View in explorer'" target="_blank">
-                          <font size="-1">
-                            <p class="m-0 mt-1 p-0">
-                              {{ settings.addSellOffer.selectedItem.owner }}
-                            </p>
-                          </font>
-                        </b-link>
-                      </b-form-group>
-                      <b-form-group label="Token Agent:" label-for="modaladdselloffer-tokenagent" label-size="sm" label-cols-sm="3" label-align-sm="right" :description="'Makers Token Agent #: ' + settings.addSellOffer.selectedItem.indexByOwner + ', nonce: ' + settings.addSellOffer.selectedItem.currentNonce" class="mx-0 my-1 p-0">
-                        <b-link :href="explorer + 'address/' + settings.addSellOffer.selectedItem.tokenAgent" v-b-popover.hover.ds500="'View in explorer'" target="_blank">
-                          <font size="-1">
-                            <p class="m-0 mt-1 p-0">
-                              {{ settings.addSellOffer.selectedItem.tokenAgent }}
-                            </p>
-                          </font>
-                        </b-link>
-                      </b-form-group>
-                      <b-form-group label="Offer Index:" label-for="modaladdselloffer-offerindex" label-size="sm" label-cols-sm="3" label-align-sm="right" :description="(settings.addSellOffer.selectedItem.nonce == settings.addSellOffer.selectedItem.currentNonce ? ' Offer nonce: ' : 'INVALIDATED offer nonce: ') + settings.addSellOffer.selectedItem.nonce" class="mx-0 my-1 p-0">
-                        <b-link :href="explorer + 'tx/' + settings.addSellOffer.selectedItem.txHash + '#eventlog#' + settings.addSellOffer.selectedItem.logIndex" v-b-popover.hover.ds500="'View in explorer'" target="_blank">
-                          <font size="-1">
-                            <p class="m-0 mt-1 p-0">
-                              {{ settings.addSellOffer.selectedItem.offerIndex }}
-                            </p>
-                          </font>
-                        </b-link>
-                      </b-form-group>
-                      <b-form-group label="Expiry:" label-for="modaladdselloffer-expiry" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
-                        <font size="-1">
-                          <p class="m-0 mt-1 p-0">
-                            {{ formatTimestamp(settings.addSellOffer.selectedItem.expiry) }}
-                          </p>
-                        </font>
-                      </b-form-group>
-
-                      <b-form-group label="" label-for="modaladdselloffer-points" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
-                        <font size="-1">
-                          <b-table ref="addSellOfferPointsTable" small fixed striped sticky-header="600px" responsive hover :fields="addSellOfferViewPointsFields" :items="addSellOfferSelectedPoints" show-empty head-variant="light" class="m-0 mt-1">
-                            <template #empty="scope">
-                              Click [+] below to add a new row
-                            </template>
-                            <template #cell(price)="data">
-                              {{ formatPrice(data.item.price) }}
-                            </template>
-                            <template #cell(tokens)="data">
-                              {{ formatTokens(data.item.tokens) }}
-                            </template>
-                            <template #cell(wethAmount)="data">
-                              {{ formatWeth(data.item.wethAmount) }}
-                            </template>
-                          </b-table>
-                        </font>
-                      </b-form-group>
-                    </div>
-                  </b-card-text>
-                </b-card>
-              </b-col>
-              <b-col class="m-0 p-0">
-                <b-card sub-title="Add Sell Offer" class="m-0 ml-1 p-1 border-1" body-class="m-1 p-1">
-                  <b-card-text class="m-0 p-0">
-                    <b-form-group label="" label-size="sm" :state="!sellOfferPointsFeedback" :invalid-feedback="sellOfferPointsFeedback" class="mx-0 my-1 p-0">
-                      <font size="-1">
-                        <b-table ref="addSellOfferPointsTable" small fixed striped sticky-header="600px" responsive hover :fields="addSellOfferPointsFields" :items="settings.addSellOffer.points" show-empty head-variant="light" class="m-0 mt-1">
-                          <template #empty="scope">
-                            Click [+] below to add a new row
-                          </template>
-                          <template #cell(price)="data">
-                            <b-form-input size="sm" type="number" v-model.trim="data.item.price" @change="saveSettings();" debounce="600" class="text-right"></b-form-input>
-                          </template>
-                          <template #cell(tokens)="data">
-                            <b-form-input size="sm" type="number" v-model.trim="data.item.tokens" @change="saveSettings();" debounce="600" class="text-right"></b-form-input>
-                          </template>
-                          <template #cell(wethAmount)="data">
-                            <b-form-input size="sm" readonly :value="formatNumber(bigNumberMultiply(data.item.price, data.item.tokens))" class="text-right"></b-form-input>
-                          </template>
-                          <template #cell(option)="data">
-                            <b-button size="sm" @click="settings.addSellOffer.points.splice(data.index, 1); saveSettings();" variant="link" v-b-popover.hover.ds500="'Add new row'"><b-icon-dash shift-v="+1" font-scale="1.2"></b-icon-dash></b-button>
-                          </template>
-                          <template #bottom-row="data">
-                            <b-td>
-                              <b-form-checkbox size="sm" v-model="settings.addSellOffer.simulate" @input="saveSettings" v-b-popover.hover.ds500="'Simulate in offers table above?'" class="ml-1 mt-1">
-                                Simulate
-                              </b-form-checkbox>
-                            </b-td>
-                            <b-td>
-                            </b-td>
-                            <b-td>
-                            </b-td>
-                            <b-td class="text-right">
-                              <b-button size="sm" @click="settings.addSellOffer.points.push({ price: null, tokens: null }); saveSettings();" variant="link" v-b-popover.hover.ds500="'Add new row'"><b-icon-plus shift-v="+1" font-scale="1.2"></b-icon-plus></b-button>
-                            </b-td>
-                          </template>
-                        </b-table>
-                      </font>
-                    </b-form-group>
-                    <b-form-group v-if="myTokenAgentOptions.length == 1" label="Deploy Token Agent:" label-size="sm" label-cols-sm="4" label-align-sm="right" description="Refresh after deployment" class="mx-0 my-1 p-0">
-                      <b-button size="sm" @click="deployNewTokenAgent" variant="warning">Deploy</b-button>
-                    </b-form-group>
-                    <b-form-group v-if="myTokenAgentOptions.length > 1" label="Token Agent:" label-for="modaladdselloffer-tokenagent" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
-                      <b-form-select size="sm" v-model="settings.addSellOffer.tokenAgent" @change="saveSettings" :options="myTokenAgentOptions""></b-form-select>
-                    </b-form-group>
-                    <b-form-group label="Expiry:" label-for="modaladdselloffer-expirytime" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
-                      <b-form-datepicker size="sm" id="modaladdselloffer-expirydate" v-model="expiryDate" :date-format-options="{ year: 'numeric', month: 'short', day: '2-digit', weekday: 'short' }" reset-button today-button close-button label-reset-button="No Expiry" label-no-date-selected="No Expiry" class="w-75"></b-form-datepicker>
-                    </b-form-group>
-                    <b-form-group v-if="expiryDate" label="" label-for="modaladdselloffer-expirytime" label-size="sm" label-cols-sm="4" label-align-sm="right" :description="formatTimestampUTC(settings.addSellOffer.expiry)" class="mx-0 my-1 p-0">
-                      <b-form-timepicker size="sm" id="modaladdselloffer-expirytime" v-model="expiryTime" minutes-step="15" now-button label-no-time-selected="Select" class="w-50"></b-form-timepicker>
-                    </b-form-group>
-                    <b-form-group label="" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
-                      <b-button size="sm" :disabled="myTokenAgentOptions.length == 1 || !settings.addSellOffer.tokenAgent || settings.addSellOffer.points.length == 0 || !!sellOfferPointsFeedback" @click="execAddSellOffer" variant="warning">Add Sell Offer</b-button>
-                    </b-form-group>
-                  </b-card-text>
-                </b-card>
-              </b-col>
-            </b-row>
-          </div>
-        </b-modal> -->
-
-        <!-- <b-modal ref="modalselloffer" hide-footer header-class="m-0 px-3 py-2" body-class="m-0 p-0" body-bg-variant="light" size="xl">
-          <template #modal-title>Take Sell Offer - Fungibles</template>
-          <div class="m-0 p-1">
-            <div class="d-flex flex-wrap m-0 p-0">
-              <div class="mt-0 ml-2 pr-0">
-                <font size="-1">
-                  Token Agent:
-                </font>
-                <b-link v-if="modalSellOffer.tokenAgent" :href="explorer + 'address/' + modalSellOffer.tokenAgent + '#code'" v-b-popover.hover.ds500="'View in explorer'" target="_blank">
-                  <b-badge variant="link" class="m-0 mt-1">
-                    {{ modalSellOffer.tokenAgent.substring(0, 10) + '...' + modalSellOffer.tokenAgent.slice(-8) }}
-                  </b-badge>
-                </b-link>
-              </div>
-              <div class="mt-0 pr-0">
-                <font size="-1">
-                  Maker:
-                </font>
-                <b-link v-if="modalSellOffer.maker" :href="explorer + 'address/' + modalSellOffer.maker" v-b-popover.hover.ds500="'View in explorer'" target="_blank">
-                  <b-badge variant="link" class="m-0 mt-1">
-                    {{ modalSellOffer.maker.substring(0, 10) + '...' + modalSellOffer.maker.slice(-8) }}
-                  </b-badge>
-                </b-link>
-              </div>
-              <div class="mt-0 pr-0">
-                <font size="-1">
-                  {{ settings.symbol }}:
-                </font>
-                <b-link v-if="modalSellOffer.maker" :href="explorer + 'token/' + settings.tokenContractAddress + '?a=' + modalSellOffer.maker" v-b-popover.hover.ds500="'View in explorer'" target="_blank">
-                  <b-badge variant="link" class="m-0 mt-1">
-                    {{ formatDecimals(sellOffer.makerTokenBalance, settings.decimals) }}
-                  </b-badge>
-                </b-link>
-              </div>
-              <div class="mt-0 pr-0">
-                <font size="-1">
-                  Approved:
-                </font>
-                <b-link v-if="modalSellOffer.maker && approvals[settings.tokenContractAddress] && approvals[settings.tokenContractAddress][modalSellOffer.maker] && approvals[settings.tokenContractAddress][modalSellOffer.maker][modalSellOffer.tokenAgent]" :href="explorer + 'tx/' + approvals[settings.tokenContractAddress][modalSellOffer.maker][modalSellOffer.tokenAgent].txHash + '#eventlog#' + approvals[settings.tokenContractAddress][modalSellOffer.maker][modalSellOffer.tokenAgent].logIndex" v-b-popover.hover.ds500="'View in explorer'" target="_blank">
-                  <b-badge variant="link" class="m-0 mt-1">
-                    {{ formatDecimals(approvals[settings.tokenContractAddress][modalSellOffer.maker][modalSellOffer.tokenAgent].tokens, settings.decimals) }}
-                  </b-badge>
-                </b-link>
-              </div>
-              <div class="mt-0 ml-2 pr-1">
-                <font size="-1">
-                  Nonce:
-                </font>
-                <b-badge variant="link" class="m-0 mt-1">
-                  {{ sellOffer.nonce }}
-                </b-badge>
-              </div>
-              <div class="mt-0 flex-grow-1">
-              </div>
-              <div class="mt-0 pl-1">
-                <b-button size="sm" v-b-modal.config variant="link" v-b-popover.hover.ds500="'Config'" class="m-0 ml-2 mr-2 p-0"><b-icon-tools shift-v="+2" font-scale="0.9"></b-icon-tools></b-button>
-              </div>
-            </div>
-            <font size="-1">
-              <b-table ref="sellOfferTable" small fixed striped responsive hover sticky-header="400px" :fields="sellOfferFields" :items="sellOffer.prices" show-empty head-variant="light" class="m-0 mt-1">
-                <template #cell(price)="data">
-                  <span v-b-popover.hover.ds500="formatDecimals(data.item.price, 18)">
-                    {{ formatPrice(data.item.price) }}
-                  </span>
-                </template>
-                <template #cell(offer)="data">
-                  <span v-b-popover.hover.ds500="formatDecimals(data.item.offer, settings.decimals)">
-                    {{ formatTokens(data.item.offer) }}
-                  </span>
-                </template>
-                <template #head(tokens)="data">
-                  {{ settings.symbol }}
-                </template>
-                <template #cell(tokens)="data">
-                  <span v-b-popover.hover.ds500="formatDecimals(data.item.tokens, settings.decimals)">
-                    {{ formatTokens(data.item.tokens) }}
-                  </span>
-                </template>
-                <template #head(totalTokens)="data">
-                  {{ '∑ ' + settings.symbol }}
-                </template>
-                <template #cell(totalTokens)="data">
-                  <span v-b-popover.hover.ds500="formatDecimals(data.item.totalTokens, settings.decimals)">
-                    {{ formatTokens(data.item.totalTokens) }}
-                  </span>
-                </template>
-                <template #head(wethAmount)="data">
-                  {{ modalSellOffer.paymentsInEth ? 'ETH' : 'WETH' }}
-                </template>
-                <template #cell(wethAmount)="data">
-                  <span v-b-popover.hover.ds500="formatDecimals(data.item.wethAmount, 18)">
-                    {{ formatWeth(data.item.wethAmount) }}
-                  </span>
-                </template>
-                <template #head(totalWeth)="data">
-                  {{ modalSellOffer.paymentsInEth ? '∑ ETH' : '∑ WETH' }}
-                </template>
-                <template #cell(totalWeth)="data">
-                  <span v-b-popover.hover.ds500="formatDecimals(data.item.totalWeth, 18)">
-                    {{ formatWeth(data.item.totalWeth) }}
-                  </span>
-                </template>
-                <template #cell(expiry)="data">
-                  <font size="-1">
-                    <b-link :href="explorer + 'tx/' + data.item.txHash + '#eventlog#' + data.item.logIndex" v-b-popover.hover.ds500="'View offer'" target="_blank">
-                      {{ formatTimestamp(data.item.expiry) }}
-                    </b-link>
-                  </font>
-                </template>
-              </b-table>
-            </font>
-            <b-row class="m-0 mt-1 p-0">
-              <b-col class="m-0 p-0">
-                <b-card sub-title="Requested" class="m-1 p-1 border-1" body-class="m-1 p-1">
-                  <b-card-text class="m-0 p-0">
-                    <b-form-group label="Token:" label-for="modalselloffer-amounttype" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
-                      <b-form-radio-group size="sm" id="modalselloffer-amounttype" v-model="modalSellOffer.amountType">
-                        <b-form-radio value="receiveTokens">{{ settings.symbol }}</b-form-radio>
-                        <b-form-radio value="payWeth">{{ modalSellOffer.paymentsInEth ? 'ETH' : 'WETH' }}</b-form-radio>
-                      </b-form-radio-group>
-                    </b-form-group>
-                    <b-form-group :label="(modalSellOffer.amountType == 'receiveTokens' ? ('Receive ' + settings.symbol) : ('Pay ' + (modalSellOffer.paymentsInEth ? 'ETH' : 'WETH'))) + ':'" label-for="modalselloffer-amount" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
-                      <b-form-input size="sm" type="number" id="modalselloffer-amount" v-model="modalSellOffer.amount" debounce="600" class="pl-2 w-75"></b-form-input>
-                    </b-form-group>
-                  </b-card-text>
-                </b-card>
-                <b-card sub-title="Available" class="m-1 p-1 border-1" body-class="m-1 p-1">
-                  <b-card-text class="m-0 p-0">
-                    <b-form-group :label="'Receive ' + settings.symbol + ':'" label-for="modalselloffer-filledtokens" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
-                      <b-form-input size="sm" plaintext id="modalselloffer-filledtokens" :value="sellOffer.filledTokens && formatDecimals(sellOffer.filledTokens, 18)" class="pl-2 w-75"></b-form-input>
-                    </b-form-group>
-                    <b-form-group :label="'Pay ' + (modalSellOffer.paymentsInEth ? 'ETH:' : 'WETH:')" label-for="modalselloffer-filledweth" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
-                      <b-form-input size="sm" plaintext id="modalselloffer-filledweth" :value="sellOffer.filledWeth && formatDecimals(sellOffer.filledWeth, 18)" class="pl-2 w-75"></b-form-input>
-                    </b-form-group>
-                    <b-form-group label="Average Price:" label-for="modalselloffer-filledaverageprice" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
-                      <b-form-input size="sm" plaintext id="modalselloffer-filledaverageprice" :value="sellOffer.filledAveragePrice && formatDecimals(sellOffer.filledAveragePrice, 18)" class="pl-2 w-75"></b-form-input>
-                    </b-form-group>
-                  </b-card-text>
-                </b-card>
-              </b-col>
-              <b-col class="m-0 p-0">
-                <b-card sub-title="Trade" class="m-1 p-1 border-1" body-class="m-1 p-1">
-                  <b-card-text class="m-0 p-0">
-                    <b-form-group label="Payments In:" label-for="modalselloffer-paymentsin" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
-                      <b-form-radio-group size="sm" id="modalselloffer-paymentsin" v-model="modalSellOffer.paymentsInEth" :options="paymentsInEthOptions">
-                      </b-form-radio-group>
-                    </b-form-group>
-                    <b-form-group label="ETH Balance:" label-for="modalselloffer-ethbalance" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
-                      <b-form-input size="sm" plaintext id="modalselloffer-ethbalance" :value="formatDecimals(balance, 18)" class="pl-2 w-75"></b-form-input>
-                    </b-form-group>
-                    <b-form-group v-if="!modalSellOffer.paymentsInEth" label="WETH Balance:" label-for="modalselloffer-wethbalance" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
-                      <b-form-input size="sm" plaintext id="modalselloffer-wethbalance" :value="balances[data.weth] && balances[data.weth][coinbase] && formatDecimals(balances[data.weth][coinbase].tokens, 18) || '0'" class="pl-2 w-75"></b-form-input>
-                    </b-form-group>
-                    <b-form-group v-if="!modalSellOffer.paymentsInEth" label="WETH Approved:" label-for="modalselloffer-wethapproved" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
-                      <b-form-input size="sm" plaintext id="modalselloffer-wethapproved" :value="approvals[data.weth] && approvals[data.weth][coinbase] && approvals[data.weth][coinbase][sellOffer.tokenAgent] && formatDecimals(approvals[data.weth][coinbase][sellOffer.tokenAgent].tokens, 18) || '0'" class="pl-2 w-75"></b-form-input>
-                    </b-form-group>
-                    <b-form-group label="" label-size="sm" label-cols-sm="4" label-align-sm="right" :state="!tradeFeedback" :invalid-feedback="tradeFeedback" class="mx-0 my-1 p-0">
-                      <b-button size="sm" :disabled="!networkSupported || !sellOffer.filledTokens || !!tradeFeedback" @click="trade" variant="warning">Trade</b-button>
-                    </b-form-group>
-                  </b-card-text>
-                </b-card>
-              </b-col>
-            </b-row>
-          </div>
-        </b-modal> -->
-
-        <b-modal ref="modalbuyoffer" hide-footer header-class="m-0 px-3 py-2" body-class="m-0 p-0" body-bg-variant="light" size="lg">
+        <!-- <b-modal ref="modalbuyoffer" hide-footer header-class="m-0 px-3 py-2" body-class="m-0 p-0" body-bg-variant="light" size="lg">
           <template #modal-title>Trade Fungibles - Buy Offer</template>
           <div class="m-0 p-1">
             <b-form-group label="Maker:" label-for="modalbuyoffer-maker" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
@@ -512,7 +53,6 @@ const TradeFungibles = {
                 <b-form-input size="sm" plaintext id="modalbuyoffer-nonce" :value="modalBuyOffer.offer && modalBuyOffer.offer.nonce" class="pl-2 w-75"></b-form-input>
               </b-input-group>
             </b-form-group>
-
             <font size="-2">
               <pre>
 buyOffer: {{ buyOffer }}
@@ -521,11 +61,8 @@ buyOffer: {{ buyOffer }}
 modalBuyOffer: {{ modalBuyOffer }}
               </pre>
             </font>
-            <!-- <b-form-group label="New Token Agent" label-size="sm" label-cols-sm="6" label-align-sm="right" class="mx-0 my-1 p-0">
-              <b-button size="sm" @click="deployNewTokenAgent" variant="warning">Deploy</b-button>
-            </b-form-group> -->
           </div>
-        </b-modal>
+        </b-modal> -->
 
         <b-tabs small card v-model="settings.tabIndex" @input="saveSettings();" content-class="mt-0" align="left">
           <template #tabs-start>
@@ -559,11 +96,11 @@ modalBuyOffer: {{ modalBuyOffer }}
               </div> -->
               <div class="mt-0 pr-1" style="width: 23.0rem;">
                 <font size="-1">
-                  <b-link v-if="false" :href="explorer + 'address/' + settings.tokenAgentOwner" v-b-popover.hover.ds500="'Token Agent owner ' + settings.tokenAgentOwner" target="_blank">
+                  <!-- <b-link v-if="false" :href="explorer + 'address/' + settings.tokenAgentOwner" v-b-popover.hover.ds500="'Token Agent owner ' + settings.tokenAgentOwner" target="_blank">
                     <b-badge v-if="settings.tokenAgentOwner" variant="link" class="m-0 mt-1">
                       {{ settings.tokenAgentOwner.substring(0, 10) + '...' + settings.tokenAgentOwner.slice(-8) }}
                     </b-badge>
-                  </b-link>
+                  </b-link> -->
                   <b-badge v-if="false" variant="light" v-b-popover.hover.ds500="'Nonce'" class="m-0 mt-1">
                     {{ nonce }}
                   </b-badge>
@@ -663,7 +200,7 @@ modalBuyOffer: {{ modalBuyOffer }}
                     </b-dropdown-item>
                   </b-dropdown>
                 </div>
-                <div class="mt-0 pr-1" style="min-width: 9rem;">
+                <!-- <div class="mt-0 pr-1" style="min-width: 9rem;"> -->
                   <!-- x {{ settings.sellOffers.select.tokenAgent }}
                   <b-button size="sm" v-if="settings.sellOffers.select.tokenAgent" @click="resetFilterSellOffersByTokenAgent" variant="link">
                     <b-badge variant="link">
@@ -671,13 +208,13 @@ modalBuyOffer: {{ modalBuyOffer }}
                       <b-icon-x shift-v="-1" font-scale="1.2"></b-icon-x>
                     </b-badge>
                   </b-button> -->
-                  <b-button size="sm" v-if="settings.sellOffers.select.tokenAgent" @click="resetFilterSellOffersByTokenAgent" variant="link">
+                  <!-- <b-button size="sm" v-if="settings.sellOffers.select.tokenAgent" @click="resetFilterSellOffersByTokenAgent" variant="link">
                     <b-badge variant="link">
                       {{ settings.sellOffers.select.tokenAgent == null ? '' : ((indexToAddress[settings.sellOffers.select.owner] && indexToAddress[settings.sellOffers.select.owner].substring(0, 12))) }}
                       <b-icon-x shift-v="-1" font-scale="1.2"></b-icon-x>
                     </b-badge>
-                  </b-button>
-                </div>
+                  </b-button> -->
+                <!-- </div> -->
                 <div class="mt-0 flex-grow-1">
                 </div>
                 <!-- <div class="mt-0 pr-1">
@@ -1506,19 +1043,13 @@ data: {{ data }}
         sellOffers: {
           mineOnly: false,
           ignoreMyApprovals: false,
-          includeInvalidated: false, // false,
-          includeExpired: false, // false,
-          simulate: false, // false,
+          includeInvalidated: false,
+          includeExpired: false,
+          simulate: false,
           points: [],
           expiry: null,
           expiryDate: null,
           expiryTime: null,
-
-          select: {
-            tokenAgent: null,
-            owner: null,
-            indexByOwner: null,
-          },
 
           tabIndex: 0,
           amountType: 'tokens',
@@ -1541,12 +1072,6 @@ data: {{ data }}
           expiryDate: null,
           expiryTime: null,
 
-          // select: {
-          //   tokenAgent: null,
-          //   owner: null,
-          //   indexByOwner: null,
-          // },
-
           tabIndex: 0,
           amountType: 'tokens',
           amount: null,
@@ -1564,49 +1089,12 @@ data: {{ data }}
           pageSize: 10,
           sortOption: 'txorderdsc',
         },
-
-        // addSellOffer: {
-        //   tokenAgent: null,
-        //   mineOnly: true,
-        //   includeExpired: false,
-        //   includeInvalidated: false,
-        //   ignoreMyApprovals: false,
-        //   selectedItem: null,
-        //   expiryDate: null,
-        //   expiryTime: null,
-        //   points: [],
-        //   simulate: true,
-        //   currentPage: 1,
-        //   pageSize: 10,
-        //   sortOption: 'txorderdsc',
-        // },
-
-        // tokenAgentAddress: null,
-        // tokenAgentOwner: null,
-        // addOffers: {
-        //   offers: [],
-        //   token: null,
-        //   type: null,
-        //   symbol: null,
-        //   decimals: null,
-        //   buySell: 0,
-        //   expiry: null,
-        //   count: null,
-        //   pricing: 0,
-        //   price: null,
-        //   tokens: null,
-        //   prices: [],
-        //   tokenIds: [],
-        //   tokenss: [],
-        // },
-
         config: {
           priceDisplayDecimals: 6,
           tokenDisplayDecimals: 9,
           wethDisplayDecimals: 9,
         },
-
-        version: 3,
+        version: 4,
       },
 
       tokenAgentFactoryEvents: [],
@@ -1619,8 +1107,6 @@ data: {{ data }}
         weth: null,
         tokenAgents: {},
         tokenAgentEvents: [],
-        // buyEvents: [], // TODO: delete
-        // sellEvents: [], // TODO: delete
         approvalAddresses: [],
         balanceAddresses: [],
 
@@ -2082,7 +1568,7 @@ data: {{ data }}
       const simulate = this.settings.sellOffers.simulate;
       const points = this.settings.sellOffers.points;
       const coinbaseIndex = this.coinbase && this.addressToIndex[this.coinbase] || null;
-      const selectedTokenAgent = this.settings.sellOffers.select.tokenAgent;
+      // const selectedTokenAgent = this.settings.sellOffers.select.tokenAgent;
       let maxTokens = this.settings.sellOffers.amount != null && this.settings.sellOffers.amount.trim().length != 0 && this.settings.sellOffers.amountType == 'tokens' ? ethers.utils.parseEther(this.settings.sellOffers.amount) : null;
       let maxWeth = this.settings.sellOffers.amount != null && this.settings.sellOffers.amount.trim().length != 0 && this.settings.sellOffers.amountType != 'tokens' ? ethers.utils.parseEther(this.settings.sellOffers.amount) : null;
       // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - maxTokens: " + (maxTokens && ethers.utils.formatEther(maxTokens) || 'null') + ", maxWeth: " + (maxWeth && ethers.utils.formatEther(maxWeth) || 'null'));
