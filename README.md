@@ -33,6 +33,8 @@ Go to the Trade Fungibles tab. Select the `WEENUS` token from the dropdown. Clic
 
 <kbd><img src="images/TradeFungibles_1_20240926.png" width="600"/></kbd>
 
+###### Take Offer
+
 Click on the [right arrow] in the Sell Offers pane to expand the Sell Offers table. Enter an amount in ETH, with Payment in ETH
 
 <kbd><img src="images/TradeFungibles_2_20240926.png" width="600"/></kbd>
@@ -60,6 +62,30 @@ Click on the [circular-arrow] icon to Sync
 View the Offered, Traded, Transfer and Approval events in the Events tab
 
 <kbd><img src="images/TradeFungibles_8_20240926.png" width="600"/></kbd>
+
+<br />
+
+###### Make Offer
+
+Click on the Make Offer pane. Enter (price, token) points. Set the Simulate checkbox to view your price points among the existing offers
+
+<kbd><img src="images/TradeFungibles_MakerOffer_1_20240926.png" width="600"/></kbd>
+
+Click [Add Sell Offer] and confirm in your web3 wallet
+
+<kbd><img src="images/TradeFungibles_MakerOffer_2_20240926.png" width="600"/></kbd>
+
+The transaction hash is displayed on the top right
+
+<kbd><img src="images/TradeFungibles_MakerOffer_3_20240926.png" width="600"/></kbd>
+
+https://sepolia.etherscan.io/tx/0x5c9d1f1358a89a1e60100f6dccb686454688586fff12037709a87449faa06aae#eventlog
+
+<kbd><img src="images/TradeFungibles_MakerOffer_4_20240926.png" width="600"/></kbd>
+
+After syncing, and un-checking the Simulate checkbox
+
+<kbd><img src="images/TradeFungibles_MakerOffer_5_20240926.png" width="600"/></kbd>
 
 <br />
 
