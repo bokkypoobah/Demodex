@@ -1856,6 +1856,7 @@ const dataModule = {
         wethIndex: parameter.wethIndex,
         blockNumber: parameter.blockNumber,
         timestamp: parameter.timestamp,
+        nonces: context.state.nonces[parameter.chainId] || {},
         approvals,
         balances,
         events,
