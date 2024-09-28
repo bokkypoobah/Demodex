@@ -278,7 +278,7 @@ modalBuyOffer: {{ modalBuyOffer }}
                     {{ settings.sellOffers.paymentType == 'eth' ? '∑ ETH' : '∑ WETH' }}
                   </template>
                   <template #cell(totalWeth)="data">
-                    <span v-b-popover.hover.ds500="formatDecimals(data.item.totalWeth, 18)">
+                    <span v-b-popover.hover.ds500="formatDecimals(data.item.totalWeth, 18)" :style="!data.item.valid ? 'text-decoration: line-through;' : ''">
                       {{ formatWeth(data.item.totalWeth) }}
                     </span>
                   </template>
@@ -286,7 +286,7 @@ modalBuyOffer: {{ modalBuyOffer }}
                     {{ settings.sellOffers.paymentType == 'eth' ? 'ETH' : 'WETH' }}
                   </template>
                   <template #cell(wethAmount)="data">
-                    <span v-b-popover.hover.ds500="formatDecimals(data.item.wethAmount, 18)">
+                    <span v-b-popover.hover.ds500="formatDecimals(data.item.wethAmount, 18)" :style="!data.item.valid ? 'text-decoration: line-through;' : ''">
                       {{ formatWeth(data.item.wethAmount) }}
                     </span>
                   </template>
@@ -294,7 +294,7 @@ modalBuyOffer: {{ modalBuyOffer }}
                     {{ '∑ ' + settings.symbol }}
                   </template>
                   <template #cell(totalTokens)="data">
-                    <span v-b-popover.hover.ds500="formatDecimals(data.item.totalTokens, settings.decimals)">
+                    <span v-b-popover.hover.ds500="formatDecimals(data.item.totalTokens, settings.decimals)" :style="!data.item.valid ? 'text-decoration: line-through;' : ''">
                       {{ formatTokens(data.item.totalTokens) }}
                     </span>
                   </template>
@@ -302,12 +302,12 @@ modalBuyOffer: {{ modalBuyOffer }}
                     {{ settings.symbol }}
                   </template>
                   <template #cell(tokens)="data">
-                    <span v-b-popover.hover.ds500="formatDecimals(data.item.tokens, settings.decimals)">
+                    <span v-b-popover.hover.ds500="formatDecimals(data.item.tokens, settings.decimals)" :style="!data.item.valid ? 'text-decoration: line-through;' : ''">
                       {{ formatTokens(data.item.tokens) }}
                     </span>
                   </template>
                   <template #cell(price)="data">
-                    <span v-b-popover.hover.ds500="formatDecimals(data.item.price, 18)">
+                    <span v-b-popover.hover.ds500="formatDecimals(data.item.price, 18)" :style="!data.item.valid ? 'text-decoration: line-through;' : ''">
                       {{ formatPrice(data.item.price) }}
                     </span>
                   </template>
@@ -1598,7 +1598,7 @@ data: {{ data }}
             // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - OFFERED SELL e: " + JSON.stringify(e));
             if (!(e.maker in collator)) {
               collator[e.maker] = {
-                nonce: 0, // TODO
+                nonce: this.tokenSet.nonces[e.maker] && this.tokenSet.nonces[e.maker].nonce|| 0,
                 offers: {},
               };
             }
@@ -1608,7 +1608,7 @@ data: {{ data }}
           // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - TRADED e: " + JSON.stringify(e));
           if (!(e.maker in collator)) {
             collator[e.maker] = {
-              nonce: 0, // TODO
+              nonce: this.tokenSet.nonces[e.maker] && this.tokenSet.nonces[e.maker].nonce|| 0,
               offers: {},
             };
           }
@@ -1632,7 +1632,7 @@ data: {{ data }}
                 maker,
                 offerIndex: d2.index, nonce: d2.nonce, expiry: d2.expiry,
                 priceIndex: i, price: d2.prices[i], tokens: d2.tokenss[i],
-                valid: d2.expiry == 0 || d2.expiry >= this.tokenSet.timestamp,
+                valid: d2.nonce == d1.nonce && (d2.expiry == 0 || d2.expiry >= this.tokenSet.timestamp),
                 // valid: d3.nonce == d2.nonce && (d3.expiry == 0 || d3.expiry >= this.tokenSet.timestamp),
                 // selected: tokenAgent == selectedTokenAgent,
               });
@@ -1659,7 +1659,7 @@ data: {{ data }}
           }
         }
       }
-      // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - prices: " + JSON.stringify(prices, null, 2));
+      console.log(now() + " INFO TradeFungibles:computed.newSellOffers - prices: " + JSON.stringify(prices, null, 2));
 
       prices.sort((a, b) => {
         if (a.valid && !b.valid) {
@@ -1719,6 +1719,8 @@ data: {{ data }}
         let wethAmount = null;
         if (price.txHash == null) {
           console.log("SIMULATED prices[" + i + "]: " + JSON.stringify(price));
+        } else if (!price.valid) {
+          console.log("INVALID prices[" + i + "]: " + JSON.stringify(price));
         }
         if (price.valid) {
           if (tokens.gt(tokenBalance)) {
