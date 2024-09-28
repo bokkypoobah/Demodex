@@ -1623,8 +1623,6 @@ data: {{ data }}
       // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - collator: " + JSON.stringify(collator, null, 2));
 
       const prices = [];
-      console.log("includeInvalidated: " + includeInvalidated);
-      console.log("includeExpired: " + includeExpired);
       for (const [maker, d1] of Object.entries(collator)) {
         for (const [offerIndex, d2] of Object.entries(d1.offers)) {
           if (d2.prices.length == d2.tokenss.length) {
@@ -1642,7 +1640,7 @@ data: {{ data }}
           }
         }
       }
-      console.log(now() + " INFO TradeFungibles:computed.newSellOffers - prices: " + JSON.stringify(prices, null, 2));
+      // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - prices: " + JSON.stringify(prices, null, 2));
 
       if (simulate && this.tokenSet.timestamp) {
         for (const [i, point] of points.entries()) {
@@ -1661,7 +1659,7 @@ data: {{ data }}
           }
         }
       }
-      console.log(now() + " INFO TradeFungibles:computed.newSellOffers - prices: " + JSON.stringify(prices, null, 2));
+      // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - prices: " + JSON.stringify(prices, null, 2));
 
       prices.sort((a, b) => {
         if (a.valid && !b.valid) {
@@ -1719,11 +1717,11 @@ data: {{ data }}
         // console.log(i + " " + ignoreApproval + " " + ethers.utils.formatEther(tokenBalance) + " " + ethers.utils.formatEther(tokenApproval) + " " + JSON.stringify(price));
         let tokens = ethers.BigNumber.from(price.tokens);
         let wethAmount = null;
-        if (price.txHash == null) {
-          console.log("SIMULATED prices[" + i + "]: " + JSON.stringify(price));
-        } else if (!price.valid) {
-          console.log("INVALID prices[" + i + "]: " + JSON.stringify(price));
-        }
+        // if (price.txHash == null) {
+        //   console.log("SIMULATED prices[" + i + "]: " + JSON.stringify(price));
+        // } else if (!price.valid) {
+        //   console.log("INVALID prices[" + i + "]: " + JSON.stringify(price));
+        // }
         if (price.valid) {
           if (tokens.gt(tokenBalance)) {
             tokens = tokenBalance;
