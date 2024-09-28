@@ -137,7 +137,7 @@ modalBuyOffer: {{ modalBuyOffer }}
               <div class="mt-0 pr-3">
                 <b-button size="sm" :disabled="!networkSupported || sync.completed != null || !validAddress(settings.tokenContractAddress)" @click="invalidateAllOffers" v-b-popover.hover.ds500="'Invalidate all of my offers'" variant="transparent"><b-icon-stop-fill shift-v="+1" font-scale="1.2" variant="danger"></b-icon-stop-fill></b-button>
               </div>
-              <div class="mt-0 pr-1">
+              <div class="mt-0 pr-3">
                 <b-button size="sm" v-b-modal.config variant="link" v-b-popover.hover.ds500="'Config'" class="m-0 ml-2 mr-2 p-0"><b-icon-tools shift-v="-1" font-scale="0.9"></b-icon-tools></b-button>
               </div>
             </div>
