@@ -1030,11 +1030,11 @@ const dataModule = {
       // const devMode = true;
       const devMode = false;
 
+      if (!devMode) {
+        await context.dispatch('syncDemodexEvents', parameter);
+      }
       // if (!devMode) {
-      //   await context.dispatch('syncTokenAgentFactoryEvents', parameter);
-      // }
-      // if (!devMode) {
-      //   await context.dispatch('collateTokenAgentFactoryEvents', parameter);
+      //   await context.dispatch('collateDemodexEvents', parameter);
       // }
       // if (!devMode) {
       //   await context.dispatch('syncTokenAgentGeneralEvents', parameter);
@@ -1069,36 +1069,41 @@ const dataModule = {
       context.commit('forceRefresh');
     },
 
-    async syncTokenAgentFactoryEvents(context, parameter) {
-      console.log(now() + " INFO dataModule:actions.syncTokenAgentFactoryEvents BEGIN - token: " + parameter.token);
+    async syncDemodexEvents(context, parameter) {
+      console.log(now() + " INFO dataModule:actions.syncDemodexEvents BEGIN - token: " + parameter.token);
       const db = new Dexie(context.state.db.name);
       db.version(context.state.db.version).stores(context.state.db.schemaDefinition);
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const network = parameter.chainId && NETWORKS[parameter.chainId.toString()] || {};
-      let [startBlock, deleteAcount, addCount] = [0, 0, 0];
-      if (network.tokenAgentFactory) {
+      let [startBlock, deleteCount, addCount] = [0, 0, 0];
+      if (network.demodex) {
         async function getLogs(fromBlock, toBlock) {
-          // console.log(now() + " INFO dataModule:actions.syncTokenAgentFactoryEvents.getLogs: " + fromBlock + " - " + toBlock);
+          // console.log(now() + " INFO dataModule:actions.syncDemodexEvents.getLogs: " + fromBlock + " - " + toBlock);
           let split = false;
           const maxLogScrapingSize = NETWORKS['' + parameter.chainId].maxLogScrapingSize || null;
           if (!maxLogScrapingSize || (toBlock - fromBlock) <= maxLogScrapingSize) {
             try {
               const filter = {
-                address: network.tokenAgentFactory.address, fromBlock, toBlock,
+                address: network.demodex.address, fromBlock, toBlock,
                 topics: [[
-                    // event NewTokenAgent(TokenAgent indexed tokenAgent, Account indexed owner, Index indexed index, Unixtime timestamp);
-                    ethers.utils.id("NewTokenAgent(address,address,uint32,uint40)"),
+                    // type Account is address;  // 2^160
+                    // type Nonce is uint24;     // 2^24  = 16,777,216
+                    // type Unixtime is uint40;  // 2^40  = 1,099,511,627,776. For Unixtime, 1,099,511,627,776 seconds = 34865.285000507356672 years
+                    //
+                    // event OffersInvalidated(Account indexed maker, Nonce newNonce, Unixtime timestamp);
+                    ethers.utils.id("OffersInvalidated(address,uint24,uint40)"),
                   ],
                 ],
               };
               const eventLogs = await provider.getLogs(filter);
-              const records = parseTokenAgentFactoryEventLogs(eventLogs, parameter.chainId, network.tokenAgentFactory.address, network.tokenAgentFactory.abi);
+              console.log(now() + " INFO dataModule:actions.syncDemodexEvents - eventLogs: " + JSON.stringify(eventLogs));
+              const records = parseDemodexEventLogs(eventLogs, parameter.chainId, network.demodex.abi);
               const newRecords = [];
               for (const record of records) {
                 if (!(record.txHash in context.state.txHashToIndex)) {
                   context.commit('addTxHashIndex', record.txHash);
                 }
-                for (const address of [record.contract, record.tokenAgent, record.owner]) {
+                for (const address of [record.contract, record.maker]) {
                   if (!(address in context.state.addressToIndex)) {
                     context.commit('addAddressIndex', address);
                   }
@@ -1115,10 +1120,10 @@ const dataModule = {
               if (newRecords.length) {
                 addCount += newRecords.length;
                 context.dispatch('saveData', ['indexToAddress', 'indexToTxHash']);
-                await db.tokenAgentFactoryEvents.bulkAdd(newRecords).then(function(lastKey) {
-                  // console.log(now() + " INFO dataModule:actions.syncTokenAgentFactoryEvents.bulkAdd - lastKey: " + JSON.stringify(lastKey));
+                await db.demodexEvents.bulkAdd(newRecords).then(function(lastKey) {
+                  // console.log(now() + " INFO dataModule:actions.syncDemodexEvents.bulkAdd - lastKey: " + JSON.stringify(lastKey));
                 }).catch(Dexie.BulkError, function(e) {
-                  // console.log(now() + " INFO dataModule:actions.syncTokenAgentFactoryEvents bulkAdd error: " + JSON.stringify(e.failures, null, 2));
+                  // console.log(now() + " INFO dataModule:actions.syncDemodexEvents bulkAdd error: " + JSON.stringify(e.failures, null, 2));
                 });
               }
             } catch (e) {
@@ -1133,21 +1138,21 @@ const dataModule = {
             await getLogs(parseInt(mid) + 1, toBlock);
           }
         }
-        context.commit('setSyncSection', { section: 'TokenAgentFactory events', total: null });
-        const data = await db.cache.where("objectName").equals('tokenAgentFactory.' + parameter.chainId).toArray();
+        context.commit('setSyncSection', { section: 'Demodex events', total: null });
+        const data = await db.cache.where("objectName").equals('demodex.' + parameter.chainId).toArray();
         startBlock = data.length == 1 ? data[0].object - parameter.confirmations : 0;
-        deleteCount = await db.tokenAgentFactoryEvents.where("[chainId+blockNumber+logIndex]").between([parameter.chainId, startBlock, Dexie.minKey],[parameter.chainId, Dexie.maxKey, Dexie.maxKey]).delete();
+        deleteCount = await db.demodexEvents.where("[chainId+blockNumber+logIndex]").between([parameter.chainId, startBlock, Dexie.minKey],[parameter.chainId, Dexie.maxKey, Dexie.maxKey]).delete();
         await getLogs(startBlock, parameter.blockNumber);
-        await db.cache.put({ objectName: 'tokenAgentFactory.' + parameter.chainId, object: parameter.blockNumber }).then(function() {
+        await db.cache.put({ objectName: 'demodex.' + parameter.chainId, object: parameter.blockNumber }).then(function() {
         }).catch(function(error) {
           console.log("error: " + error);
         });
       }
-      console.log(now() + " INFO dataModule:actions.syncTokenAgentFactoryEvents END - startBlock: " + startBlock + ", blockNumber: " + parameter.blockNumber+ ", deleteCount: " + deleteCount + ", addCount: " + addCount);
+      console.log(now() + " INFO dataModule:actions.syncDemodexEvents END - startBlock: " + startBlock + ", blockNumber: " + parameter.blockNumber+ ", deleteCount: " + deleteCount + ", addCount: " + addCount);
     },
 
-    async collateTokenAgentFactoryEvents(context, parameter) {
-      console.log(now() + " INFO dataModule:actions.collateTokenAgentFactoryEvents BEGIN - token: " + parameter.token);
+    async collateDemodexEvents(context, parameter) {
+      console.log(now() + " INFO dataModule:actions.collateDemodexEvents BEGIN - token: " + parameter.token);
       const db = new Dexie(context.state.db.name);
       db.version(context.state.db.version).stores(context.state.db.schemaDefinition);
       // console.log("tokenAgents BEFORE: " + JSON.stringify(context.state.tokenAgents, null, 2));
@@ -1155,7 +1160,7 @@ const dataModule = {
       let done = false;
       do {
         let data = await db.tokenAgentFactoryEvents.where('[chainId+blockNumber+logIndex]').between([parameter.chainId, Dexie.minKey, Dexie.minKey],[parameter.chainId, Dexie.maxKey, Dexie.maxKey]).offset(rows).limit(context.state.DB_PROCESSING_BATCH_SIZE).toArray();
-        // console.log(now() + " INFO dataModule:actions.collateTokenAgentFactoryEvents - data.length: " + data.length + ", first[0..9]: " + JSON.stringify(data.slice(0, 10).map(e => e.blockNumber + '.' + e.logIndex )));
+        // console.log(now() + " INFO dataModule:actions.collateDemodexEvents - data.length: " + data.length + ", first[0..9]: " + JSON.stringify(data.slice(0, 10).map(e => e.blockNumber + '.' + e.logIndex )));
         for (const item of data) {
           if (!(parameter.chainId in context.state.tokenAgents) || !(item.tokenAgent in context.state.tokenAgents[parameter.chainId])) {
             context.commit('addTokenAgent', item);
@@ -1166,7 +1171,7 @@ const dataModule = {
       } while (!done);
       // console.log("tokenAgents AFTER: " + JSON.stringify(context.state.tokenAgents, null, 2));
       await context.dispatch('saveData', ['tokenAgents']);
-      console.log(now() + " INFO dataModule:actions.collateTokenAgentFactoryEvents END - rows: " + rows);
+      console.log(now() + " INFO dataModule:actions.collateDemodexEvents END - rows: " + rows);
     },
 
     async syncTokenAgentGeneralEvents(context, parameter) {

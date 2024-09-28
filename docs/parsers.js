@@ -214,7 +214,7 @@ function parseTokenAgentFactoryEventLogsOld(logs, chainId, tokenAgentFactoryAddr
 }
 
 function parseDemodexEventLogs(logs, chainId, demodexAbi) {
-  // console.log(now() + " INFO functions:parseDemodexEventLogs - logs: " + JSON.stringify(logs, null, 2));
+  console.log(now() + " INFO functions:parseDemodexEventLogs - logs: " + JSON.stringify(logs, null, 2));
   const interface = new ethers.utils.Interface(demodexAbi);
   const records = [];
   for (const log of logs) {
@@ -250,11 +250,11 @@ function parseDemodexEventLogs(logs, chainId, demodexAbi) {
         const [from, to, ethers, timestamp] = logData.args;
         eventRecord = { eventType: EVENTTYPE_INTERNALTRANSFER, from, to, ethers: ethers.toString(), timestamp };
       } else if (logData.eventFragment.name == "OffersInvalidated") {
-        // event OffersInvalidated(Nonce newNonce, Unixtime timestamp);
-        const [newNonce, timestamp] = logData.args;
-        eventRecord = { eventType: EVENTTYPE_OFFERSINVALIDATED, newNonce, timestamp };
+        // event OffersInvalidated(Account indexed maker, Nonce newNonce, Unixtime timestamp);
+        const [maker, newNonce, timestamp] = logData.args;
+        eventRecord = { eventType: EVENTTYPE_OFFERSINVALIDATED, maker, newNonce, timestamp };
       } else {
-        // console.log(now() + " INFO functions:parseDemodexEventLogs - UNHANDLED log: " + JSON.stringify(log));
+        console.log(now() + " INFO functions:parseDemodexEventLogs - UNHANDLED log: " + JSON.stringify(log));
       }
       if (eventRecord) {
         records.push( {
@@ -269,7 +269,7 @@ function parseDemodexEventLogs(logs, chainId, demodexAbi) {
       }
     }
   }
-  // console.log(now() + " INFO functions:parseDemodexEventLogs - records: " + JSON.stringify(records, null, 2));
+  console.log(now() + " INFO functions:parseDemodexEventLogs - records: " + JSON.stringify(records, null, 2));
   return records;
 }
 
