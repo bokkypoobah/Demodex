@@ -1623,24 +1623,26 @@ data: {{ data }}
       // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - collator: " + JSON.stringify(collator, null, 2));
 
       const prices = [];
+      console.log("includeInvalidated: " + includeInvalidated);
+      console.log("includeExpired: " + includeExpired);
       for (const [maker, d1] of Object.entries(collator)) {
         for (const [offerIndex, d2] of Object.entries(d1.offers)) {
           if (d2.prices.length == d2.tokenss.length) {
             for (let i = 0; i < d2.prices.length; i++) {
-              prices.push({
-                txHash: d2.txHash, logIndex: d2.logIndex,
-                maker,
-                offerIndex: d2.index, nonce: d2.nonce, expiry: d2.expiry,
-                priceIndex: i, price: d2.prices[i], tokens: d2.tokenss[i],
-                valid: d2.nonce == d1.nonce && (d2.expiry == 0 || d2.expiry >= this.tokenSet.timestamp),
-                // valid: d3.nonce == d2.nonce && (d3.expiry == 0 || d3.expiry >= this.tokenSet.timestamp),
-                // selected: tokenAgent == selectedTokenAgent,
-              });
+              if ((includeInvalidated || d2.nonce == d1.nonce) && (includeExpired || d2.expiry == 0 || d2.expiry >= this.tokenSet.timestamp)) {
+                prices.push({
+                  txHash: d2.txHash, logIndex: d2.logIndex,
+                  maker,
+                  offerIndex: d2.index, nonce: d2.nonce, expiry: d2.expiry,
+                  priceIndex: i, price: d2.prices[i], tokens: d2.tokenss[i],
+                  valid: d2.nonce == d1.nonce && (d2.expiry == 0 || d2.expiry >= this.tokenSet.timestamp),
+                });
+              }
             }
           }
         }
       }
-      // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - prices: " + JSON.stringify(prices, null, 2));
+      console.log(now() + " INFO TradeFungibles:computed.newSellOffers - prices: " + JSON.stringify(prices, null, 2));
 
       if (simulate && this.tokenSet.timestamp) {
         for (const [i, point] of points.entries()) {
