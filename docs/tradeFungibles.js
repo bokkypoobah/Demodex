@@ -476,7 +476,7 @@ modalBuyOffer: {{ modalBuyOffer }}
                       <b-form-group label="Average Price:" label-for="takeselloffer-filledaverageprice" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
                         <b-form-input size="sm" plaintext id="takeselloffer-filledaverageprice" :value="newSellOffers.filled.averagePrice && formatDecimals(newSellOffers.filled.averagePrice, 18)" class="pl-2 w-75"></b-form-input>
                       </b-form-group>
-                      <b-form-group label="Payment in:" label-for="takeselloffer-paymenttype" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+                      <b-form-group label="Pay:" label-for="takeselloffer-paymenttype" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
                         <b-form-radio-group size="sm" buttons id="takeselloffer-paymenttype" v-model="settings.sellOffers.paymentType" @change="saveSettings();" button-variant="outline-primary">
                           <b-form-radio value="weth">WETH</b-form-radio>
                           <b-form-radio value="eth">ETH</b-form-radio>
@@ -704,7 +704,7 @@ newSellOffers: {{ newSellOffers }}
                       <b-form-group label="Average Price:" label-for="takebuyoffer-filledaverageprice" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
                         <b-form-input size="sm" plaintext id="takebuyoffer-filledaverageprice" :value="newBuyOffers.filled.averagePrice && formatDecimals(newBuyOffers.filled.averagePrice, 18)" class="pl-2 w-75"></b-form-input>
                       </b-form-group>
-                      <b-form-group label="Payment in:" label-for="takebuyoffer-paymenttype" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+                      <b-form-group label="Receive:" label-for="takebuyoffer-paymenttype" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
                         <b-form-radio-group size="sm" buttons id="takebuyoffer-paymenttype" v-model="settings.buyOffers.paymentType" @change="saveSettings();" button-variant="outline-primary">
                           <b-form-radio value="weth">WETH</b-form-radio>
                           <b-form-radio value="eth">ETH</b-form-radio>
@@ -2800,7 +2800,7 @@ data: {{ data }}
     },
 
     async newBuyOffersTrade() {
-      console.log(now() + " INFO TradeFungibles:methods.newBuyOffersTrade - this.newSellOffers.trades: " + JSON.stringify(this.newSellOffers.trades));
+      console.log(now() + " INFO TradeFungibles:methods.newBuyOffersTrade - this.newBuyOffers.trades: " + JSON.stringify(this.newBuyOffers.trades));
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const network = this.chainId && NETWORKS[this.chainId.toString()] || {};
       console.log("token: " + this.tokenSet.token);
@@ -2835,7 +2835,7 @@ data: {{ data }}
         console.log("takerWethApproved: " + ethers.utils.formatEther(takerWethApproved));
 
         try {
-          const tx = await contractWithSigner.trade(this.newSellOffers.trades, this.settings.sellOffers.paymentType == 'eth' ? 1 : 0, { value: this.settings.sellOffers.paymentType == 'eth' ? this.newSellOffers.filled.weth : 0 });
+          const tx = await contractWithSigner.trade(this.newBuyOffers.trades, this.settings.buyOffers.paymentType == 'eth' ? 1 : 0, { value: this.settings.buyOffers.paymentType == 'eth' ? this.newSellOffers.filled.weth : 0 });
           // const tx = { hash: "blah" };
           console.log(now() + " INFO TradeFungibles:methods.newBuyOffersTrade - tx: " + JSON.stringify(tx));
           const h = this.$createElement;
