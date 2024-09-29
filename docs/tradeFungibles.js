@@ -1374,7 +1374,7 @@ data: {{ data }}
       buyOffersFields: [
         { key: 'price', label: 'Price', sortable: false, thStyle: 'width: 20%;', tdClass: 'text-left' },
         // { key: 'tokens', label: 'Tokens', sortable: false, thStyle: 'width: 25%;', tdClass: 'text-left' },
-        { key: 'totalTokens', label: '∑ Tokens', sortable: false, thStyle: 'width: 25%;', tdClass: 'text-left' },        
+        { key: 'totalTokens', label: '∑ Tokens', sortable: false, thStyle: 'width: 25%;', tdClass: 'text-left' },
         // { key: 'wethAmount', label: 'WETH', sortable: false, thStyle: 'width: 25%;', tdClass: 'text-left' },
         { key: 'totalWeth', label: '∑ WETH', sortable: false, thStyle: 'width: 25%;', tdClass: 'text-left' },
         { key: 'maker', label: 'Maker', sortable: false, thStyle: 'width: 20%;', tdClass: 'text-left' },
@@ -2208,7 +2208,7 @@ data: {{ data }}
     },
     filteredSortedBuyOffers() {
       // const results = this.buyOffers;
-      const results = this.newSellOffers.records;
+      const results = this.newBuyOffers.records;
       // if (this.settings.events.sortOption == 'txorderasc') {
       //   results.sort((a, b) => {
       //     if (a.blockNumber == b.blockNumber) {
