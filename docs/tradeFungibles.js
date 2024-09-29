@@ -2019,6 +2019,7 @@ data: {{ data }}
       };
 
       // console.log(now() + " INFO TradeFungibles:computed.newBuyOffers - prices: " + JSON.stringify(prices, null, 2));
+      console.log(now() + " INFO TradeFungibles:computed.newBuyOffers - trades: " + JSON.stringify(trades, null, 2));
       return { trades, filled, records, wethBalances, wethApprovals, prices, collator };
     },
 
@@ -2744,11 +2745,14 @@ data: {{ data }}
           // this.settings.newTokenAgent.show = false;
           // this.saveSettings();
         } catch (e) {
-          // console.log(now() + " ERROR TradeFungibles:methods.newBuyOffersTrade: " + JSON.stringify(e, null, 2));
+          console.log(now() + " ERROR TradeFungibles:methods.newBuyOffersTrade: " + JSON.stringify(e, null, 2));
 
-          const decodedError = contract.interface.parseError(e.error.data.originalError.data)
+          try {
+            const decodedError = contract.interface.parseError(e.error.data.originalError.data)
+            console.log(now() + " ERROR TradeFungibles:methods.newBuyOffersTrade - decodedError.name: " + decodedError.name + ", args: " + JSON.stringify(decodedError.args.map(e => ethers.utils.formatEther(e)), null, 2));
+          } catch (e1) {            
+          }
 
-          console.log(now() + " ERROR TradeFungibles:methods.newBuyOffersTrade - decodedError.name: " + decodedError.name + ", args: " + JSON.stringify(decodedError.args.map(e => ethers.utils.formatEther(e)), null, 2));
           // console.log(now() + " ERROR TradeFungibles:methods.newBuyOffersTrade - decodedError: " + JSON.stringify(decodedError, null, 2));
 
           // console.log(`Transaction failed: ${decodedError.name}`)
