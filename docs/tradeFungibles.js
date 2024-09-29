@@ -382,17 +382,48 @@ modalBuyOffer: {{ modalBuyOffer }}
               <font size="-1">
                 <b-table ref="buyOffersTable" small fixed striped responsive hover sticky-header="400px" selectable select-mode="single" @row-selected='buyOffersRowSelected' :fields="settings.viewMode == 0 ? buyOffersFields : extendedBuyOffersFields" :items="pagedFilteredBuyOffers" show-empty head-variant="light" class="m-0 mt-1" style="min-height: 250px;">
                   <template #cell(price)="data">
-                    <font size="-1">
+                    <span v-b-popover.hover.ds500="formatDecimals(data.item.price, 18)" :style="!data.item.valid ? 'text-decoration: line-through;' : ''">
+                      {{ formatPrice(data.item.price) }}
+                    </span>
+                    <!-- <font size="-1">
                       {{ formatDecimals(data.item.price, 18) }}
-                    </font>
+                    </font> -->
+                  </template>
+                  <template #head(tokens)="data">
+                    {{ settings.symbol }}
                   </template>
                   <template #cell(tokens)="data">
-                    <font size="-1">
-                      {{ formatDecimals(data.item.tokensAvailable, 18) }}
-                    </font>
+                    <span v-b-popover.hover.ds500="formatDecimals(data.item.tokens, settings.decimals)" :style="!data.item.valid ? 'text-decoration: line-through;' : ''">
+                      {{ formatTokens(data.item.tokens) }}
+                    </span>
                   </template>
-                  <template #cell(maker)="data1">
-                    <font size="-1">
+                  <template #head(totalTokens)="data">
+                    {{ '∑ ' + settings.symbol }}
+                  </template>
+                  <template #cell(totalTokens)="data">
+                    <span v-b-popover.hover.ds500="formatDecimals(data.item.totalTokens, settings.decimals)" :style="!data.item.valid ? 'text-decoration: line-through;' : ''">
+                      {{ formatTokens(data.item.totalTokens) }}
+                    </span>
+                  </template>
+                  <template #head(wethAmount)="data">
+                    {{ settings.buyOffers.paymentType == 'eth' ? 'ETH' : 'WETH' }}
+                  </template>
+                  <template #cell(wethAmount)="data">
+                    <span v-b-popover.hover.ds500="formatDecimals(data.item.wethAmount, 18)" :style="!data.item.valid ? 'text-decoration: line-through;' : ''">
+                      {{ formatWeth(data.item.wethAmount) }}
+                    </span>
+                  </template>
+                  <template #head(totalWeth)="data">
+                    {{ settings.buyOffers.paymentType == 'eth' ? '∑ ETH' : '∑ WETH' }}
+                  </template>
+                  <template #cell(totalWeth)="data">
+                    <span v-b-popover.hover.ds500="formatDecimals(data.item.totalWeth, 18)" :style="!data.item.valid ? 'text-decoration: line-through;' : ''">
+                      {{ formatWeth(data.item.totalWeth) }}
+                    </span>
+                  </template>
+                  <template #cell(maker)="data">
+                    {{ (indexToAddress[data.item.maker] && indexToAddress[data.item.maker].substring(0, 12) || '') }}
+                    <!-- <font size="-1">
                       <b-link size="sm" :href="explorer + 'token/' + data.weth + '?a=' + data1.item.maker" variant="link" v-b-popover.hover.ds500="data1.item.maker" target="_blank">
                         {{ data1.item.maker.substring(0, 8) + '...' + data1.item.maker.slice(-6) }}
                       </b-link>
@@ -405,17 +436,15 @@ modalBuyOffer: {{ modalBuyOffer }}
                       <b-badge variant="light" v-b-popover.hover.ds500="'Price index ' + data1.item.priceIndex" class="m-0 p-0">
                         {{ data1.item.priceIndex }}
                       </b-badge>
-                    </font>
+                    </font> -->
                   </template>
                   <template #cell(expiry)="data">
-                    <font size="-1">
-                      {{ formatTimestamp(data.item.expiry) }}
-                    </font>
+                    <span v-b-popover.hover.ds500="formatTimestamp(data.item.expiry)">
+                      {{ formatExpiry(data.item.expiry) }}
+                    </span>
                   </template>
                   <template #cell(number)="data">
-                    <font size="-1">
-                      {{ parseInt(data.index) + ((settings.buyOffers.currentPage - 1) * settings.buyOffers.pageSize) + 1 }}
-                    </font>
+                    {{ parseInt(data.index) + ((settings.buyOffers.currentPage - 1) * settings.buyOffers.pageSize) + 1 }}
                   </template>
                 </b-table>
               </font>
@@ -485,7 +514,7 @@ modalBuyOffer: {{ modalBuyOffer }}
                               <b-form-input size="sm" readonly :value="formatNumber(bigNumberMultiply(data.item.price, data.item.tokens))" class="text-right"></b-form-input>
                             </template> -->
                             <template #cell(option)="data">
-                              <b-button size="sm" @click="settings.sellOffers.points.splice(data.index, 1); saveSettings();" variant="link" v-b-popover.hover.ds500="'Add new row'"><b-icon-dash shift-v="+1" font-scale="1.2"></b-icon-dash></b-button>
+                              <b-button size="sm" @click="settings.sellOffers.points.splice(data.index, 1); saveSettings();" variant="link" v-b-popover.hover.ds500="'Delete row'"><b-icon-dash shift-v="+1" font-scale="1.2"></b-icon-dash></b-button>
                             </template>
                             <template #bottom-row="data">
                               <b-td>
@@ -503,16 +532,15 @@ modalBuyOffer: {{ modalBuyOffer }}
                           </b-table>
                         </font>
                       </b-form-group>
-                      <b-form-group label="Expiry:" label-for="modaladdselloffer-expirytime" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
-                        <b-form-datepicker size="sm" id="modaladdselloffer-expirydate" v-model="expiryDate" :date-format-options="{ year: 'numeric', month: 'short', day: '2-digit', weekday: 'short' }" reset-button today-button close-button label-reset-button="No Expiry" label-no-date-selected="No Expiry" class="w-75"></b-form-datepicker>
+                      <b-form-group label="Expiry:" label-for="addselloffer-expirytime" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+                        <b-form-datepicker size="sm" id="addselloffer-expirydate" v-model="sellExpiryDate" :date-format-options="{ year: 'numeric', month: 'short', day: '2-digit', weekday: 'short' }" reset-button today-button close-button label-reset-button="No Expiry" label-no-date-selected="No Expiry" class="w-75"></b-form-datepicker>
                       </b-form-group>
-                      <b-form-group v-if="expiryDate" label="" label-for="modaladdselloffer-expirytime" label-size="sm" label-cols-sm="4" label-align-sm="right" :description="formatTimestampUTC(settings.sellOffers.expiry)" class="mx-0 my-1 p-0">
-                        <b-form-timepicker size="sm" id="modaladdselloffer-expirytime" v-model="expiryTime" minutes-step="15" now-button label-no-time-selected="Select" class="w-50"></b-form-timepicker>
+                      <b-form-group v-if="sellExpiryDate" label="" label-for="addselloffer-expirytime" label-size="sm" label-cols-sm="4" label-align-sm="right" :description="formatTimestampUTC(settings.sellOffers.expiry)" class="mx-0 my-1 p-0">
+                        <b-form-timepicker size="sm" id="addselloffer-expirytime" v-model="sellExpiryTime" minutes-step="15" now-button label-no-time-selected="Select" class="w-50"></b-form-timepicker>
                       </b-form-group>
                       <b-form-group label="" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
                         <b-button size="sm" :disabled="settings.sellOffers.points.length == 0 || !!sellOfferPointsFeedback" @click="execAddSellOffer" variant="warning">Add Sell Offer</b-button>
                       </b-form-group>
-
                     </b-card-text>
                   </b-tab>
                 </b-tabs>
@@ -660,7 +688,49 @@ newSellOffers: {{ newSellOffers }}
                   </b-tab>
                   <b-tab title="Make Offer">
                     <b-card-text>
-                      Tab contents 2
+                      <b-form-group label="Points:" label-size="sm" label-cols-sm="4" label-align-sm="right" :state="!buyOfferPointsFeedback" :invalid-feedback="buyOfferPointsFeedback" class="mx-0 my-1 p-0">
+                        <font size="-1">
+                          <b-table ref="addSellOfferPointsTable" small fixed striped sticky-header="600px" responsive hover :fields="addSellOfferPointsFields" :items="settings.buyOffers.points" show-empty head-variant="light" class="m-0 mt-1">
+                            <template #empty="scope">
+                              Click [+] below to add a new row
+                            </template>
+                            <template #cell(price)="data">
+                              <b-form-input size="sm" type="number" v-model.trim="data.item.price" @change="saveSettings();" debounce="600" class="text-right"></b-form-input>
+                            </template>
+                            <template #cell(tokens)="data">
+                              <b-form-input size="sm" type="number" v-model.trim="data.item.tokens" @change="saveSettings();" debounce="600" class="text-right"></b-form-input>
+                            </template>
+                            <!-- <template #cell(wethAmount)="data">
+                              <b-form-input size="sm" readonly :value="formatNumber(bigNumberMultiply(data.item.price, data.item.tokens))" class="text-right"></b-form-input>
+                            </template> -->
+                            <template #cell(option)="data">
+                              <b-button size="sm" @click="settings.buyOffers.points.splice(data.index, 1); saveSettings();" variant="link" v-b-popover.hover.ds500="'Delete row'"><b-icon-dash shift-v="+1" font-scale="1.2"></b-icon-dash></b-button>
+                            </template>
+                            <template #bottom-row="data">
+                              <b-td>
+                                <!-- <b-form-checkbox size="sm" v-model="settings.buyOffers.simulate" @input="saveSettings" v-b-popover.hover.ds500="'Simulate in offers table above?'" class="ml-1 mt-1"> -->
+                                <b-form-checkbox size="sm" v-model="settings.buyOffers.simulate" @input="saveSettings" class="ml-1 mt-1">
+                                  Simulate
+                                </b-form-checkbox>
+                              </b-td>
+                              <b-td>
+                              </b-td>
+                              <b-td class="text-right">
+                                <b-button size="sm" @click="settings.buyOffers.points.push({ price: null, tokens: null }); saveSettings();" variant="link" v-b-popover.hover.ds500="'Add new row'"><b-icon-plus shift-v="+1" font-scale="1.2"></b-icon-plus></b-button>
+                              </b-td>
+                            </template>
+                          </b-table>
+                        </font>
+                      </b-form-group>
+                      <b-form-group label="Expiry:" label-for="addbuyoffer-expirytime" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+                        <b-form-datepicker size="sm" id="addbuyoffer-expirydate" v-model="buyExpiryDate" :date-format-options="{ year: 'numeric', month: 'short', day: '2-digit', weekday: 'short' }" reset-button today-button close-button label-reset-button="No Expiry" label-no-date-selected="No Expiry" class="w-75"></b-form-datepicker>
+                      </b-form-group>
+                      <b-form-group v-if="buyExpiryDate" label="" label-for="addbuyoffer-expirytime" label-size="sm" label-cols-sm="4" label-align-sm="right" :description="formatTimestampUTC(settings.buyOffers.expiry)" class="mx-0 my-1 p-0">
+                        <b-form-timepicker size="sm" id="addbuyoffer-expirytime" v-model="buyExpiryTime" minutes-step="15" now-button label-no-time-selected="Select" class="w-50"></b-form-timepicker>
+                      </b-form-group>
+                      <b-form-group label="" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+                        <b-button size="sm" :disabled="settings.buyOffers.points.length == 0 || !!buyOfferPointsFeedback" @click="execAddSellOffer" variant="warning">Add Buy Offer</b-button>
+                      </b-form-group>
                     </b-card-text>
                   </b-tab>
                 </b-tabs>
@@ -1303,8 +1373,10 @@ data: {{ data }}
       ],
       buyOffersFields: [
         { key: 'price', label: 'Price', sortable: false, thStyle: 'width: 20%;', tdClass: 'text-left' },
-        { key: 'tokens', label: 'Tokens', sortable: false, thStyle: 'width: 25%;', tdClass: 'text-left' },
-        { key: 'wethAmount', label: 'WETH', sortable: false, thStyle: 'width: 25%;', tdClass: 'text-left' },
+        // { key: 'tokens', label: 'Tokens', sortable: false, thStyle: 'width: 25%;', tdClass: 'text-left' },
+        { key: 'totalTokens', label: '∑ Tokens', sortable: false, thStyle: 'width: 25%;', tdClass: 'text-left' },        
+        // { key: 'wethAmount', label: 'WETH', sortable: false, thStyle: 'width: 25%;', tdClass: 'text-left' },
+        { key: 'totalWeth', label: '∑ WETH', sortable: false, thStyle: 'width: 25%;', tdClass: 'text-left' },
         { key: 'maker', label: 'Maker', sortable: false, thStyle: 'width: 20%;', tdClass: 'text-left' },
         { key: 'expiry', label: 'Expiry', sortable: false, thStyle: 'width: 10%;', thClass: 'text-left', tdClass: 'text-left' },
         { key: 'number', label: '#', sortable: false, thStyle: 'width: 5%;', thClass: 'text-left', tdClass: 'text-left' },
@@ -1382,7 +1454,7 @@ data: {{ data }}
     registry() {
       return store.getters['data/registry'];
     },
-    expiryDate: {
+    sellExpiryDate: {
       get: function () {
         return this.settings.sellOffers.expiryDate;
       },
@@ -1398,7 +1470,7 @@ data: {{ data }}
         this.saveSettings();
       },
     },
-    expiryTime: {
+    sellExpiryTime: {
       get: function () {
         return this.settings.sellOffers.expiryTime;
       },
@@ -1410,6 +1482,38 @@ data: {{ data }}
           this.settings.sellOffers.expiry = moment(this.settings.sellOffers.expiryDate + 'T00:00:00').unix();
         } else {
           this.settings.sellOffers.expiry = moment(this.settings.sellOffers.expiryDate + 'T' + this.settings.sellOffers.expiryTime).unix();
+        }
+        this.saveSettings();
+      },
+    },
+    buyExpiryDate: {
+      get: function () {
+        return this.settings.buyOffers.expiryDate;
+      },
+      set: function (d) {
+        this.settings.buyOffers.expiryDate = d;
+        if (this.settings.buyOffers.expiryDate == null || this.settings.buyOffers.expiryDate == '') {
+          this.settings.buyOffers.expiry = null;
+        } else if (this.settings.buyOffers.expiryTime == null || this.settings.buyOffers.expiryTime == '') {
+          this.settings.buyOffers.expiry = moment(this.settings.buyOffers.expiryDate + 'T00:00:00');
+        } else {
+          this.settings.buyOffers.expiry = moment(this.settings.buyOffers.expiryDate + 'T' + this.settings.buyOffers.expiryTime).unix();
+        }
+        this.saveSettings();
+      },
+    },
+    buyExpiryTime: {
+      get: function () {
+        return this.settings.buyOffers.expiryTime;
+      },
+      set: function (t) {
+        this.settings.buyOffers.expiryTime = t;
+        if (this.settings.buyOffers.expiryDate == null || this.settings.buyOffers.expiryDate == '') {
+          this.settings.buyOffers.expiry = null;
+        } else if (this.settings.buyOffers.expiryTime == null || this.settings.buyOffers.expiryTime == '') {
+          this.settings.buyOffers.expiry = moment(this.settings.buyOffers.expiryDate + 'T00:00:00').unix();
+        } else {
+          this.settings.buyOffers.expiry = moment(this.settings.buyOffers.expiryDate + 'T' + this.settings.buyOffers.expiryTime).unix();
         }
         this.saveSettings();
       },
@@ -1473,6 +1577,26 @@ data: {{ data }}
         if (i > 0) {
           // console.log(i + " => " + JSON.stringify(point) + " vs prev: " + JSON.stringify(this.settings.sellOffers.points[i - 1]));
           if (parseFloat(point.price) <= parseFloat(this.settings.sellOffers.points[i - 1].price)) {
+            return "Prices must be in descending order with no duplicates";
+          }
+        }
+      }
+      return  null;
+    },
+
+    buyOfferPointsFeedback() {
+      // console.log(now() + " INFO TradeFungibles:computed.buyOfferPointsFeedback - this.settings.buyOffers.points: " + JSON.stringify(this.settings.buyOffers.points));
+      for (const [i, point] of this.settings.buyOffers.points.entries()) {
+        // console.log(i + " => " + JSON.stringify(point));
+        if (point.price == null || point.price == "") {
+          return "Invalid price";
+        }
+        if (point.tokens == null || point.tokens == "") {
+          return "Invalid tokens";
+        }
+        if (i > 0) {
+          // console.log(i + " => " + JSON.stringify(point) + " vs prev: " + JSON.stringify(this.settings.buyOffers.points[i - 1]));
+          if (parseFloat(point.price) >= parseFloat(this.settings.buyOffers.points[i - 1].price)) {
             return "Prices must be in descending order with no duplicates";
           }
         }
@@ -1923,7 +2047,7 @@ data: {{ data }}
         let tokens = ethers.BigNumber.from(price.tokens);
         let wethAmount = null;
         if (price.txHash == null) {
-          console.log("SIMULATED prices[" + i + "]: " + JSON.stringify(price));
+          console.log(now() + " INFO TradeFungibles:computed.newBuyOffers - SIMULATED prices[" + i + "]: " + JSON.stringify(price));
         }
         if (price.valid) {
           if (tokens.gt(tokenBalance)) {
@@ -1972,7 +2096,7 @@ data: {{ data }}
         averagePrice: filledAveragePrice != null && filledAveragePrice.toString() || null,
       };
 
-      // console.log(now() + " INFO TradeFungibles:computed.newBuyOffers - prices: " + JSON.stringify(prices, null, 2));
+      console.log(now() + " INFO TradeFungibles:computed.newBuyOffers - prices: " + JSON.stringify(prices, null, 2));
       return { trades, filled, records, tokenBalances, tokenApprovals, prices, collator };
     },
 
@@ -2083,7 +2207,8 @@ data: {{ data }}
       return results;
     },
     filteredSortedBuyOffers() {
-      const results = this.buyOffers;
+      // const results = this.buyOffers;
+      const results = this.newSellOffers.records;
       // if (this.settings.events.sortOption == 'txorderasc') {
       //   results.sort((a, b) => {
       //     if (a.blockNumber == b.blockNumber) {
