@@ -1801,11 +1801,6 @@ data: {{ data }}
       return { trades, filled, records, tokenBalances, tokenApprovals, prices, collator };
     },
 
-    // newBuyOffers() {
-    //   console.log(now() + " INFO TradeFungibles:computed.newBuyOffers");
-    //   return { records: [{ one: 1, two: 2 }]};
-    // },
-
     newBuyOffers() {
       // console.log(now() + " INFO TradeFungibles:computed.newBuyOffers - this.tokenSet: " + JSON.stringify(this.tokenSet, null, 2));
       // console.log(now() + " INFO TradeFungibles:computed.newBuyOffers - tokenSet.timestamp: " + this.formatTimestamp(this.tokenSet.timestamp) + ", token.symbol: " + this.tokenSet.symbol + ", token.decimals: " + this.tokenSet.decimals);
