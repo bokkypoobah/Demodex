@@ -482,13 +482,13 @@ modalBuyOffer: {{ modalBuyOffer }}
                           <b-form-radio value="eth">ETH</b-form-radio>
                         </b-form-radio-group>
                       </b-form-group>
-                      <b-form-group label="ETH Balance:" label-for="takeselloffer-ethbalance" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+                      <b-form-group label="ETH balance:" label-for="takeselloffer-ethbalance" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
                         <b-form-input size="sm" plaintext id="takeselloffer-ethbalance" :value="formatDecimals(balance, 18)" class="pl-2 w-75"></b-form-input>
                       </b-form-group>
-                      <b-form-group v-if="settings.sellOffers.paymentType == 'weth'" label="WETH Balance:" label-for="takeselloffer-wethbalance" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+                      <b-form-group v-if="settings.sellOffers.paymentType == 'weth'" label="WETH balance:" label-for="takeselloffer-wethbalance" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
                         <b-form-input size="sm" plaintext id="takeselloffer-wethbalance" :value="formatDecimals(coinbaseWethBalance, 18)" class="pl-2 w-75"></b-form-input>
                       </b-form-group>
-                      <b-form-group v-if="settings.sellOffers.paymentType == 'weth'" label="WETH Approved:" label-for="takeselloffer-wethapproved" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+                      <b-form-group v-if="settings.sellOffers.paymentType == 'weth'" label="WETH approved:" label-for="takeselloffer-wethapproved" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
                         <b-form-input size="sm" plaintext id="takeselloffer-wethapproved" :value="formatDecimals(coinbaseWethApproval, 18)" class="pl-2 w-75"></b-form-input>
                       </b-form-group>
                       <b-form-group label="" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
@@ -562,11 +562,11 @@ modalBuyOffer: {{ modalBuyOffer }}
                           </b-input-group-append>
                         </b-input-group>
                       </b-form-group>
-                      <b-form-group :label="'Receive ' + settings.symbol + ':'" label-for="takebuyoffer-filledtokens" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
-                        <b-form-input size="sm" plaintext id="takebuyoffer-filledtokens" :value="newBuyOffers.filled.tokens && formatDecimals(newBuyOffers.filled.tokens, 18)" class="pl-2 w-75"></b-form-input>
-                      </b-form-group>
-                      <b-form-group :label="settings.buyOffers.paymentType == 'weth' ? 'Pay WETH:' : 'Pay ETH:'" label-for="takebuyoffer-filledweth" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+                      <b-form-group :label="settings.buyOffers.paymentType == 'weth' ? 'Receive WETH:' : 'Receive ETH:'" label-for="takebuyoffer-filledweth" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
                         <b-form-input size="sm" plaintext id="takebuyoffer-filledweth" :value="newBuyOffers.filled.weth && formatDecimals(newBuyOffers.filled.weth, 18)" class="pl-2 w-75"></b-form-input>
+                      </b-form-group>
+                      <b-form-group :label="'Pay ' + settings.symbol + ':'" label-for="takebuyoffer-filledtokens" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+                        <b-form-input size="sm" plaintext id="takebuyoffer-filledtokens" :value="newBuyOffers.filled.tokens && formatDecimals(newBuyOffers.filled.tokens, 18)" class="pl-2 w-75"></b-form-input>
                       </b-form-group>
                       <b-form-group label="Average Price:" label-for="takebuyoffer-filledaverageprice" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
                         <b-form-input size="sm" plaintext id="takebuyoffer-filledaverageprice" :value="newBuyOffers.filled.averagePrice && formatDecimals(newBuyOffers.filled.averagePrice, 18)" class="pl-2 w-75"></b-form-input>
@@ -580,11 +580,11 @@ modalBuyOffer: {{ modalBuyOffer }}
                       <b-form-group label="ETH Balance:" label-for="takebuyoffer-ethbalance" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
                         <b-form-input size="sm" plaintext id="takebuyoffer-ethbalance" :value="formatDecimals(balance, 18)" class="pl-2 w-75"></b-form-input>
                       </b-form-group>
-                      <b-form-group v-if="settings.buyOffers.paymentType == 'weth'" label="WETH Balance:" label-for="takebuyoffer-wethbalance" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
-                        <b-form-input size="sm" plaintext id="takebuyoffer-wethbalance" :value="formatDecimals(coinbaseWethBalance, 18)" class="pl-2 w-75"></b-form-input>
+                      <b-form-group :label="settings.symbol + ' balance:'" label-for="takebuyoffer-wethbalance" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+                        <b-form-input size="sm" plaintext id="takebuyoffer-wethbalance" :value="formatDecimals(coinbaseTokenBalance, 18)" class="pl-2 w-75"></b-form-input>
                       </b-form-group>
-                      <b-form-group v-if="settings.buyOffers.paymentType == 'weth'" label="WETH Approved:" label-for="takebuyoffer-wethapproved" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
-                        <b-form-input size="sm" plaintext id="takebuyoffer-wethapproved" :value="formatDecimals(coinbaseWethApproval, 18)" class="pl-2 w-75"></b-form-input>
+                      <b-form-group :label="settings.symbol + ' approved:'" label-for="takebuyoffer-wethapproved" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+                        <b-form-input size="sm" plaintext id="takebuyoffer-wethapproved" :value="formatDecimals(coinbaseTokenApproval, 18)" class="pl-2 w-75"></b-form-input>
                       </b-form-group>
                       <b-form-group label="" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
                         <b-button size="sm" :disabled="!networkSupported || !newBuyOffers.filled.tokens" @click="newBuyOffersTrade" variant="warning">Trade</b-button>
