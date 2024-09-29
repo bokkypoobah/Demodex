@@ -451,8 +451,8 @@ modalBuyOffer: {{ modalBuyOffer }}
             </b-col>
           </b-row>
           <b-row class="m-0 mt-1 p-0">
-            <b-col v-if="settings.viewMode == 0 || settings.viewMode == 1" :cols="settings.viewMode == 0 ? null : 6" class="m-0 mr-1 p-0">
-              <b-card no-body>
+            <b-col class="m-0 mr-1 p-0">
+              <b-card v-if="settings.viewMode == 0 || settings.viewMode == 1" :cols="settings.viewMode == 0 ? null : 6" no-body>
                 <b-tabs small card v-model="settings.sellOffers.tabIndex" @input="saveSettings();" pills card vertical nav-class="m-0 p-1" content-class="mt-0" active-tab-class="m-1 p-1" align="left" style="min-height: 260px;">
                   <b-tab title="Take Offer" active>
                     <b-card-text class="m-0 p-0">
@@ -546,8 +546,8 @@ modalBuyOffer: {{ modalBuyOffer }}
                 </b-tabs>
               </b-card>
             </b-col>
-            <b-col v-if="settings.viewMode == 0 || settings.viewMode == 2" :cols="settings.viewMode == 0 ? null : 6" class="m-0 ml-1 p-0">
-              <b-card no-body>
+            <b-col class="m-0 ml-1 p-0">
+              <b-card v-if="settings.viewMode == 0 || settings.viewMode == 2" :cols="settings.viewMode == 0 ? null : 6" no-body>
                 <b-tabs small card v-model="settings.buyOffers.tabIndex" @input="saveSettings();" pills card vertical nav-class="m-0 p-1" content-class="mt-0" active-tab-class="m-1 p-1" align="left" style="min-height: 260px;">
                   <b-tab title="Take Offer" active>
                     <b-card-text class="m-0 p-0">
