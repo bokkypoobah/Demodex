@@ -2716,8 +2716,10 @@ data: {{ data }}
         const takerWethApproved = await weth.allowance(this.coinbase, network.demodex.address);
         console.log("takerWethApproved: " + ethers.utils.formatEther(takerWethApproved));
 
+        console.log("this.newBuyOffers.trades: " + JSON.stringify(this.newBuyOffers.trades, null, 2));
+
         try {
-          const tx = await contractWithSigner.trade(this.newBuyOffers.trades, this.settings.buyOffers.paymentType == 'eth' ? 1 : 0, { value: this.settings.buyOffers.paymentType == 'eth' ? this.newSellOffers.filled.weth : 0 });
+          const tx = await contractWithSigner.trade(this.newBuyOffers.trades, this.settings.buyOffers.paymentType == 'eth' ? 1 : 0, { value: 0 });
           // const tx = { hash: "blah" };
           console.log(now() + " INFO TradeFungibles:methods.newBuyOffersTrade - tx: " + JSON.stringify(tx));
           const h = this.$createElement;
