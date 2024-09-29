@@ -1821,7 +1821,7 @@ data: {{ data }}
       // const selectedTokenAgent = this.settings.buyOffers.select.tokenAgent;
       let maxTokens = this.settings.buyOffers.amount != null && this.settings.buyOffers.amount.trim().length != 0 && this.settings.buyOffers.amountType == 'tokens' ? ethers.utils.parseEther(this.settings.buyOffers.amount) : null;
       let maxWeth = this.settings.buyOffers.amount != null && this.settings.buyOffers.amount.trim().length != 0 && this.settings.buyOffers.amountType != 'tokens' ? ethers.utils.parseEther(this.settings.buyOffers.amount) : null;
-      // console.log(now() + " INFO TradeFungibles:computed.newBuyOffers - maxTokens: " + (maxTokens && ethers.utils.formatEther(maxTokens) || 'null') + ", maxWeth: " + (maxWeth && ethers.utils.formatEther(maxWeth) || 'null'));
+      console.log(now() + " INFO TradeFungibles:computed.newBuyOffers - maxTokens: " + (maxTokens && ethers.utils.formatEther(maxTokens) || 'null') + ", maxWeth: " + (maxWeth && ethers.utils.formatEther(maxWeth) || 'null'));
 
       const collator = {};
       for (const e of (this.tokenSet.events || [])) {
@@ -1966,9 +1966,9 @@ data: {{ data }}
         if (price.valid) {
           const tokensWethBalance = wethBalance.mul(TENPOW18).div(price.price);
           const tokensWethApproval = wethApproval.mul(TENPOW18).div(price.price);
-          // console.log("tokens: " + ethers.utils.formatEther(tokens) + ", price: " + ethers.utils.formatEther(price.price));
-          // console.log("wethBalance: " + ethers.utils.formatEther(wethBalance) + ", tokensWethBalance: " + ethers.utils.formatEther(tokensWethBalance));
-          // console.log("wethApproval: " + ethers.utils.formatEther(wethApproval) + ", tokensWethApproval: " + ethers.utils.formatEther(tokensWethApproval));
+          console.log("tokens: " + ethers.utils.formatEther(tokens) + ", price: " + ethers.utils.formatEther(price.price));
+          console.log("wethBalance: " + ethers.utils.formatEther(wethBalance) + ", tokensWethBalance: " + ethers.utils.formatEther(tokensWethBalance));
+          console.log("wethApproval: " + ethers.utils.formatEther(wethApproval) + ", tokensWethApproval: " + ethers.utils.formatEther(tokensWethApproval));
           if (tokens.gt(tokensWethBalance)) {
             tokens = tokensWethBalance;
           }
@@ -1981,18 +1981,24 @@ data: {{ data }}
             }
             maxTokens = maxTokens.sub(tokens);
           }
+          wethAmount = tokens.mul(ethers.BigNumber.from(price.price)).div(TENPOW18);
           if (maxWeth != null) {
-            wethAmount = tokens.mul(ethers.BigNumber.from(price.price)).div(TENPOW18);
             // maxTokensFromWeth = maxWeth * 10**18 / e.price
             const maxTokensFromWeth = maxWeth.mul(TENPOW18).div(price.price);
-            if (tokens.gt(maxTokensFromWeth)) {
-              wethAmount = maxWeth;
-              tokens = maxTokensFromWeth;
+            const maxWethFromMaxTokensFromWeth = maxTokensFromWeth.mul(ethers.BigNumber.from(price.price)).div(TENPOW18);
+            const tokensFromMaxWethFromMaxTokensFromWeth = maxWethFromMaxTokensFromWeth.mul(TENPOW18).div(price.price);
+            const maxWethFilledAveragePrice = tokensFromMaxWethFromMaxTokensFromWeth > 0 ? maxWethFromMaxTokensFromWeth.mul(TENPOW18).div(tokensFromMaxWethFromMaxTokensFromWeth) : 0;
+            console.log("HERE maxWeth: " + ethers.utils.formatEther(maxWeth) + ", wethAmount: " + ethers.utils.formatEther(wethAmount) + ", maxTokensFromWeth: " + ethers.utils.formatEther(maxTokensFromWeth) + ", maxWethFromMaxTokensFromWeth: " + ethers.utils.formatEther(maxWethFromMaxTokensFromWeth) + ", maxWethFilledAveragePrice: " + ethers.utils.formatEther(maxWethFilledAveragePrice));
+            if (tokens.gt(tokensFromMaxWethFromMaxTokensFromWeth)) {
+              wethAmount = maxWethFromMaxTokensFromWeth;
+              // TODO
+              tokens = tokensFromMaxWethFromMaxTokensFromWeth;
+              // wethAmount = tokens.mul(ethers.BigNumber.from(price.price)).div(TENPOW18);
             }
             maxWeth = maxWeth.sub(wethAmount);
           }
           if (tokens.gt(0)) {
-            wethAmount = tokens.mul(ethers.BigNumber.from(price.price)).div(TENPOW18);
+            // wethAmount = tokens.mul(ethers.BigNumber.from(price.price)).div(TENPOW18);
             totalTokens = ethers.BigNumber.from(totalTokens).add(tokens);
             totalWeth = ethers.BigNumber.from(totalWeth).add(wethAmount);
             wethBalances[price.maker].tokens = ethers.BigNumber.from(wethBalances[price.maker].tokens).sub(wethAmount).toString();
@@ -2008,6 +2014,8 @@ data: {{ data }}
         filledTokens = totalTokens;
         filledWeth = totalWeth;
         filledAveragePrice = totalTokens > 0 ? totalWeth.mul(TENPOW18).div(totalTokens) : 0;
+        console.log("filledTokens: " + ethers.utils.formatEther(filledTokens) + ", filledWeth: " + ethers.utils.formatEther(filledWeth) + ", filledAveragePrice: " + ethers.utils.formatEther(filledAveragePrice));
+        // console.log("wethApproval: " + ethers.utils.formatEther(wethApproval) + ", tokensWethApproval: " + ethers.utils.formatEther(tokensWethApproval));
       }
       const filled = {
         tokens: filledTokens != null && filledTokens.toString() || null,
@@ -2741,7 +2749,15 @@ data: {{ data }}
           // this.settings.newTokenAgent.show = false;
           // this.saveSettings();
         } catch (e) {
-          console.log(now() + " ERROR TradeFungibles:methods.newBuyOffersTrade: " + JSON.stringify(e));
+          // console.log(now() + " ERROR TradeFungibles:methods.newBuyOffersTrade: " + JSON.stringify(e, null, 2));
+
+          const decodedError = contract.interface.parseError(e.error.data.originalError.data)
+
+          console.log(now() + " ERROR TradeFungibles:methods.newBuyOffersTrade - decodedError.name: " + decodedError.name + ", args: " + JSON.stringify(decodedError.args.map(e => ethers.utils.formatEther(e)), null, 2));
+          // console.log(now() + " ERROR TradeFungibles:methods.newBuyOffersTrade - decodedError: " + JSON.stringify(decodedError, null, 2));
+
+          // console.log(`Transaction failed: ${decodedError.name}`)
+
           this.$bvToast.toast(`${e.message}`, {
             title: 'Error!',
             autoHideDelay: 5000,
