@@ -729,7 +729,7 @@ newSellOffers: {{ newSellOffers }}
                         <b-form-timepicker size="sm" id="addbuyoffer-expirytime" v-model="buyExpiryTime" minutes-step="15" now-button label-no-time-selected="Select" class="w-50"></b-form-timepicker>
                       </b-form-group>
                       <b-form-group label="" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
-                        <b-button size="sm" :disabled="settings.buyOffers.points.length == 0 || !!buyOfferPointsFeedback" @click="execAddSellOffer" variant="warning">Add Buy Offer</b-button>
+                        <b-button size="sm" :disabled="settings.buyOffers.points.length == 0 || !!buyOfferPointsFeedback" @click="execAddBuyOffer" variant="warning">Add Buy Offer</b-button>
                       </b-form-group>
                     </b-card-text>
                   </b-tab>
@@ -3396,7 +3396,7 @@ data: {{ data }}
             [
               this.tokenSet.token,
               1, // SELL
-              this.settings.addSellOffer.expiry || 0,
+              this.settings.sellOffers.expiry || 0,
               prices,
               [],
               tokenss,
@@ -3435,6 +3435,72 @@ data: {{ data }}
           // this.saveSettings();
         } catch (e) {
           console.log(now() + " ERROR TradeFungibles:methods.execAddSellOffer: " + JSON.stringify(e));
+          this.$bvToast.toast(`${e.message}`, {
+            title: 'Error!',
+            autoHideDelay: 5000,
+          });
+        }
+      }
+    },
+
+    async execAddBuyOffer() {
+      console.log(now() + " INFO TradeFungibles:methods.execAddBuyOffer - this.settings.sellOffers: " + JSON.stringify(this.settings.sellOffers));
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const network = this.chainId && NETWORKS[this.chainId.toString()] || {};
+      if (network.demodex) {
+        const contract = new ethers.Contract(network.demodex.address, network.demodex.abi, provider);
+        const contractWithSigner = contract.connect(provider.getSigner());
+        const prices = [];
+        const tokenss = [];
+        for (const [i, point] of this.settings.buyOffers.points.entries()) {
+          prices.push(ethers.utils.parseEther(point.price).toString());
+          tokenss.push(ethers.utils.parseUnits(point.tokens, this.tokenSet.decimals).toString());
+        }
+
+        try {
+          const payload = [
+            [
+              this.tokenSet.token,
+              0, // BUY
+              this.settings.buyOffers.expiry || 0,
+              prices,
+              [],
+              tokenss,
+            ],
+          ];
+          // struct AddOffer {
+          //     Token token;             // 160 bits
+          //     BuySell buySell;         // 8 bits
+          //     Unixtime expiry;         // 40 bits
+          //     Price[] prices;          // token/WETH 18dp
+          //     TokenId[] tokenIds;      // ERC-721/1155
+          //     Tokens[] tokenss;        // ERC-20/721/1155
+          // }
+          // function addOffers(AddOffer[] calldata inputs) external onlyOwner {
+          console.log(now() + " INFO TradeFungibles:methods.execAddBuyOffer - payload: " + JSON.stringify(payload));
+          const tx = await contractWithSigner.addOffers(payload);
+          // const tx = { hash: "blah" };
+          console.log(now() + " INFO TradeFungibles:methods.execAddBuyOffer - tx: " + JSON.stringify(tx));
+          const h = this.$createElement;
+          const vNodesMsg = h(
+            'p',
+            { class: ['text-left', 'mb-0'] },
+            [
+              h('a', { attrs: { href: this.explorer + 'tx/' + tx.hash, target: '_blank' } }, tx.hash.substring(0, 20) + '...' + tx.hash.slice(-18)),
+              h('br'),
+              h('br'),
+              'Resync after this tx has been included',
+            ]
+          );
+          this.$bvToast.toast([vNodesMsg], {
+            title: 'Transaction submitted',
+            autoHideDelay: 5000,
+          });
+          // this.$refs['modalnewtokenagent'].hide();
+          // this.settings.newTokenAgent.show = false;
+          // this.saveSettings();
+        } catch (e) {
+          console.log(now() + " ERROR TradeFungibles:methods.execAddBuyOffer: " + JSON.stringify(e));
           this.$bvToast.toast(`${e.message}`, {
             title: 'Error!',
             autoHideDelay: 5000,
