@@ -1672,7 +1672,7 @@ data: {{ data }}
 
       if (simulate && this.tokenSet.timestamp) {
         for (const [i, point] of points.entries()) {
-          console.log(now() + " INFO TradeFungibles:computed.newSellOffers - point[" + i + "]: " + JSON.stringify(point));
+          // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - point[" + i + "]: " + JSON.stringify(point));
           try {
             prices.push({
               txHash: null, logIndex: null,
@@ -1826,12 +1826,12 @@ data: {{ data }}
       const collator = {};
       for (const e of (this.tokenSet.events || [])) {
         if (e.eventType == EVENTTYPE_OFFERED && e.buySell == 0) {
-          console.log(now() + " INFO TradeFungibles:computed.newBuyOffers - OFFERED e: " + JSON.stringify(e));
+          // console.log(now() + " INFO TradeFungibles:computed.newBuyOffers - OFFERED e: " + JSON.stringify(e));
           if ((!mineOnly || e.maker == coinbaseIndex) && /*(includeInvalidated || d.nonce == e.nonce) &&*/ (includeExpired || (e.expiry == 0 || e.expiry >= this.tokenSet.timestamp))) {
-            // console.log(now() + " INFO TradeFungibles:computed.newBuyOffers - OFFERED SELL e: " + JSON.stringify(e));
+            // console.log(now() + " INFO TradeFungibles:computed.newBuyOffers - OFFERED BUY e: " + JSON.stringify(e));
             if (!(e.maker in collator)) {
               collator[e.maker] = {
-                nonce: 0, // TODO
+                nonce: this.tokenSet.nonces[e.maker] && this.tokenSet.nonces[e.maker].nonce|| 0,
                 offers: {},
               };
             }
@@ -1841,7 +1841,7 @@ data: {{ data }}
           // console.log(now() + " INFO TradeFungibles:computed.newBuyOffers - TRADED e: " + JSON.stringify(e));
           if (!(e.maker in collator)) {
             collator[e.maker] = {
-              nonce: 0, // TODO
+              nonce: this.tokenSet.nonces[e.maker] && this.tokenSet.nonces[e.maker].nonce|| 0,
               offers: {},
             };
           }
@@ -1860,15 +1860,15 @@ data: {{ data }}
         for (const [offerIndex, d2] of Object.entries(d1.offers)) {
           if (d2.prices.length == d2.tokenss.length) {
             for (let i = 0; i < d2.prices.length; i++) {
-              prices.push({
-                txHash: d2.txHash, logIndex: d2.logIndex,
-                maker,
-                offerIndex: d2.index, nonce: d2.nonce, expiry: d2.expiry,
-                priceIndex: i, price: d2.prices[i], tokens: d2.tokenss[i],
-                valid: d2.expiry == 0 || d2.expiry >= this.tokenSet.timestamp,
-                // valid: d3.nonce == d2.nonce && (d3.expiry == 0 || d3.expiry >= this.tokenSet.timestamp),
-                // selected: tokenAgent == selectedTokenAgent,
-              });
+              if ((includeInvalidated || d2.nonce == d1.nonce) && (includeExpired || d2.expiry == 0 || d2.expiry >= this.tokenSet.timestamp)) {
+                prices.push({
+                  txHash: d2.txHash, logIndex: d2.logIndex,
+                  maker,
+                  offerIndex: d2.index, nonce: d2.nonce, expiry: d2.expiry,
+                  priceIndex: i, price: d2.prices[i], tokens: d2.tokenss[i],
+                  valid: d2.nonce == d1.nonce && (d2.expiry == 0 || d2.expiry >= this.tokenSet.timestamp),
+                });
+              }
             }
           }
         }
@@ -1877,7 +1877,7 @@ data: {{ data }}
 
       if (simulate && this.tokenSet.timestamp) {
         for (const [i, point] of points.entries()) {
-          console.log(now() + " INFO TradeFungibles:computed.newBuyOffers - point[" + i + "]: " + JSON.stringify(point));
+          // console.log(now() + " INFO TradeFungibles:computed.newBuyOffers - point[" + i + "]: " + JSON.stringify(point));
           try {
             prices.push({
               txHash: null, logIndex: null,
@@ -1950,9 +1950,11 @@ data: {{ data }}
         // console.log(i + " " + ignoreApproval + " " + ethers.utils.formatEther(tokenBalance) + " " + ethers.utils.formatEther(tokenApproval) + " " + JSON.stringify(price));
         let tokens = ethers.BigNumber.from(price.tokens);
         let wethAmount = null;
-        if (price.txHash == null) {
-          console.log(now() + " INFO TradeFungibles:computed.newBuyOffers - SIMULATED prices[" + i + "]: " + JSON.stringify(price));
-        }
+        // if (price.txHash == null) {
+        //   console.log("SIMULATED prices[" + i + "]: " + JSON.stringify(price));
+        // } else if (!price.valid) {
+        //   console.log("INVALID prices[" + i + "]: " + JSON.stringify(price));
+        // }
         if (price.valid) {
           if (tokens.gt(tokenBalance)) {
             tokens = tokenBalance;
@@ -2000,7 +2002,7 @@ data: {{ data }}
         averagePrice: filledAveragePrice != null && filledAveragePrice.toString() || null,
       };
 
-      console.log(now() + " INFO TradeFungibles:computed.newBuyOffers - prices: " + JSON.stringify(prices, null, 2));
+      // console.log(now() + " INFO TradeFungibles:computed.newBuyOffers - prices: " + JSON.stringify(prices, null, 2));
       return { trades, filled, records, tokenBalances, tokenApprovals, prices, collator };
     },
 
