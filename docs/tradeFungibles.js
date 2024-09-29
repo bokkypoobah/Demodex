@@ -492,7 +492,7 @@ modalBuyOffer: {{ modalBuyOffer }}
                         <b-form-input size="sm" plaintext id="takeselloffer-wethapproved" :value="formatDecimals(coinbaseWethApproval, 18)" class="pl-2 w-75"></b-form-input>
                       </b-form-group>
                       <b-form-group label="" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
-                        <b-button size="sm" :disabled="!networkSupported || !newSellOffers.filled.tokens" @click="newSellOffersTrade" variant="warning">Trade</b-button>
+                        <b-button size="sm" :disabled="!networkSupported || !newSellOffers.filled.tokens" @click="newSellOffersTrade" variant="warning">Buy {{ settings.symbol }}</b-button>
                       </b-form-group>
                     </b-card-text>
                   </b-tab>
@@ -539,7 +539,7 @@ modalBuyOffer: {{ modalBuyOffer }}
                         <b-form-timepicker size="sm" id="addselloffer-expirytime" v-model="sellExpiryTime" minutes-step="15" now-button label-no-time-selected="Select" class="w-50"></b-form-timepicker>
                       </b-form-group>
                       <b-form-group label="" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
-                        <b-button size="sm" :disabled="settings.sellOffers.points.length == 0 || !!sellOfferPointsFeedback" @click="execAddSellOffer" variant="warning">Add Sell Offer</b-button>
+                        <b-button size="sm" :disabled="settings.sellOffers.points.length == 0 || !!sellOfferPointsFeedback" @click="execAddSellOffer" variant="warning">Add Sell {{ settings.symbol }} Offer</b-button>
                       </b-form-group>
                     </b-card-text>
                   </b-tab>
@@ -587,7 +587,7 @@ modalBuyOffer: {{ modalBuyOffer }}
                         <b-form-input size="sm" plaintext id="takebuyoffer-wethapproved" :value="formatDecimals(coinbaseTokenApproval, 18)" class="pl-2 w-75"></b-form-input>
                       </b-form-group>
                       <b-form-group label="" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
-                        <b-button size="sm" :disabled="!networkSupported || !newBuyOffers.filled.tokens" @click="newBuyOffersTrade" variant="warning">Trade</b-button>
+                        <b-button size="sm" :disabled="!networkSupported || !newBuyOffers.filled.tokens" @click="newBuyOffersTrade" variant="warning">Sell {{ settings.symbol }}</b-button>
                       </b-form-group>
                     </b-card-text>
                   </b-tab>
@@ -634,7 +634,7 @@ modalBuyOffer: {{ modalBuyOffer }}
                         <b-form-timepicker size="sm" id="addbuyoffer-expirytime" v-model="buyExpiryTime" minutes-step="15" now-button label-no-time-selected="Select" class="w-50"></b-form-timepicker>
                       </b-form-group>
                       <b-form-group label="" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
-                        <b-button size="sm" :disabled="settings.buyOffers.points.length == 0 || !!buyOfferPointsFeedback" @click="execAddBuyOffer" variant="warning">Add Buy Offer</b-button>
+                        <b-button size="sm" :disabled="settings.buyOffers.points.length == 0 || !!buyOfferPointsFeedback" @click="execAddBuyOffer" variant="warning">Add Buy {{ settings.symbol }} Offer</b-button>
                       </b-form-group>
                     </b-card-text>
                   </b-tab>
