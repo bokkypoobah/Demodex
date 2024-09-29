@@ -456,40 +456,40 @@ modalBuyOffer: {{ modalBuyOffer }}
                 <b-tabs small card v-model="settings.sellOffers.tabIndex" @input="saveSettings();" pills card vertical nav-class="m-0 p-1" content-class="mt-0" active-tab-class="m-1 p-1" align="left" style="min-height: 260px;">
                   <b-tab title="Take Offer" active>
                     <b-card-text class="m-0 p-0">
-                      <b-form-group label="Requested amount:" label-for="modalselloffer-amounttype" label-size="sm" label-cols-sm="4" label-align-sm="right" class="m-0 p-0">
+                      <b-form-group label="Requested amount:" label-for="takeselloffer-amounttype" label-size="sm" label-cols-sm="4" label-align-sm="right" class="m-0 p-0">
                         <b-input-group class="w-75">
-                          <b-form-input size="sm" type="number" id="modalselloffer-amount" v-model="settings.sellOffers.amount" @update="saveSettings();" debounce="600"></b-form-input>
+                          <b-form-input size="sm" type="number" id="takeselloffer-amount" v-model="settings.sellOffers.amount" @update="saveSettings();" debounce="600"></b-form-input>
                           <b-input-group-append>
-                            <b-form-radio-group size="sm" buttons id="modalselloffer-amounttype" v-model="settings.sellOffers.amountType" @change="saveSettings();" button-variant="outline-primary">
+                            <b-form-radio-group size="sm" buttons id="takeselloffer-amounttype" v-model="settings.sellOffers.amountType" @change="saveSettings();" button-variant="outline-primary">
                               <b-form-radio value="tokens">{{ settings.symbol }}</b-form-radio>
                               <b-form-radio value="weth">{{ settings.sellOffers.paymentType == 'weth' ? 'WETH' : 'ETH' }}</b-form-radio>
                             </b-form-radio-group>
                           </b-input-group-append>
                         </b-input-group>
                       </b-form-group>
-                      <b-form-group :label="'Receive ' + settings.symbol + ':'" label-for="modalselloffer-filledtokens" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
-                        <b-form-input size="sm" plaintext id="modalselloffer-filledtokens" :value="newSellOffers.filled.tokens && formatDecimals(newSellOffers.filled.tokens, 18)" class="pl-2 w-75"></b-form-input>
+                      <b-form-group :label="'Receive ' + settings.symbol + ':'" label-for="takeselloffer-filledtokens" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+                        <b-form-input size="sm" plaintext id="takeselloffer-filledtokens" :value="newSellOffers.filled.tokens && formatDecimals(newSellOffers.filled.tokens, 18)" class="pl-2 w-75"></b-form-input>
                       </b-form-group>
-                      <b-form-group :label="settings.sellOffers.paymentType == 'weth' ? 'Pay WETH:' : 'Pay ETH:'" label-for="modalselloffer-filledweth" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
-                        <b-form-input size="sm" plaintext id="modalselloffer-filledweth" :value="newSellOffers.filled.weth && formatDecimals(newSellOffers.filled.weth, 18)" class="pl-2 w-75"></b-form-input>
+                      <b-form-group :label="settings.sellOffers.paymentType == 'weth' ? 'Pay WETH:' : 'Pay ETH:'" label-for="takeselloffer-filledweth" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+                        <b-form-input size="sm" plaintext id="takeselloffer-filledweth" :value="newSellOffers.filled.weth && formatDecimals(newSellOffers.filled.weth, 18)" class="pl-2 w-75"></b-form-input>
                       </b-form-group>
-                      <b-form-group label="Average Price:" label-for="modalselloffer-filledaverageprice" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
-                        <b-form-input size="sm" plaintext id="modalselloffer-filledaverageprice" :value="newSellOffers.filled.averagePrice && formatDecimals(newSellOffers.filled.averagePrice, 18)" class="pl-2 w-75"></b-form-input>
+                      <b-form-group label="Average Price:" label-for="takeselloffer-filledaverageprice" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+                        <b-form-input size="sm" plaintext id="takeselloffer-filledaverageprice" :value="newSellOffers.filled.averagePrice && formatDecimals(newSellOffers.filled.averagePrice, 18)" class="pl-2 w-75"></b-form-input>
                       </b-form-group>
-                      <b-form-group label="Payment in:" label-for="modalselloffer-paymenttype" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
-                        <b-form-radio-group size="sm" buttons id="modalselloffer-paymenttype" v-model="settings.sellOffers.paymentType" @change="saveSettings();" button-variant="outline-primary">
+                      <b-form-group label="Payment in:" label-for="takeselloffer-paymenttype" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+                        <b-form-radio-group size="sm" buttons id="takeselloffer-paymenttype" v-model="settings.sellOffers.paymentType" @change="saveSettings();" button-variant="outline-primary">
                           <b-form-radio value="weth">WETH</b-form-radio>
                           <b-form-radio value="eth">ETH</b-form-radio>
                         </b-form-radio-group>
                       </b-form-group>
-                      <b-form-group label="ETH Balance:" label-for="modalselloffer-ethbalance" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
-                        <b-form-input size="sm" plaintext id="modalselloffer-ethbalance" :value="formatDecimals(balance, 18)" class="pl-2 w-75"></b-form-input>
+                      <b-form-group label="ETH Balance:" label-for="takeselloffer-ethbalance" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+                        <b-form-input size="sm" plaintext id="takeselloffer-ethbalance" :value="formatDecimals(balance, 18)" class="pl-2 w-75"></b-form-input>
                       </b-form-group>
-                      <b-form-group v-if="settings.sellOffers.paymentType == 'weth'" label="WETH Balance:" label-for="modalselloffer-wethbalance" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
-                        <b-form-input size="sm" plaintext id="modalselloffer-wethbalance" :value="formatDecimals(coinbaseWethBalance, 18)" class="pl-2 w-75"></b-form-input>
+                      <b-form-group v-if="settings.sellOffers.paymentType == 'weth'" label="WETH Balance:" label-for="takeselloffer-wethbalance" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+                        <b-form-input size="sm" plaintext id="takeselloffer-wethbalance" :value="formatDecimals(coinbaseWethBalance, 18)" class="pl-2 w-75"></b-form-input>
                       </b-form-group>
-                      <b-form-group v-if="settings.sellOffers.paymentType == 'weth'" label="WETH Approved:" label-for="modalselloffer-wethapproved" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
-                        <b-form-input size="sm" plaintext id="modalselloffer-wethapproved" :value="formatDecimals(coinbaseWethApproval, 18)" class="pl-2 w-75"></b-form-input>
+                      <b-form-group v-if="settings.sellOffers.paymentType == 'weth'" label="WETH Approved:" label-for="takeselloffer-wethapproved" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+                        <b-form-input size="sm" plaintext id="takeselloffer-wethapproved" :value="formatDecimals(coinbaseWethApproval, 18)" class="pl-2 w-75"></b-form-input>
                       </b-form-group>
                       <b-form-group label="" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
                         <b-button size="sm" :disabled="!networkSupported || !newSellOffers.filled.tokens" @click="newSellOffersTrade" variant="warning">Trade</b-button>
@@ -683,7 +683,45 @@ newSellOffers: {{ newSellOffers }}
               <b-card no-body>
                 <b-tabs small card v-model="settings.buyOffers.tabIndex" @input="saveSettings();" pills card vertical nav-class="m-0 p-1" content-class="mt-0" active-tab-class="m-1 p-1" align="left" style="min-height: 260px;">
                   <b-tab title="Take Offer" active>
-                    <b-card-text>
+                    <b-card-text class="m-0 p-0">
+                      <b-form-group label="Requested amount:" label-for="takebuyoffer-amounttype" label-size="sm" label-cols-sm="4" label-align-sm="right" class="m-0 p-0">
+                        <b-input-group class="w-75">
+                          <b-form-input size="sm" type="number" id="takebuyoffer-amount" v-model="settings.buyOffers.amount" @update="saveSettings();" debounce="600"></b-form-input>
+                          <b-input-group-append>
+                            <b-form-radio-group size="sm" buttons id="takebuyoffer-amounttype" v-model="settings.buyOffers.amountType" @change="saveSettings();" button-variant="outline-primary">
+                              <b-form-radio value="tokens">{{ settings.symbol }}</b-form-radio>
+                              <b-form-radio value="weth">{{ settings.buyOffers.paymentType == 'weth' ? 'WETH' : 'ETH' }}</b-form-radio>
+                            </b-form-radio-group>
+                          </b-input-group-append>
+                        </b-input-group>
+                      </b-form-group>
+                      <b-form-group :label="'Receive ' + settings.symbol + ':'" label-for="takebuyoffer-filledtokens" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+                        <b-form-input size="sm" plaintext id="takebuyoffer-filledtokens" :value="newBuyOffers.filled.tokens && formatDecimals(newBuyOffers.filled.tokens, 18)" class="pl-2 w-75"></b-form-input>
+                      </b-form-group>
+                      <b-form-group :label="settings.buyOffers.paymentType == 'weth' ? 'Pay WETH:' : 'Pay ETH:'" label-for="takebuyoffer-filledweth" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+                        <b-form-input size="sm" plaintext id="takebuyoffer-filledweth" :value="newBuyOffers.filled.weth && formatDecimals(newBuyOffers.filled.weth, 18)" class="pl-2 w-75"></b-form-input>
+                      </b-form-group>
+                      <b-form-group label="Average Price:" label-for="takebuyoffer-filledaverageprice" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+                        <b-form-input size="sm" plaintext id="takebuyoffer-filledaverageprice" :value="newBuyOffers.filled.averagePrice && formatDecimals(newBuyOffers.filled.averagePrice, 18)" class="pl-2 w-75"></b-form-input>
+                      </b-form-group>
+                      <b-form-group label="Payment in:" label-for="takebuyoffer-paymenttype" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+                        <b-form-radio-group size="sm" buttons id="takebuyoffer-paymenttype" v-model="settings.buyOffers.paymentType" @change="saveSettings();" button-variant="outline-primary">
+                          <b-form-radio value="weth">WETH</b-form-radio>
+                          <b-form-radio value="eth">ETH</b-form-radio>
+                        </b-form-radio-group>
+                      </b-form-group>
+                      <b-form-group label="ETH Balance:" label-for="takebuyoffer-ethbalance" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+                        <b-form-input size="sm" plaintext id="takebuyoffer-ethbalance" :value="formatDecimals(balance, 18)" class="pl-2 w-75"></b-form-input>
+                      </b-form-group>
+                      <b-form-group v-if="settings.buyOffers.paymentType == 'weth'" label="WETH Balance:" label-for="takebuyoffer-wethbalance" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+                        <b-form-input size="sm" plaintext id="takebuyoffer-wethbalance" :value="formatDecimals(coinbaseWethBalance, 18)" class="pl-2 w-75"></b-form-input>
+                      </b-form-group>
+                      <b-form-group v-if="settings.buyOffers.paymentType == 'weth'" label="WETH Approved:" label-for="takebuyoffer-wethapproved" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+                        <b-form-input size="sm" plaintext id="takebuyoffer-wethapproved" :value="formatDecimals(coinbaseWethApproval, 18)" class="pl-2 w-75"></b-form-input>
+                      </b-form-group>
+                      <b-form-group label="" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+                        <b-button size="sm" :disabled="!networkSupported || !newBuyOffers.filled.tokens" @click="newBuyOffersTrade" variant="warning">Trade</b-button>
+                      </b-form-group>
                     </b-card-text>
                   </b-tab>
                   <b-tab title="Make Offer">
@@ -751,12 +789,11 @@ newSellOffers: {{ newSellOffers }}
               <!-- <b-card-text v-if="settings.buyOffers.tabIndex == 0" class="m-0 p-0">
 
               </b-card-text> -->
-              <font v-if="settings.buyOffers.tabIndex != 0" size="-2">
+              <!-- <font v-if="settings.buyOffers.tabIndex != 0" size="-2">
                 <pre>
-<!-- settings.buyOffers: {{ settings.buyOffers }} -->
 newBuyOffers: {{ newBuyOffers }}
                 </pre>
-              </font>
+              </font> -->
             </b-col>
           </b-row>
           <!-- <b-row class="m-0 mt-2 p-0">
@@ -2733,7 +2770,7 @@ data: {{ data }}
         try {
           const tx = await contractWithSigner.trade(this.newSellOffers.trades, this.settings.sellOffers.paymentType == 'eth' ? 1 : 0, { value: this.settings.sellOffers.paymentType == 'eth' ? this.newSellOffers.filled.weth : 0 });
           // const tx = { hash: "blah" };
-          console.log(now() + " INFO TradeFungibles:methods.trade - tx: " + JSON.stringify(tx));
+          console.log(now() + " INFO TradeFungibles:methods.newSellOffersTrade - tx: " + JSON.stringify(tx));
           const h = this.$createElement;
           const vNodesMsg = h(
             'p',
@@ -2753,7 +2790,74 @@ data: {{ data }}
           // this.settings.newTokenAgent.show = false;
           // this.saveSettings();
         } catch (e) {
-          console.log(now() + " ERROR TradeFungibles:methods.trade: " + JSON.stringify(e));
+          console.log(now() + " ERROR TradeFungibles:methods.newSellOffersTrade: " + JSON.stringify(e));
+          this.$bvToast.toast(`${e.message}`, {
+            title: 'Error!',
+            autoHideDelay: 5000,
+          });
+        }
+      }
+    },
+
+    async newBuyOffersTrade() {
+      console.log(now() + " INFO TradeFungibles:methods.newBuyOffersTrade - this.newSellOffers.trades: " + JSON.stringify(this.newSellOffers.trades));
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const network = this.chainId && NETWORKS[this.chainId.toString()] || {};
+      console.log("token: " + this.tokenSet.token);
+      console.log("WETH: " + this.tokenSet.weth);
+      console.log("taker: " + this.coinbase);
+
+      if (network.demodex) {
+        const contract = new ethers.Contract(network.demodex.address, network.demodex.abi, provider);
+        const contractWithSigner = contract.connect(provider.getSigner());
+
+        const token = new ethers.Contract(this.tokenSet.token, ERC20ABI, provider);
+        const weth = new ethers.Contract(this.tokenSet.weth, ERC20ABI, provider);
+
+        // const makerTokenBalance = await token.balanceOf(maker);
+        // console.log("makerTokenBalance: " + ethers.utils.formatEther(makerTokenBalance));
+        // const makerTokenApproved = await token.allowance(maker, tokenAgent);
+        // console.log("makerTokenApproved: " + ethers.utils.formatEther(makerTokenApproved));
+
+        // const makerWethBalance = await weth.balanceOf(maker);
+        // console.log("makerWethBalance: " + ethers.utils.formatEther(makerWethBalance));
+        // const makerWethApproved = await weth.allowance(maker, tokenAgent);
+        // console.log("makerWethApproved: " + ethers.utils.formatEther(makerWethApproved));
+
+        const takerTokenBalance = await token.balanceOf(this.coinbase);
+        console.log("takerTokenBalance: " + ethers.utils.formatEther(takerTokenBalance));
+        const takerTokenApproved = await token.allowance(this.coinbase, network.demodex.address);
+        console.log("takerTokenApproved: " + ethers.utils.formatEther(takerTokenApproved));
+
+        const takerWethBalance = await weth.balanceOf(this.coinbase);
+        console.log("takerWethBalance: " + ethers.utils.formatEther(takerWethBalance));
+        const takerWethApproved = await weth.allowance(this.coinbase, network.demodex.address);
+        console.log("takerWethApproved: " + ethers.utils.formatEther(takerWethApproved));
+
+        try {
+          const tx = await contractWithSigner.trade(this.newSellOffers.trades, this.settings.sellOffers.paymentType == 'eth' ? 1 : 0, { value: this.settings.sellOffers.paymentType == 'eth' ? this.newSellOffers.filled.weth : 0 });
+          // const tx = { hash: "blah" };
+          console.log(now() + " INFO TradeFungibles:methods.newBuyOffersTrade - tx: " + JSON.stringify(tx));
+          const h = this.$createElement;
+          const vNodesMsg = h(
+            'p',
+            { class: ['text-left', 'mb-0'] },
+            [
+              h('a', { attrs: { href: this.explorer + 'tx/' + tx.hash, target: '_blank' } }, tx.hash.substring(0, 20) + '...' + tx.hash.slice(-18)),
+              h('br'),
+              h('br'),
+              'Resync after this tx has been included',
+            ]
+          );
+          this.$bvToast.toast([vNodesMsg], {
+            title: 'Transaction submitted',
+            autoHideDelay: 5000,
+          });
+          // this.$refs['modalnewtokenagent'].hide();
+          // this.settings.newTokenAgent.show = false;
+          // this.saveSettings();
+        } catch (e) {
+          console.log(now() + " ERROR TradeFungibles:methods.newBuyOffersTrade: " + JSON.stringify(e));
           this.$bvToast.toast(`${e.message}`, {
             title: 'Error!',
             autoHideDelay: 5000,
