@@ -3,6 +3,34 @@ const TradeFungibles = {
     <div class="m-0 p-0">
       <b-card no-body no-header class="border-0">
 
+        <b-modal id="wallet" hide-footer header-class="m-0 px-3 py-2" body-class="m-0 p-0" body-bg-variant="light" size="md">
+          <template #modal-title>Wallet</template>
+          <b-form-group :label="settings.symbol + ' balance:'" label-for="wallet-wethbalance" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
+            <b-form-input size="sm" plaintext id="wallet-wethbalance" :value="formatDecimals(coinbaseTokenBalance, 18)" class="pl-2 w-75"></b-form-input>
+          </b-form-group>
+          <b-form-group :label="settings.symbol + ' approved:'" label-for="takebuyoffer-wethapproved" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
+            <b-form-input size="sm" plaintext id="takebuyoffer-wethapproved" :value="formatDecimals(coinbaseTokenApproval, 18)" class="pl-2 w-75"></b-form-input>
+          </b-form-group>
+          <b-form-group label="WETH balance:" label-for="wallet-wethbalance" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
+            <b-form-input size="sm" plaintext id="wallet-wethbalance" :value="formatDecimals(coinbaseWethBalance, 18)" class="pl-2 w-75"></b-form-input>
+          </b-form-group>
+          <b-form-group label="WETH approved:" label-for="wallet-wethapproved" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
+            <b-form-input size="sm" plaintext id="wallet-wethapproved" :value="formatDecimals(coinbaseWethApproval, 18)" class="pl-2 w-75"></b-form-input>
+          </b-form-group>
+          <b-form-group label="ETH balance:" label-for="wallet-ethbalance" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
+            <b-form-input size="sm" plaintext id="wallet-ethbalance" :value="formatDecimals(balance, 18)" class="pl-2 w-75"></b-form-input>
+          </b-form-group>
+          <!-- <b-form-group label="Price display decimals:" label-for="config-pricedisplaydecimals" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
+            <b-form-select size="sm" id="config-pricedisplaydecimals" v-model="settings.config.priceDisplayDecimals" @change="saveSettings" :options="priceDecimalsOptions" v-b-popover.hover.ds500="'Number of decimals to display for prices'"></b-form-select>
+          </b-form-group>
+          <b-form-group label="Token display decimals:" label-for="config-tokendisplaydecimals" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
+            <b-form-select size="sm" id="config-tokendisplaydecimals" v-model="settings.config.tokenDisplayDecimals" @change="saveSettings" :options="decimalsOptions" v-b-popover.hover.ds500="'Number of decimals to display for prices'"></b-form-select>
+          </b-form-group>
+          <b-form-group label="WETH display decimals:" label-for="config-wethisplaydecimals" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
+            <b-form-select size="sm" id="config-wethisplaydecimals" v-model="settings.config.wethDisplayDecimals" @change="saveSettings" :options="decimalsOptions" v-b-popover.hover.ds500="'Number of decimals to display for prices'"></b-form-select>
+          </b-form-group> -->
+        </b-modal>
+
         <b-modal id="config" hide-footer header-class="m-0 px-3 py-2" body-class="m-0 p-0" body-bg-variant="light" size="md">
           <template #modal-title>Config</template>
           <b-form-group label="Price display decimals:" label-for="config-pricedisplaydecimals" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
@@ -136,6 +164,9 @@ modalBuyOffer: {{ modalBuyOffer }}
               </div>
               <div class="mt-0 pr-3">
                 <b-button size="sm" :disabled="!networkSupported || sync.completed != null || !validAddress(settings.tokenContractAddress)" @click="invalidateAllOffers" v-b-popover.hover.ds500="'Invalidate all of my offers'" variant="transparent"><b-icon-stop-fill shift-v="+1" font-scale="1.2" variant="danger"></b-icon-stop-fill></b-button>
+              </div>
+              <div class="mt-0 pr-3">
+                <b-button size="sm" v-b-modal.wallet variant="link" v-b-popover.hover.ds500="'Wallet'" class="m-0 ml-2 mr-2 p-0"><b-icon-wallet2 shift-v="-2" font-scale="1.1"></b-icon-wallet2></b-button>
               </div>
               <div class="mt-0 pr-3">
                 <b-button size="sm" v-b-modal.config variant="link" v-b-popover.hover.ds500="'Config'" class="m-0 ml-2 mr-2 p-0"><b-icon-tools shift-v="-1" font-scale="0.9"></b-icon-tools></b-button>
@@ -2750,7 +2781,7 @@ data: {{ data }}
           try {
             const decodedError = contract.interface.parseError(e.error.data.originalError.data)
             console.log(now() + " ERROR TradeFungibles:methods.newBuyOffersTrade - decodedError.name: " + decodedError.name + ", args: " + JSON.stringify(decodedError.args.map(e => ethers.utils.formatEther(e)), null, 2));
-          } catch (e1) {            
+          } catch (e1) {
           }
 
           // console.log(now() + " ERROR TradeFungibles:methods.newBuyOffersTrade - decodedError: " + JSON.stringify(decodedError, null, 2));
