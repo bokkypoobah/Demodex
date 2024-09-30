@@ -3,8 +3,47 @@ const TradeFungibles = {
     <div class="m-0 p-0">
       <b-card no-body no-header class="border-0">
 
-        <b-modal id="wallet" ref="modalwallet" v-model="wallet.show" @close="wallet.show = false;" hide-footer header-class="m-0 px-3 py-2" body-class="m-0 p-0" body-bg-variant="light" size="md">
-          <template #modal-title>Wallet {{ indexToAddress[wallet.address].substring(0, 10) + '...' + indexToAddress[wallet.address].slice(-8) }}</template>
+        <b-modal id="wallet" ref="modalwallet" v-model="wallet.show" @close="wallet.show = false;" hide-footer :hide-header-close=false header-class="m-0 px-3 py-2" body-class="m-0 p-0" body-bg-variant="light" size="md">
+          <!-- <template #modal-title>
+            <div class="d-flex flex-wrap m-0 mt-0 p-0">
+              <div class="mt-0 pr-1">
+                Wallet {{ indexToAddress[wallet.address].substring(0, 10) + '...' + indexToAddress[wallet.address].slice(-8) }}
+              </div>
+              <div class="mt-0 flex-grow-1">
+              </div>
+              <div class="mt-0 pl-1 text-right">
+                Blah
+              </div>
+            </div> -->
+            <!-- <h6 class="mt-1">
+              Wallet {{ indexToAddress[wallet.address].substring(0, 10) + '...' + indexToAddress[wallet.address].slice(-8) }}
+            </h6> -->
+          <!-- </template> -->
+
+          <template #modal-header="{ close }">
+            <h5 class="m-0 p-0">Wallet</h5>
+            <!-- <b-button size="sm" variant="transparent" @click="close()" class="m-0 p-0">
+              <h5 class="m-0 p-0">
+                <b-icon-x shift-v="+1" font-scale="1.0"></b-icon-x>
+              </h5>
+            </b-button> -->
+            <!-- <b-button type="button" @click="close()">y
+            </b-button> -->
+            <div>
+              <b-button type="button" @click="close()" variant="none" class="close">×</b-button>
+              <b-button size="sm" :disabled="!networkSupported" @click="refreshWallet(); syncNow();" v-b-popover.hover.ds500="'Sync'" variant="link"><b-icon-arrow-repeat shift-v="+1" font-scale="1.2"></b-icon-arrow-repeat></b-button>
+            </div>
+            <!-- <div class="d-flex flex-wrap m-0 mt-0 p-0">
+              <div class="mt-0 pr-1">
+                Wallet {{ indexToAddress[wallet.address].substring(0, 10) + '...' + indexToAddress[wallet.address].slice(-8) }}
+              </div>
+              <div class="mt-0 flex-grow-1">
+              </div>
+              <div class="mt-0 pl-1 text-right">
+                Blah
+              </div>
+            </div> -->
+          </template>
           <b-form-group :label="settings.symbol + ' balance:'" label-for="wallet-wethbalance" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
             <b-form-input size="sm" plaintext id="wallet-wethbalance" :value="formatDecimals(wallet.tokenBalance, 18)" class="pl-2 w-75"></b-form-input>
           </b-form-group>
