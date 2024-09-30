@@ -31,7 +31,7 @@ const TradeFungibles = {
             </b-button> -->
             <div>
               <b-button type="button" @click="close()" variant="none" class="close">×</b-button>
-              <b-button size="sm" :disabled="!networkSupported" @click="refreshWallet(); syncNow();" v-b-popover.hover.ds500="'Sync'" variant="link"><b-icon-arrow-repeat shift-v="+1" font-scale="1.2"></b-icon-arrow-repeat></b-button>
+              <b-button size="sm" :disabled="!networkSupported || sync.completed != null" @click="refreshWallet(); syncNow();" v-b-popover.hover.ds500="'Sync'" variant="link"><b-icon-arrow-repeat shift-v="+1" font-scale="1.2"></b-icon-arrow-repeat></b-button>
             </div>
             <!-- <div class="d-flex flex-wrap m-0 mt-0 p-0">
               <div class="mt-0 pr-1">
