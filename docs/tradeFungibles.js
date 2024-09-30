@@ -3,8 +3,8 @@ const TradeFungibles = {
     <div class="m-0 p-0">
       <b-card no-body no-header class="border-0">
 
-        <b-modal id="wallet" hide-footer header-class="m-0 px-3 py-2" body-class="m-0 p-0" body-bg-variant="light" size="md">
-          <template #modal-title>Wallet</template>
+        <b-modal id="wallet" ref="modalwallet" v-model="wallet.show" @close="wallet.show = false;" hide-footer header-class="m-0 px-3 py-2" body-class="m-0 p-0" body-bg-variant="light" size="md">
+          <template #modal-title>Wallet {{ indexToAddress[wallet.address].substring(0, 10) + '...' + indexToAddress[wallet.address].slice(-8) }}</template>
           <b-form-group :label="settings.symbol + ' balance:'" label-for="wallet-wethbalance" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
             <b-form-input size="sm" plaintext id="wallet-wethbalance" :value="formatDecimals(coinbaseTokenBalance, 18)" class="pl-2 w-75"></b-form-input>
           </b-form-group>
@@ -166,7 +166,8 @@ modalBuyOffer: {{ modalBuyOffer }}
                 <b-button size="sm" :disabled="!networkSupported || sync.completed != null || !validAddress(settings.tokenContractAddress)" @click="invalidateAllOffers" v-b-popover.hover.ds500="'Invalidate all of my offers'" variant="transparent"><b-icon-stop-fill shift-v="+1" font-scale="1.2" variant="danger"></b-icon-stop-fill></b-button>
               </div>
               <div class="mt-0 pr-3">
-                <b-button size="sm" v-b-modal.wallet variant="link" v-b-popover.hover.ds500="'Wallet'" class="m-0 ml-2 mr-2 p-0"><b-icon-wallet2 shift-v="-2" font-scale="1.1"></b-icon-wallet2></b-button>
+                <!-- <b-button size="sm" @click="wallet.address = addressToIndex[coinbase]; wallet.show = true;" variant="link" v-b-popover.hover.ds500="'Wallet'" class="m-0 ml-2 mr-2 p-0"><b-icon-wallet2 shift-v="-2" font-scale="1.1"></b-icon-wallet2></b-button> -->
+                <b-button size="sm" @click="viewWallet(addressToIndex[coinbase]);" variant="link" v-b-popover.hover.ds500="'Wallet'" class="m-0 ml-2 mr-2 p-0"><b-icon-wallet2 shift-v="-2" font-scale="1.1"></b-icon-wallet2></b-button>
               </div>
               <div class="mt-0 pr-3">
                 <b-button size="sm" v-b-modal.config variant="link" v-b-popover.hover.ds500="'Config'" class="m-0 ml-2 mr-2 p-0"><b-icon-tools shift-v="-1" font-scale="0.9"></b-icon-tools></b-button>
@@ -1106,6 +1107,16 @@ data: {{ data }}
       },
 
       tokenAgentFactoryEvents: [],
+
+      wallet: {
+        show: false,
+        address: null,
+        balance: null,
+        tokenBalance: null,
+        tokenApproval: null,
+        wethBalance: null,
+        wethApproval: null,
+      },
 
       data: {
         chainId: null,
@@ -2603,6 +2614,26 @@ data: {{ data }}
 
   },
   methods: {
+    async viewWallet(address) {
+      console.log(now() + " INFO TradeFungibles:methods.viewWallet - address: " + address);
+      this.wallet.address = address;
+      this.wallet.show = true;
+      this.refreshWallet();
+    },
+    async refreshWallet() {
+      console.log(now() + " INFO TradeFungibles:methods.refreshWallet - this.wallet.address: " + this.wallet.address);
+
+      // wallet: {
+      //   show: false,
+      //   address: null,
+      //   balance: null,
+      //   tokenBalance: null,
+      //   tokenApproval: null,
+      //   wethBalance: null,
+      //   wethApproval: null,
+      // },
+
+    },
     syncNow() {
       console.log(now() + " INFO TradeFungibles:methods.syncNow - settings.tokenContractAddress: " + this.settings.tokenContractAddress);
       store.dispatch('data/syncIt', {
@@ -3334,7 +3365,11 @@ data: {{ data }}
 
     sellOffersRowSelected(item) {
       console.log(now() + " INFO Addresses:methods.sellOffersRowSelected BEGIN: " + JSON.stringify(item, null, 2));
-      // if (item && item.length > 0) {
+      if (item && item.length > 0) {
+        // this.wallet.address = this.indexToAddress[item[0].maker];
+        this.viewWallet(item[0].maker);
+        // this.wallet.address = item[0].maker;
+        // this.wallet.show = true;
       //   if (item[0].tokenAgent != this.settings.sellOffers.select.tokenAgent) {
       //     this.settings.sellOffers.select = {
       //       tokenAgent: item[0].tokenAgent,
@@ -3346,14 +3381,18 @@ data: {{ data }}
       //       owner: null,
       //     };
       //   }
-      // }
+      }
       // this.saveSettings();
-      // this.$refs.sellOffersTable.clearSelected();
+      this.$refs.sellOffersTable.clearSelected();
     },
 
     buyOffersRowSelected(item) {
       console.log(now() + " INFO Addresses:methods.buyOffersRowSelected BEGIN: " + JSON.stringify(item, null, 2));
       if (item && item.length > 0) {
+        // this.wallet.address = this.indexToAddress[item[0].maker];
+        this.viewWallet(item[0].maker);
+        // this.wallet.address = item[0].maker;
+        // this.wallet.show = true;
         // this.modalBuyOffer = {
         //   txHash: item[0].txHash,
         //   logIndex: item[0].logIndex,
@@ -3368,7 +3407,7 @@ data: {{ data }}
         //   offer: this.data.tokenAgents[item[0].tokenAgent].offers[item[0].offerIndex],
         // };
         // this.$refs.modalbuyoffer.show();
-        // this.$refs.buyOffersTable.clearSelected();
+        this.$refs.buyOffersTable.clearSelected();
       }
     },
 
