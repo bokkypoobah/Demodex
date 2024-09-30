@@ -6,25 +6,25 @@ const TradeFungibles = {
         <b-modal id="wallet" ref="modalwallet" v-model="wallet.show" @close="wallet.show = false;" hide-footer header-class="m-0 px-3 py-2" body-class="m-0 p-0" body-bg-variant="light" size="md">
           <template #modal-title>Wallet {{ indexToAddress[wallet.address].substring(0, 10) + '...' + indexToAddress[wallet.address].slice(-8) }}</template>
           <b-form-group :label="settings.symbol + ' balance:'" label-for="wallet-wethbalance" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
-            <b-form-input size="sm" plaintext id="wallet-wethbalance" :value="formatDecimals(coinbaseTokenBalance, 18)" class="pl-2 w-75"></b-form-input>
+            <b-form-input size="sm" plaintext id="wallet-wethbalance" :value="formatDecimals(wallet.tokenBalance, 18)" class="pl-2 w-75"></b-form-input>
           </b-form-group>
           <b-form-group :label="settings.symbol + ' approved:'" label-for="takebuyoffer-wethapproved" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
-            <b-form-input size="sm" plaintext id="takebuyoffer-wethapproved" :value="formatDecimals(coinbaseTokenApproval, 18)" class="pl-2 w-75"></b-form-input>
+            <b-form-input size="sm" plaintext id="takebuyoffer-wethapproved" :value="formatDecimals(wallet.tokenApproval, 18)" class="pl-2 w-75"></b-form-input>
           </b-form-group>
           <b-form-group label="WETH balance:" label-for="wallet-wethbalance" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
-            <b-form-input size="sm" plaintext id="wallet-wethbalance" :value="formatDecimals(coinbaseWethBalance, 18)" class="pl-2 w-75"></b-form-input>
+            <b-form-input size="sm" plaintext id="wallet-wethbalance" :value="formatDecimals(wallet.wethBalance, 18)" class="pl-2 w-75"></b-form-input>
           </b-form-group>
           <b-form-group label="WETH approved:" label-for="wallet-wethapproved" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
-            <b-form-input size="sm" plaintext id="wallet-wethapproved" :value="formatDecimals(coinbaseWethApproval, 18)" class="pl-2 w-75"></b-form-input>
+            <b-form-input size="sm" plaintext id="wallet-wethapproved" :value="formatDecimals(wallet.wethApproval, 18)" class="pl-2 w-75"></b-form-input>
           </b-form-group>
           <b-form-group label="ETH balance:" label-for="wallet-ethbalance" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
-            <b-form-input size="sm" plaintext id="wallet-ethbalance" :value="formatDecimals(balance, 18)" class="pl-2 w-75"></b-form-input>
+            <b-form-input size="sm" plaintext id="wallet-ethbalance" :value="formatDecimals(wallet.balance, 18)" class="pl-2 w-75"></b-form-input>
           </b-form-group>
-          <font size="-2">
+          <!-- <font size="-2">
             <pre>
 {{ wallet }}
             </pre>
-          </font>
+          </font> -->
           <!-- <b-form-group label="Price display decimals:" label-for="config-pricedisplaydecimals" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
             <b-form-select size="sm" id="config-pricedisplaydecimals" v-model="settings.config.priceDisplayDecimals" @change="saveSettings" :options="priceDecimalsOptions" v-b-popover.hover.ds500="'Number of decimals to display for prices'"></b-form-select>
           </b-form-group>
@@ -2627,7 +2627,35 @@ data: {{ data }}
     },
     async refreshWallet() {
       console.log(now() + " INFO TradeFungibles:methods.refreshWallet - this.wallet.address: " + this.wallet.address);
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const network = this.chainId && NETWORKS[this.chainId.toString()] || {};
+      if (network.demodex) {
+        const token = new ethers.Contract(this.tokenSet.token, ERC20ABI, provider);
+        const weth = new ethers.Contract(this.tokenSet.weth, ERC20ABI, provider);
 
+        this.wallet.tokenBalance = null;
+        this.wallet.tokenApproval = null;
+        this.wallet.wethBalance = null;
+        this.wallet.wethApproval = null;
+        this.wallet.balance = null;
+
+        this.wallet.tokenBalance = (await token.balanceOf(this.indexToAddress[this.wallet.address])).toString();
+        this.wallet.tokenApproval = (await token.allowance(this.indexToAddress[this.wallet.address], network.demodex.address)).toString();
+        this.wallet.wethBalance = (await weth.balanceOf(this.indexToAddress[this.wallet.address])).toString();
+        this.wallet.wethApproval = (await weth.allowance(this.indexToAddress[this.wallet.address], network.demodex.address)).toString();
+        this.wallet.balance = (await provider.getBalance(this.indexToAddress[this.wallet.address])).toString();
+
+        // const takerTokenBalance = await token.balanceOf(this.coinbase);
+        // console.log("takerTokenBalance: " + ethers.utils.formatEther(takerTokenBalance));
+        // const takerTokenApproved = await token.allowance(this.coinbase, network.demodex.address);
+        // console.log("takerTokenApproved: " + ethers.utils.formatEther(takerTokenApproved));
+        //
+        // const takerWethBalance = await weth.balanceOf(this.coinbase);
+        // console.log("takerWethBalance: " + ethers.utils.formatEther(takerWethBalance));
+        // const takerWethApproved = await weth.allowance(this.coinbase, network.demodex.address);
+        // console.log("takerWethApproved: " + ethers.utils.formatEther(takerWethApproved));
+
+      }
       // wallet: {
       //   show: false,
       //   address: null,
