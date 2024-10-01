@@ -3,7 +3,7 @@ const TradeFungibles = {
     <div class="m-0 p-0">
       <b-card no-body no-header class="border-0">
 
-        <b-modal id="wallet" ref="modalwallet" v-model="wallet.show" @close="wallet.show = false;" hide-footer :hide-header-close=false header-class="m-0 px-3 pt-2 pb-1" body-class="m-0 p-0" body-bg-variant="light" size="md">
+        <b-modal id="wallet" ref="modalwallet" v-model="wallet.show" @close="wallet.show = false;" hide-footer :hide-header-close=false header-class="m-0 px-3 pt-2 pb-1" body-class="m-0 p-0" body-bg-variant="light" size="lg">
           <!-- <template #modal-title>
             <div class="d-flex flex-wrap m-0 mt-0 p-0">
               <div class="mt-0 pr-1">
@@ -46,27 +46,85 @@ const TradeFungibles = {
           </template>
           <!-- updateTokenApproval: null,
           updateWethApproval: null, -->
-          <b-form-group :label="settings.symbol + ' balance:'" label-for="wallet-wethbalance" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
-            <b-form-input size="sm" plaintext id="wallet-wethbalance" :value="formatDecimals(wallet.tokenBalance, 18)" class="pl-2 w-75"></b-form-input>
+
+          <b-form-group label-cols-lg="1" label="" label-size="lg" label-class="font-weight-bold pt-0" class="m-1 p-1">
+            <template v-slot:label>
+              <h6>{{ settings.symbol }}</h6>
+            </template>
+            <b-form-group :label="'Balance:'" label-for="wallet-tokenbalance" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+              <!-- <template v-slot="label">
+                Customer Name <span class="text-danger">*</span>
+              </template> -->
+              <b-input-group size="sm" class="w-75">
+                <b-form-input size="sm" plaintext id="wallet-tokenbalance" :value="formatDecimals(wallet.tokenBalance, 18)" class="pl-2 w-75"></b-form-input>
+                <b-input-group-append>
+                  <b-button size="sm" :href="explorer + 'token/' + tokenSet.token + '?a=' + indexToAddress[wallet.address]" variant="link" v-b-popover.hover.ds500="'View in explorer'" target="_blank" class="m-0 mt-1 ml-2 mr-2 p-0"><b-icon-link45deg shift-v="-1" font-scale="1.2"></b-icon-link45deg></b-button>
+                </b-input-group-append>
+              </b-input-group>
+            </b-form-group>
+            <b-form-group :label="'Approved:'" label-for="wallet-tokenapproved" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+              <b-form-input size="sm" plaintext id="wallet-tokenapproved" :value="formatDecimals(wallet.tokenApproval, 18)" class="pl-2 w-75"></b-form-input>
+            </b-form-group>
+            <b-form-group v-if="indexToAddress[wallet.address] == coinbase" :label="'Update approval:'" label-for="wallet-updatetokenapproval" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+              <b-input-group size="sm" class="w-75">
+                <b-form-input size="sm" type="number" id="wallet-updatetokenapproval" v-model.trim="wallet.updateTokenApproval" class="w-75"></b-form-input>
+                <b-input-group-append>
+                  <b-button variant="warning">Update</b-button>
+                </b-input-group-append>
+              </b-input-group>
+            </b-form-group>
           </b-form-group>
-          <b-form-group :label="settings.symbol + ' approved:'" label-for="wallet-wethapproved" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
-            <b-form-input size="sm" plaintext id="wallet-wethapproved" :value="formatDecimals(wallet.tokenApproval, 18)" class="pl-2 w-75"></b-form-input>
+
+          <b-form-group label-cols-lg="1" label="" label-size="lg" label-class="font-weight-bold pt-0" class="m-1 p-1">
+            <template v-slot:label>
+              <h6>WETH</h6>
+            </template>
+            <b-form-group label="ETH balance:" label-for="wallet-ethbalance" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+              <b-input-group size="sm" class="w-75">
+                <b-form-input size="sm" plaintext id="wallet-ethbalance" :value="formatDecimals(wallet.balance, 18)" class="pl-2 w-75"></b-form-input>
+                <b-input-group-append>
+                  <b-button size="sm" :href="explorer + 'address/' + indexToAddress[wallet.address]" variant="link" v-b-popover.hover.ds500="'View in explorer'" target="_blank" class="m-0 mt-1 ml-2 mr-2 p-0"><b-icon-link45deg shift-v="-1" font-scale="1.2"></b-icon-link45deg></b-button>
+                </b-input-group-append>
+              </b-input-group>
+            </b-form-group>
+            <b-form-group label="WETH balance:" label-for="wallet-wethbalance" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+              <b-input-group size="sm" class="w-75">
+                <b-form-input size="sm" plaintext id="wallet-wethbalance" :value="formatDecimals(wallet.wethBalance, 18)" class="pl-2 w-75"></b-form-input>
+                <b-input-group-append>
+                  <b-button size="sm" :href="explorer + 'token/' + tokenSet.weth + '?a=' + indexToAddress[wallet.address]" variant="link" v-b-popover.hover.ds500="'View in explorer'" target="_blank" class="m-0 mt-1 ml-2 mr-2 p-0"><b-icon-link45deg shift-v="-1" font-scale="1.2"></b-icon-link45deg></b-button>
+                </b-input-group-append>
+              </b-input-group>
+            </b-form-group>
+            <b-form-group v-if="indexToAddress[wallet.address] == coinbase" label="Convert ETH to WETH:" label-for="wallet-ethtoweth" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+              <b-input-group size="sm" class="w-75">
+                <b-form-input size="sm" type="number" id="wallet-ethtoweth" v-model.trim="wallet.ethToWeth"  class="w-75"></b-form-input>
+                <b-input-group-append>
+                  <b-button variant="warning">Convert</b-button>
+                </b-input-group-append>
+              </b-input-group>
+            </b-form-group>
+            <b-form-group v-if="indexToAddress[wallet.address] == coinbase" label="Convert WETH to ETH:" label-for="wallet-wethtoeth" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+              <b-input-group size="sm" class="w-75">
+                <b-form-input size="sm" type="number" id="wallet-wethtoeth" v-model.trim="wallet.wethToEth"  class="w-75"></b-form-input>
+                <b-input-group-append>
+                  <b-button variant="warning">Convert</b-button>
+                </b-input-group-append>
+              </b-input-group>
+            </b-form-group>
+            <b-form-group label="Approved:" label-for="wallet-wethapproved" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+              <b-form-input size="sm" plaintext id="wallet-wethapproved" :value="formatDecimals(wallet.wethApproval, 18)" class="pl-2 w-75"></b-form-input>
+            </b-form-group>
+            <b-form-group v-if="indexToAddress[wallet.address] == coinbase" label="Update approval:" label-for="wallet-updatewethapproval" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+              <b-input-group size="sm" class="w-75">
+                <b-form-input size="sm" type="number" id="wallet-updatewethapproval" v-model.trim="wallet.updateWethApproval"  class="w-75"></b-form-input>
+                <b-input-group-append>
+                  <b-button variant="warning">Update</b-button>
+                </b-input-group-append>
+              </b-input-group>
+            </b-form-group>
           </b-form-group>
-          <b-form-group v-if="indexToAddress[wallet.address] == coinbase" :label="'Update ' + settings.symbol + ' approval:'" label-for="wallet-updatetokenapproval" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
-            <b-form-input size="sm" type="number" id="wallet-updatetokenapproval" v-model.trim="wallet.updateTokenApproval" class="w-75"></b-form-input>
-          </b-form-group>
-          <b-form-group label="WETH balance:" label-for="wallet-wethbalance" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
-            <b-form-input size="sm" plaintext id="wallet-wethbalance" :value="formatDecimals(wallet.wethBalance, 18)" class="pl-2 w-75"></b-form-input>
-          </b-form-group>
-          <b-form-group label="WETH approved:" label-for="wallet-wethapproved" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
-            <b-form-input size="sm" plaintext id="wallet-wethapproved" :value="formatDecimals(wallet.wethApproval, 18)" class="pl-2 w-75"></b-form-input>
-          </b-form-group>
-          <b-form-group v-if="indexToAddress[wallet.address] == coinbase" label="Update WETH approval:" label-for="wallet-updatewethapproval" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
-            <b-form-input size="sm" type="number" id="wallet-updatewethapproval" v-model.trim="wallet.updateWethApproval"  class="w-75"></b-form-input>
-          </b-form-group>
-          <b-form-group label="ETH balance:" label-for="wallet-ethbalance" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
-            <b-form-input size="sm" plaintext id="wallet-ethbalance" :value="formatDecimals(wallet.balance, 18)" class="pl-2 w-75"></b-form-input>
-          </b-form-group>
+
+
           <!-- <font size="-2">
             <pre>
 {{ wallet }}
@@ -1163,11 +1221,13 @@ data: {{ data }}
       wallet: {
         show: false,
         address: null,
-        balance: null,
         tokenBalance: null,
         tokenApproval: null,
         updateTokenApproval: null,
+        balance: null,
         wethBalance: null,
+        ethToWeth: null,
+        wethToEth: null,
         wethApproval: null,
         updateWethApproval: null,
       },
@@ -2686,15 +2746,15 @@ data: {{ data }}
 
         this.wallet.tokenBalance = null;
         this.wallet.tokenApproval = null;
+        this.wallet.balance = null;
         this.wallet.wethBalance = null;
         this.wallet.wethApproval = null;
-        this.wallet.balance = null;
 
         this.wallet.tokenBalance = (await token.balanceOf(this.indexToAddress[this.wallet.address])).toString();
         this.wallet.tokenApproval = (await token.allowance(this.indexToAddress[this.wallet.address], network.demodex.address)).toString();
+        this.wallet.balance = (await provider.getBalance(this.indexToAddress[this.wallet.address])).toString();
         this.wallet.wethBalance = (await weth.balanceOf(this.indexToAddress[this.wallet.address])).toString();
         this.wallet.wethApproval = (await weth.allowance(this.indexToAddress[this.wallet.address], network.demodex.address)).toString();
-        this.wallet.balance = (await provider.getBalance(this.indexToAddress[this.wallet.address])).toString();
 
         // const takerTokenBalance = await token.balanceOf(this.coinbase);
         // console.log("takerTokenBalance: " + ethers.utils.formatEther(takerTokenBalance));
