@@ -4,57 +4,18 @@ const TradeFungibles = {
       <b-card no-body no-header class="border-0">
 
         <b-modal id="wallet" ref="modalwallet" v-model="wallet.show" @close="wallet.show = false;" hide-footer :hide-header-close=false header-class="m-0 px-3 pt-2 pb-1" body-class="m-0 p-0" body-bg-variant="light" size="lg">
-          <!-- <template #modal-title>
-            <div class="d-flex flex-wrap m-0 mt-0 p-0">
-              <div class="mt-0 pr-1">
-                Wallet {{ indexToAddress[wallet.address].substring(0, 10) + '...' + indexToAddress[wallet.address].slice(-8) }}
-              </div>
-              <div class="mt-0 flex-grow-1">
-              </div>
-              <div class="mt-0 pl-1 text-right">
-                Blah
-              </div>
-            </div> -->
-            <!-- <h6 class="mt-1">
-              Wallet {{ indexToAddress[wallet.address].substring(0, 10) + '...' + indexToAddress[wallet.address].slice(-8) }}
-            </h6> -->
-          <!-- </template> -->
-
           <template #modal-header="{ close }">
             <h5 class="m-0 p-0">Balances and Approvals</h5>
-            <!-- <b-button size="sm" variant="transparent" @click="close()" class="m-0 p-0">
-              <h5 class="m-0 p-0">
-                <b-icon-x shift-v="+1" font-scale="1.0"></b-icon-x>
-              </h5>
-            </b-button> -->
-            <!-- <b-button type="button" @click="close()">y
-            </b-button> -->
             <div>
               <b-button type="button" @click="close()" variant="none" class="close">×</b-button>
               <b-button size="sm" :disabled="!networkSupported || sync.completed != null" @click="refreshWallet();" v-b-popover.hover.ds500="'Refresh'" variant="link"><b-icon-arrow-repeat shift-v="+1" font-scale="1.2"></b-icon-arrow-repeat></b-button>
             </div>
-            <!-- <div class="d-flex flex-wrap m-0 mt-0 p-0">
-              <div class="mt-0 pr-1">
-                Wallet {{ indexToAddress[wallet.address].substring(0, 10) + '...' + indexToAddress[wallet.address].slice(-8) }}
-              </div>
-              <div class="mt-0 flex-grow-1">
-              </div>
-              <div class="mt-0 pl-1 text-right">
-                Blah
-              </div>
-            </div> -->
           </template>
-          <!-- updateTokenApproval: null,
-          updateWethApproval: null, -->
-
           <b-form-group label-cols-lg="1" label="" label-size="lg" label-class="font-weight-bold pt-0" class="m-1 p-1">
             <template v-slot:label>
               <h6>{{ settings.symbol }}</h6>
             </template>
             <b-form-group :label="'Balance:'" label-for="wallet-tokenbalance" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
-              <!-- <template v-slot="label">
-                Customer Name <span class="text-danger">*</span>
-              </template> -->
               <b-input-group size="sm" class="w-75">
                 <b-form-input size="sm" plaintext id="wallet-tokenbalance" :value="formatDecimals(wallet.tokenBalance, 18)" class="pl-2 w-75"></b-form-input>
                 <b-input-group-append>
@@ -69,12 +30,11 @@ const TradeFungibles = {
               <b-input-group size="sm" class="w-75">
                 <b-form-input size="sm" type="number" id="wallet-updatetokenapproval" v-model.trim="wallet.updateTokenApproval" class="w-75"></b-form-input>
                 <b-input-group-append>
-                  <b-button variant="warning">Update</b-button>
+                  <b-button :disabled="wallet.updateTokenApproval == null" @click="updateToken('tokenapproval')" variant="warning">Update</b-button>
                 </b-input-group-append>
               </b-input-group>
             </b-form-group>
           </b-form-group>
-
           <b-form-group label-cols-lg="1" label="" label-size="lg" label-class="font-weight-bold pt-0" class="m-1 p-1">
             <template v-slot:label>
               <h6>WETH</h6>
@@ -99,7 +59,7 @@ const TradeFungibles = {
               <b-input-group size="sm" class="w-75">
                 <b-form-input size="sm" type="number" id="wallet-ethtoweth" v-model.trim="wallet.ethToWeth"  class="w-75"></b-form-input>
                 <b-input-group-append>
-                  <b-button variant="warning">Convert</b-button>
+                  <b-button :disabled="wallet.ethToWeth == null" @click="updateToken('ethtoweth')" variant="warning">Convert</b-button>
                 </b-input-group-append>
               </b-input-group>
             </b-form-group>
@@ -107,7 +67,7 @@ const TradeFungibles = {
               <b-input-group size="sm" class="w-75">
                 <b-form-input size="sm" type="number" id="wallet-wethtoeth" v-model.trim="wallet.wethToEth"  class="w-75"></b-form-input>
                 <b-input-group-append>
-                  <b-button variant="warning">Convert</b-button>
+                  <b-button :disabled="wallet.wethToEth == null" @click="updateToken('wethtoeth')" variant="warning">Convert</b-button>
                 </b-input-group-append>
               </b-input-group>
             </b-form-group>
@@ -118,27 +78,11 @@ const TradeFungibles = {
               <b-input-group size="sm" class="w-75">
                 <b-form-input size="sm" type="number" id="wallet-updatewethapproval" v-model.trim="wallet.updateWethApproval"  class="w-75"></b-form-input>
                 <b-input-group-append>
-                  <b-button variant="warning">Update</b-button>
+                  <b-button :disabled="wallet.updateWethApproval == null" @click="updateToken('wethapproval')" variant="warning">Update</b-button>
                 </b-input-group-append>
               </b-input-group>
             </b-form-group>
           </b-form-group>
-
-
-          <!-- <font size="-2">
-            <pre>
-{{ wallet }}
-            </pre>
-          </font> -->
-          <!-- <b-form-group label="Price display decimals:" label-for="config-pricedisplaydecimals" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
-            <b-form-select size="sm" id="config-pricedisplaydecimals" v-model="settings.config.priceDisplayDecimals" @change="saveSettings" :options="priceDecimalsOptions" v-b-popover.hover.ds500="'Number of decimals to display for prices'"></b-form-select>
-          </b-form-group>
-          <b-form-group label="Token display decimals:" label-for="config-tokendisplaydecimals" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
-            <b-form-select size="sm" id="config-tokendisplaydecimals" v-model="settings.config.tokenDisplayDecimals" @change="saveSettings" :options="decimalsOptions" v-b-popover.hover.ds500="'Number of decimals to display for prices'"></b-form-select>
-          </b-form-group>
-          <b-form-group label="WETH display decimals:" label-for="config-wethisplaydecimals" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
-            <b-form-select size="sm" id="config-wethisplaydecimals" v-model="settings.config.wethDisplayDecimals" @change="saveSettings" :options="decimalsOptions" v-b-popover.hover.ds500="'Number of decimals to display for prices'"></b-form-select>
-          </b-form-group> -->
         </b-modal>
 
         <b-modal id="config" hide-footer header-class="m-0 px-3 py-2" body-class="m-0 p-0" body-bg-variant="light" size="md">
@@ -2798,6 +2742,55 @@ data: {{ data }}
           const tx = await contractWithSigner.invalidateOffers();
           // const tx = { hash: "blah" };
           console.log(now() + " INFO TradeFungibles:methods.invalidateAllOffers - tx: " + JSON.stringify(tx));
+          const h = this.$createElement;
+          const vNodesMsg = h(
+            'p',
+            { class: ['text-left', 'mb-0'] },
+            [
+              h('a', { attrs: { href: this.explorer + 'tx/' + tx.hash, target: '_blank' } }, tx.hash.substring(0, 20) + '...' + tx.hash.slice(-18)),
+              h('br'),
+              h('br'),
+              'Resync after this tx has been included',
+            ]
+          );
+          this.$bvToast.toast([vNodesMsg], {
+            title: 'Transaction submitted',
+            autoHideDelay: 5000,
+          });
+          // this.$refs['modalnewtokenagent'].hide();
+          // this.settings.newTokenAgent.show = false;
+          // this.saveSettings();
+        } catch (e) {
+          console.log(now() + " ERROR TradeFungibles:methods.invalidateAllOffers: " + JSON.stringify(e));
+          this.$bvToast.toast(`${e.message}`, {
+            title: 'Error!',
+            autoHideDelay: 5000,
+          });
+        }
+      }
+    },
+
+    async updateToken(type) {
+      console.log(now() + " INFO TradeFungibles:methods.updateToken - type: " + type);
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const network = this.chainId && NETWORKS[this.chainId.toString()] || {};
+      if (network.demodex) {
+        try {
+          const contract = new ethers.Contract(type == 'tokenapproval' ? this.tokenSet.token : this.tokenSet.weth, network.weth.abi, provider);
+          const contractWithSigner = contract.connect(provider.getSigner());
+          let tx;
+          if (type == 'tokenapproval') {
+            tx = await contractWithSigner.approve(network.demodex.address, ethers.utils.parseUnits(this.wallet.updateTokenApproval, this.tokenSet.decimals));
+          } else if (type == 'ethtoweth') {
+            tx = await contractWithSigner.deposit({ value: ethers.utils.parseEther(this.wallet.ethToWeth)});
+          } else if (type == 'wethtoeth') {
+            tx = await contractWithSigner.withdraw(ethers.utils.parseEther(this.wallet.wethToEth));
+          } else if (type == 'wethapproval') {
+            tx = await contractWithSigner.approve(network.demodex.address, ethers.utils.parseUnits(this.wallet.updateWethApproval, this.tokenSet.decimals));
+          } else {
+            tx = { hash: "should not get here" };
+          }
+          console.log(now() + " INFO TradeFungibles:methods.updateToken - tx: " + JSON.stringify(tx));
           const h = this.$createElement;
           const vNodesMsg = h(
             'p',
