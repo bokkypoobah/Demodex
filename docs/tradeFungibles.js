@@ -26,11 +26,11 @@ const TradeFungibles = {
             <b-form-group :label="'Approved:'" label-for="wallet-tokenapproved" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
               <b-form-input size="sm" plaintext id="wallet-tokenapproved" :value="formatDecimals(wallet.tokenApproval, 18)" class="pl-2 w-75"></b-form-input>
             </b-form-group>
-            <b-form-group v-if="indexToAddress[wallet.address] == coinbase" :label="'Update approval:'" label-for="wallet-updatetokenapproval" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+            <b-form-group v-if="indexToAddress[wallet.address] == coinbase" label="" label-for="wallet-updatetokenapproval" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
               <b-input-group size="sm" class="w-75">
-                <b-form-input size="sm" type="number" id="wallet-updatetokenapproval" v-model.trim="wallet.updateTokenApproval" class="w-75"></b-form-input>
+                <b-form-input size="sm" type="number" id="wallet-updatetokenapproval" v-model.trim="wallet.updateTokenApproval" placeholder="Update approval" class="w-75"></b-form-input>
                 <b-input-group-append>
-                  <b-button :disabled="wallet.updateTokenApproval == null" @click="updateToken('tokenapproval')" variant="warning">Update</b-button>
+                  <b-button :disabled="wallet.updateTokenApproval == null" @click="updateToken('tokenapproval')" variant="warning" style="width: 5rem;">Approve</b-button>
                 </b-input-group-append>
               </b-input-group>
             </b-form-group>
@@ -47,6 +47,14 @@ const TradeFungibles = {
                 </b-input-group-append>
               </b-input-group>
             </b-form-group>
+            <b-form-group v-if="indexToAddress[wallet.address] == coinbase" label="" label-for="wallet-ethtoweth" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+              <b-input-group size="sm" class="w-75">
+                <b-form-input size="sm" type="number" id="wallet-ethtoweth" v-model.trim="wallet.ethToWeth" placeholder="Deposit ETH to WETH" class="w-75"></b-form-input>
+                <b-input-group-append>
+                  <b-button :disabled="wallet.ethToWeth == null" @click="updateToken('ethtoweth')" variant="warning" style="width: 5rem;">Deposit</b-button>
+                </b-input-group-append>
+              </b-input-group>
+            </b-form-group>
             <b-form-group label="WETH balance:" label-for="wallet-wethbalance" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
               <b-input-group size="sm" class="w-75">
                 <b-form-input size="sm" plaintext id="wallet-wethbalance" :value="formatDecimals(wallet.wethBalance, 18)" class="pl-2 w-75"></b-form-input>
@@ -55,30 +63,22 @@ const TradeFungibles = {
                 </b-input-group-append>
               </b-input-group>
             </b-form-group>
-            <b-form-group v-if="indexToAddress[wallet.address] == coinbase" label="Convert ETH to WETH:" label-for="wallet-ethtoweth" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+            <b-form-group v-if="indexToAddress[wallet.address] == coinbase" label="" label-for="wallet-wethtoeth" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
               <b-input-group size="sm" class="w-75">
-                <b-form-input size="sm" type="number" id="wallet-ethtoweth" v-model.trim="wallet.ethToWeth"  class="w-75"></b-form-input>
+                <b-form-input size="sm" type="number" id="wallet-wethtoeth" v-model.trim="wallet.wethToEth" placeholder="Withdraw WETH to ETH" class="w-75"></b-form-input>
                 <b-input-group-append>
-                  <b-button :disabled="wallet.ethToWeth == null" @click="updateToken('ethtoweth')" variant="warning">Convert</b-button>
-                </b-input-group-append>
-              </b-input-group>
-            </b-form-group>
-            <b-form-group v-if="indexToAddress[wallet.address] == coinbase" label="Convert WETH to ETH:" label-for="wallet-wethtoeth" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
-              <b-input-group size="sm" class="w-75">
-                <b-form-input size="sm" type="number" id="wallet-wethtoeth" v-model.trim="wallet.wethToEth"  class="w-75"></b-form-input>
-                <b-input-group-append>
-                  <b-button :disabled="wallet.wethToEth == null" @click="updateToken('wethtoeth')" variant="warning">Convert</b-button>
+                  <b-button :disabled="wallet.wethToEth == null" @click="updateToken('wethtoeth')" variant="warning" style="width: 5rem;">Withdraw</b-button>
                 </b-input-group-append>
               </b-input-group>
             </b-form-group>
             <b-form-group label="Approved:" label-for="wallet-wethapproved" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
               <b-form-input size="sm" plaintext id="wallet-wethapproved" :value="formatDecimals(wallet.wethApproval, 18)" class="pl-2 w-75"></b-form-input>
             </b-form-group>
-            <b-form-group v-if="indexToAddress[wallet.address] == coinbase" label="Update approval:" label-for="wallet-updatewethapproval" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+            <b-form-group v-if="indexToAddress[wallet.address] == coinbase" label="" label-for="wallet-updatewethapproval" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
               <b-input-group size="sm" class="w-75">
-                <b-form-input size="sm" type="number" id="wallet-updatewethapproval" v-model.trim="wallet.updateWethApproval"  class="w-75"></b-form-input>
+                <b-form-input size="sm" type="number" id="wallet-updatewethapproval" v-model.trim="wallet.updateWethApproval" placeholder="Update approval" class="w-75"></b-form-input>
                 <b-input-group-append>
-                  <b-button :disabled="wallet.updateWethApproval == null" @click="updateToken('wethapproval')" variant="warning">Update</b-button>
+                  <b-button :disabled="wallet.updateWethApproval == null" @click="updateToken('wethapproval')" variant="warning" style="width: 5rem;">Approve</b-button>
                 </b-input-group-append>
               </b-input-group>
             </b-form-group>
