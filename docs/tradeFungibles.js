@@ -52,7 +52,7 @@ const TradeFungibles = {
           <b-form-group :label="settings.symbol + ' approved:'" label-for="wallet-wethapproved" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
             <b-form-input size="sm" plaintext id="wallet-wethapproved" :value="formatDecimals(wallet.tokenApproval, 18)" class="pl-2 w-75"></b-form-input>
           </b-form-group>
-          <b-form-group :label="'Update ' + settings.symbol + ' approval:'" label-for="wallet-updatetokenapproval" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
+          <b-form-group v-if="indexToAddress[wallet.address] == coinbase" :label="'Update ' + settings.symbol + ' approval:'" label-for="wallet-updatetokenapproval" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
             <b-form-input size="sm" type="number" id="wallet-updatetokenapproval" v-model.trim="wallet.updateTokenApproval" class="w-75"></b-form-input>
           </b-form-group>
           <b-form-group label="WETH balance:" label-for="wallet-wethbalance" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
@@ -61,7 +61,7 @@ const TradeFungibles = {
           <b-form-group label="WETH approved:" label-for="wallet-wethapproved" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
             <b-form-input size="sm" plaintext id="wallet-wethapproved" :value="formatDecimals(wallet.wethApproval, 18)" class="pl-2 w-75"></b-form-input>
           </b-form-group>
-          <b-form-group label="Update WETH approval:" label-for="wallet-updatewethapproval" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
+          <b-form-group v-if="indexToAddress[wallet.address] == coinbase" label="Update WETH approval:" label-for="wallet-updatewethapproval" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
             <b-form-input size="sm" type="number" id="wallet-updatewethapproval" v-model.trim="wallet.updateWethApproval"  class="w-75"></b-form-input>
           </b-form-group>
           <b-form-group label="ETH balance:" label-for="wallet-ethbalance" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
