@@ -3,7 +3,7 @@ const TradeFungibles = {
     <div class="m-0 p-0">
       <b-card no-body no-header class="border-0">
 
-        <b-modal id="wallet" ref="modalwallet" v-model="wallet.show" @close="wallet.show = false;" hide-footer :hide-header-close=false header-class="m-0 px-3 py-2" body-class="m-0 p-0" body-bg-variant="light" size="md">
+        <b-modal id="wallet" ref="modalwallet" v-model="wallet.show" @close="wallet.show = false;" hide-footer :hide-header-close=false header-class="m-0 px-3 pt-2 pb-1" body-class="m-0 p-0" body-bg-variant="light" size="md">
           <!-- <template #modal-title>
             <div class="d-flex flex-wrap m-0 mt-0 p-0">
               <div class="mt-0 pr-1">
@@ -21,7 +21,7 @@ const TradeFungibles = {
           <!-- </template> -->
 
           <template #modal-header="{ close }">
-            <h5 class="m-0 p-0">Wallet</h5>
+            <h5 class="m-0 p-0">Balances and Approvals</h5>
             <!-- <b-button size="sm" variant="transparent" @click="close()" class="m-0 p-0">
               <h5 class="m-0 p-0">
                 <b-icon-x shift-v="+1" font-scale="1.0"></b-icon-x>
@@ -31,7 +31,7 @@ const TradeFungibles = {
             </b-button> -->
             <div>
               <b-button type="button" @click="close()" variant="none" class="close">×</b-button>
-              <b-button size="sm" :disabled="!networkSupported || sync.completed != null" @click="refreshWallet(); syncNow();" v-b-popover.hover.ds500="'Sync'" variant="link"><b-icon-arrow-repeat shift-v="+1" font-scale="1.2"></b-icon-arrow-repeat></b-button>
+              <b-button size="sm" :disabled="!networkSupported || sync.completed != null" @click="refreshWallet();" v-b-popover.hover.ds500="'Refresh'" variant="link"><b-icon-arrow-repeat shift-v="+1" font-scale="1.2"></b-icon-arrow-repeat></b-button>
             </div>
             <!-- <div class="d-flex flex-wrap m-0 mt-0 p-0">
               <div class="mt-0 pr-1">
@@ -44,17 +44,25 @@ const TradeFungibles = {
               </div>
             </div> -->
           </template>
+          <!-- updateTokenApproval: null,
+          updateWethApproval: null, -->
           <b-form-group :label="settings.symbol + ' balance:'" label-for="wallet-wethbalance" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
             <b-form-input size="sm" plaintext id="wallet-wethbalance" :value="formatDecimals(wallet.tokenBalance, 18)" class="pl-2 w-75"></b-form-input>
           </b-form-group>
-          <b-form-group :label="settings.symbol + ' approved:'" label-for="takebuyoffer-wethapproved" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
-            <b-form-input size="sm" plaintext id="takebuyoffer-wethapproved" :value="formatDecimals(wallet.tokenApproval, 18)" class="pl-2 w-75"></b-form-input>
+          <b-form-group :label="settings.symbol + ' approved:'" label-for="wallet-wethapproved" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
+            <b-form-input size="sm" plaintext id="wallet-wethapproved" :value="formatDecimals(wallet.tokenApproval, 18)" class="pl-2 w-75"></b-form-input>
+          </b-form-group>
+          <b-form-group :label="'Update ' + settings.symbol + ' approval:'" label-for="wallet-updatetokenapproval" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
+            <b-form-input size="sm" type="number" id="wallet-updatetokenapproval" v-model.trim="wallet.updateTokenApproval" class="w-75"></b-form-input>
           </b-form-group>
           <b-form-group label="WETH balance:" label-for="wallet-wethbalance" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
             <b-form-input size="sm" plaintext id="wallet-wethbalance" :value="formatDecimals(wallet.wethBalance, 18)" class="pl-2 w-75"></b-form-input>
           </b-form-group>
           <b-form-group label="WETH approved:" label-for="wallet-wethapproved" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
             <b-form-input size="sm" plaintext id="wallet-wethapproved" :value="formatDecimals(wallet.wethApproval, 18)" class="pl-2 w-75"></b-form-input>
+          </b-form-group>
+          <b-form-group label="Update WETH approval:" label-for="wallet-updatewethapproval" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
+            <b-form-input size="sm" type="number" id="wallet-updatewethapproval" v-model.trim="wallet.updateWethApproval"  class="w-75"></b-form-input>
           </b-form-group>
           <b-form-group label="ETH balance:" label-for="wallet-ethbalance" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
             <b-form-input size="sm" plaintext id="wallet-ethbalance" :value="formatDecimals(wallet.balance, 18)" class="pl-2 w-75"></b-form-input>
@@ -1158,8 +1166,10 @@ data: {{ data }}
         balance: null,
         tokenBalance: null,
         tokenApproval: null,
+        updateTokenApproval: null,
         wethBalance: null,
         wethApproval: null,
+        updateWethApproval: null,
       },
 
       data: {
@@ -2662,6 +2672,8 @@ data: {{ data }}
       console.log(now() + " INFO TradeFungibles:methods.viewWallet - address: " + address);
       this.wallet.address = address;
       this.wallet.show = true;
+      this.wallet.updateTokenApproval = null;
+      this.wallet.updateWethApproval = null;
       this.refreshWallet();
     },
     async refreshWallet() {
@@ -2704,7 +2716,9 @@ data: {{ data }}
       //   wethBalance: null,
       //   wethApproval: null,
       // },
-
+      store.dispatch('data/syncIt', {
+        tokenContractAddress: this.settings.tokenContractAddress,
+      });
     },
     syncNow() {
       console.log(now() + " INFO TradeFungibles:methods.syncNow - settings.tokenContractAddress: " + this.settings.tokenContractAddress);

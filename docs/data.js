@@ -246,7 +246,7 @@ const dataModule = {
       }
     },
     updateNonce(state, info) {
-      console.log(now() + " INFO dataModule:mutations.updateNonce - info: " + JSON.stringify(info));
+      // console.log(now() + " INFO dataModule:mutations.updateNonce - info: " + JSON.stringify(info));
       if (!(info.chainId in state.nonces)) {
         Vue.set(state.nonces, info.chainId, {});
       }
@@ -1127,7 +1127,7 @@ const dataModule = {
                 ],
               };
               const eventLogs = await provider.getLogs(filter);
-              console.log(now() + " INFO dataModule:actions.syncDemodexEvents - eventLogs: " + JSON.stringify(eventLogs));
+              // console.log(now() + " INFO dataModule:actions.syncDemodexEvents - eventLogs: " + JSON.stringify(eventLogs));
               const records = parseDemodexEventLogs(eventLogs, parameter.chainId, network.demodex.abi);
               const newRecords = [];
               for (const record of records) {

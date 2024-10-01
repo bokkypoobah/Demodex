@@ -214,7 +214,7 @@ function parseTokenAgentFactoryEventLogsOld(logs, chainId, tokenAgentFactoryAddr
 }
 
 function parseDemodexEventLogs(logs, chainId, demodexAbi) {
-  console.log(now() + " INFO functions:parseDemodexEventLogs - logs: " + JSON.stringify(logs, null, 2));
+  // console.log(now() + " INFO functions:parseDemodexEventLogs - logs: " + JSON.stringify(logs, null, 2));
   const interface = new ethers.utils.Interface(demodexAbi);
   const records = [];
   for (const log of logs) {
@@ -269,7 +269,7 @@ function parseDemodexEventLogs(logs, chainId, demodexAbi) {
       }
     }
   }
-  console.log(now() + " INFO functions:parseDemodexEventLogs - records: " + JSON.stringify(records, null, 2));
+  // console.log(now() + " INFO functions:parseDemodexEventLogs - records: " + JSON.stringify(records, null, 2));
   return records;
 }
 
