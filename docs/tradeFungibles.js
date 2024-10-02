@@ -1777,7 +1777,7 @@ data: {{ data }}
             prices.push({
               txHash: null, logIndex: null,
               maker: this.tokenSet.coinbaseIndex,
-              offerIndex: null, nonce: null, expiry: 0,
+              offerIndex: null, nonce: null, expiry: this.settings.sellOffers.expiry,
               priceIndex: i, price: ethers.utils.parseEther(point.price).toString(),
               tokens: ethers.utils.parseUnits(point.tokens, this.tokenSet.decimals).toString(),
               valid: true,
@@ -1977,7 +1977,7 @@ data: {{ data }}
             prices.push({
               txHash: null, logIndex: null,
               maker: this.tokenSet.coinbaseIndex,
-              offerIndex: null, nonce: null, expiry: 0,
+              offerIndex: null, nonce: null, expiry: this.settings.buyOffers.expiry,
               priceIndex: i, price: ethers.utils.parseEther(point.price).toString(),
               tokens: ethers.utils.parseUnits(point.tokens, this.tokenSet.decimals).toString(),
               valid: true,
