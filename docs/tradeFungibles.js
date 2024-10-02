@@ -3789,6 +3789,8 @@ data: {{ data }}
     formatExpiry(e) {
       if (e == 0) {
         return "n/a";
+      } else if (e == null) {
+        return "sim";
       } else {
         const s = e - moment().unix();
         if (s >= (365 * 24 * 60 * 60)) {
@@ -3809,7 +3811,7 @@ data: {{ data }}
         } else if (s >= 0) {
           return parseInt(s) + "s";
         } else {
-          return "sim";
+          return "expired";
         }
       }
     },
