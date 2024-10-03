@@ -360,20 +360,20 @@ modalBuyOffer: {{ modalBuyOffer }}
                       </b-badge>
                     </font> -->
                   </template>
-                  <template #head(totalWeth)="data">
+                  <template #head(totalWeths)="data">
                     {{ settings.sellOffers.paymentType == 'eth' ? '∑ ETH' : '∑ WETH' }}
                   </template>
-                  <template #cell(totalWeth)="data">
-                    <span v-b-popover.hover.ds500="formatDecimals(data.item.totalWeth, 18)" :style="!data.item.valid ? 'text-decoration: line-through;' : ''">
-                      {{ formatWeth(data.item.totalWeth) }}
+                  <template #cell(totalWeths)="data">
+                    <span v-b-popover.hover.ds500="formatDecimals(data.item.totalWeths, 18)" :style="!data.item.valid ? 'text-decoration: line-through;' : ''">
+                      {{ formatWeth(data.item.totalWeths) }}
                     </span>
                   </template>
-                  <template #head(wethAmount)="data">
+                  <template #head(weths)="data">
                     {{ settings.sellOffers.paymentType == 'eth' ? 'ETH' : 'WETH' }}
                   </template>
-                  <template #cell(wethAmount)="data">
-                    <span v-b-popover.hover.ds500="formatDecimals(data.item.wethAmount, 18)" :style="!data.item.valid ? 'text-decoration: line-through;' : ''">
-                      {{ formatWeth(data.item.wethAmount) }}
+                  <template #cell(weths)="data">
+                    <span v-b-popover.hover.ds500="formatDecimals(data.item.weths, 18)" :style="!data.item.valid ? 'text-decoration: line-through;' : ''">
+                      {{ formatWeth(data.item.weths) }}
                     </span>
                   </template>
                   <template #head(totalTokens)="data">
@@ -491,20 +491,20 @@ modalBuyOffer: {{ modalBuyOffer }}
                       {{ formatTokens(data.item.totalTokens) }}
                     </span>
                   </template>
-                  <template #head(wethAmount)="data">
+                  <template #head(weths)="data">
                     {{ settings.buyOffers.paymentType == 'eth' ? 'ETH' : 'WETH' }}
                   </template>
-                  <template #cell(wethAmount)="data">
-                    <span v-b-popover.hover.ds500="formatDecimals(data.item.wethAmount, 18)" :style="!data.item.valid ? 'text-decoration: line-through;' : ''">
-                      {{ formatWeth(data.item.wethAmount) }}
+                  <template #cell(weths)="data">
+                    <span v-b-popover.hover.ds500="formatDecimals(data.item.weths, 18)" :style="!data.item.valid ? 'text-decoration: line-through;' : ''">
+                      {{ formatWeth(data.item.weths) }}
                     </span>
                   </template>
-                  <template #head(totalWeth)="data">
+                  <template #head(totalWeths)="data">
                     {{ settings.buyOffers.paymentType == 'eth' ? '∑ ETH' : '∑ WETH' }}
                   </template>
-                  <template #cell(totalWeth)="data">
-                    <span v-b-popover.hover.ds500="formatDecimals(data.item.totalWeth, 18)" :style="!data.item.valid ? 'text-decoration: line-through;' : ''">
-                      {{ formatWeth(data.item.totalWeth) }}
+                  <template #cell(totalWeths)="data">
+                    <span v-b-popover.hover.ds500="formatDecimals(data.item.totalWeths, 18)" :style="!data.item.valid ? 'text-decoration: line-through;' : ''">
+                      {{ formatWeth(data.item.totalWeths) }}
                     </span>
                   </template>
                   <template #cell(maker)="data">
@@ -596,7 +596,7 @@ modalBuyOffer: {{ modalBuyOffer }}
                             <template #cell(tokens)="data">
                               <b-form-input size="sm" type="number" v-model.trim="data.item.tokens" @change="saveSettings();" debounce="600" class="text-right"></b-form-input>
                             </template>
-                            <!-- <template #cell(wethAmount)="data">
+                            <!-- <template #cell(weths)="data">
                               <b-form-input size="sm" readonly :value="formatNumber(bigNumberMultiply(data.item.price, data.item.tokens))" class="text-right"></b-form-input>
                             </template> -->
                             <template #cell(option)="data">
@@ -691,7 +691,7 @@ modalBuyOffer: {{ modalBuyOffer }}
                             <template #cell(tokens)="data">
                               <b-form-input size="sm" type="number" v-model.trim="data.item.tokens" @change="saveSettings();" debounce="600" class="text-right"></b-form-input>
                             </template>
-                            <!-- <template #cell(wethAmount)="data">
+                            <!-- <template #cell(weths)="data">
                               <b-form-input size="sm" readonly :value="formatNumber(bigNumberMultiply(data.item.price, data.item.tokens))" class="text-right"></b-form-input>
                             </template> -->
                             <template #cell(option)="data">
@@ -1329,20 +1329,20 @@ data: {{ data }}
         { key: 'price', label: 'Price', sortable: false, thStyle: 'width: 10%;', thClass: 'text-right', tdClass: 'text-right' },
         { key: 'tokens', label: 'Tokens', sortable: false, thStyle: 'width: 15%;', thClass: 'text-right', tdClass: 'text-right' },
         { key: 'totalTokens', label: '∑ Tokens', sortable: false, thStyle: 'width: 15%;', thClass: 'text-right', tdClass: 'text-right' },
-        { key: 'wethAmount', label: '[W]ETH', sortable: false, thStyle: 'width: 15%;', thClass: 'text-right', tdClass: 'text-right' },
-        { key: 'totalWeth', label: '∑ [W]ETH', sortable: false, thStyle: 'width: 15%;', thClass: 'text-right', tdClass: 'text-right' },
+        { key: 'weths', label: '[W]ETH', sortable: false, thStyle: 'width: 15%;', thClass: 'text-right', tdClass: 'text-right' },
+        { key: 'totalWeths', label: '∑ [W]ETH', sortable: false, thStyle: 'width: 15%;', thClass: 'text-right', tdClass: 'text-right' },
         { key: 'maker', label: 'Maker', sortable: false, thStyle: 'width: 15%;', thClass: 'text-left', tdClass: 'text-left' },
         { key: 'expiry', label: 'Expiry', sortable: false, thStyle: 'width: 15%;', thClass: 'text-left', tdClass: 'text-left' },
       ],
       addSellOfferViewPointsFields: [
         { key: 'price', label: 'Price', sortable: false, thStyle: 'width: 35%;', thClass: 'text-right', tdClass: 'text-right' },
         { key: 'tokens', label: 'Tokens', sortable: false, thStyle: 'width: 35%;', thClass: 'text-right', tdClass: 'text-right' },
-        { key: 'wethAmount', label: 'WETH', sortable: false, thStyle: 'width: 30%;', thClass: 'text-right', tdClass: 'text-right' },
+        { key: 'weths', label: 'WETH', sortable: false, thStyle: 'width: 30%;', thClass: 'text-right', tdClass: 'text-right' },
       ],
       addSellOfferPointsFields: [
         { key: 'price', label: 'Price', sortable: false, thStyle: 'width: 30%;', thClass: 'text-right', tdClass: 'text-right' },
         { key: 'tokens', label: 'Tokens', sortable: false, thStyle: 'width: 30%;', thClass: 'text-right', tdClass: 'text-right' },
-        // { key: 'wethAmount', label: 'WETH', sortable: false, thStyle: 'width: 30%;', thClass: 'text-right', tdClass: 'text-right' },
+        // { key: 'weths', label: 'WETH', sortable: false, thStyle: 'width: 30%;', thClass: 'text-right', tdClass: 'text-right' },
         { key: 'option', label: '', sortable: false, thStyle: 'width: 10%;', thClass: 'text-right', tdClass: 'text-right' },
       ],
       sellOfferFields: [
@@ -1351,16 +1351,16 @@ data: {{ data }}
         { key: 'offer', label: 'Offered', sortable: false, thStyle: 'width: 15%;', thClass: 'text-right', tdClass: 'text-right' },
         { key: 'tokens', label: 'Tokens', sortable: false, thStyle: 'width: 15%;', thClass: 'text-right', tdClass: 'text-right' },
         { key: 'totalTokens', label: '∑ Tokens', sortable: false, thStyle: 'width: 15%;', thClass: 'text-right', tdClass: 'text-right' },
-        { key: 'wethAmount', label: '[W]ETH', sortable: false, thStyle: 'width: 15%;', thClass: 'text-right', tdClass: 'text-right' },
-        { key: 'totalWeth', label: '∑ [W]ETH', sortable: false, thStyle: 'width: 15%;', thClass: 'text-right', tdClass: 'text-right' },
+        { key: 'weths', label: '[W]ETH', sortable: false, thStyle: 'width: 15%;', thClass: 'text-right', tdClass: 'text-right' },
+        { key: 'totalWeths', label: '∑ [W]ETH', sortable: false, thStyle: 'width: 15%;', thClass: 'text-right', tdClass: 'text-right' },
         { key: 'expiry', label: 'Expiry', sortable: false, thStyle: 'width: 15%;', thClass: 'text-right', tdClass: 'text-right' },
       ],
       sellOffersFields: [
         { key: 'number', label: '#', sortable: false, thStyle: 'width: 5%;', tdClass: 'text-left' },
         { key: 'expiry', label: 'Expiry', sortable: false, thStyle: 'width: 10%;', thClass: 'text-right', tdClass: 'text-right' },
         { key: 'maker', label: 'Maker', sortable: false, thStyle: 'width: 20%;', thClass: 'text-right', tdClass: 'text-right' },
-        { key: 'totalWeth', label: '∑ WETH', sortable: false, thStyle: 'width: 25%;', thClass: 'text-right', tdClass: 'text-right' },
-        // { key: 'wethAmount', label: 'WETH', sortable: false, thStyle: 'width: 25%;', thClass: 'text-right', tdClass: 'text-right' },
+        { key: 'totalWeths', label: '∑ WETH', sortable: false, thStyle: 'width: 25%;', thClass: 'text-right', tdClass: 'text-right' },
+        // { key: 'weths', label: 'WETH', sortable: false, thStyle: 'width: 25%;', thClass: 'text-right', tdClass: 'text-right' },
         { key: 'totalTokens', label: '∑ Tokens', sortable: false, thStyle: 'width: 25%;', thClass: 'text-right', tdClass: 'text-right' },
         // { key: 'tokens', label: 'Tokens', sortable: false, thStyle: 'width: 25%;', thClass: 'text-right', tdClass: 'text-right' },
         { key: 'price', label: 'Price', sortable: false, thStyle: 'width: 20%;', thClass: 'text-right', tdClass: 'text-right' },
@@ -1369,8 +1369,8 @@ data: {{ data }}
         { key: 'number', label: '#', sortable: false, thStyle: 'width: 5%;', tdClass: 'text-left' },
         { key: 'expiry', label: 'Expiry', sortable: false, thStyle: 'width: 10%;', thClass: 'text-right', tdClass: 'text-right' },
         { key: 'maker', label: 'Maker', sortable: false, thStyle: 'width: 20%;', thClass: 'text-right', tdClass: 'text-right' },
-        { key: 'totalWeth', label: '∑ WETH', sortable: false, thStyle: 'width: 25%;', thClass: 'text-right', tdClass: 'text-right' },
-        { key: 'wethAmount', label: 'WETH', sortable: false, thStyle: 'width: 25%;', thClass: 'text-right', tdClass: 'text-right' },
+        { key: 'totalWeths', label: '∑ WETH', sortable: false, thStyle: 'width: 25%;', thClass: 'text-right', tdClass: 'text-right' },
+        { key: 'weths', label: 'WETH', sortable: false, thStyle: 'width: 25%;', thClass: 'text-right', tdClass: 'text-right' },
         { key: 'totalTokens', label: '∑ Tokens', sortable: false, thStyle: 'width: 25%;', thClass: 'text-right', tdClass: 'text-right' },
         { key: 'tokens', label: 'Tokens', sortable: false, thStyle: 'width: 25%;', thClass: 'text-right', tdClass: 'text-right' },
         { key: 'price', label: 'Price', sortable: false, thStyle: 'width: 20%;', thClass: 'text-right', tdClass: 'text-right' },
@@ -1379,8 +1379,8 @@ data: {{ data }}
         { key: 'price', label: 'Price', sortable: false, thStyle: 'width: 20%;', tdClass: 'text-left' },
         // { key: 'tokens', label: 'Tokens', sortable: false, thStyle: 'width: 25%;', tdClass: 'text-left' },
         { key: 'totalTokens', label: '∑ Tokens', sortable: false, thStyle: 'width: 25%;', tdClass: 'text-left' },
-        // { key: 'wethAmount', label: 'WETH', sortable: false, thStyle: 'width: 25%;', tdClass: 'text-left' },
-        { key: 'totalWeth', label: '∑ WETH', sortable: false, thStyle: 'width: 25%;', tdClass: 'text-left' },
+        // { key: 'weths', label: 'WETH', sortable: false, thStyle: 'width: 25%;', tdClass: 'text-left' },
+        { key: 'totalWeths', label: '∑ WETH', sortable: false, thStyle: 'width: 25%;', tdClass: 'text-left' },
         { key: 'maker', label: 'Maker', sortable: false, thStyle: 'width: 20%;', tdClass: 'text-left' },
         { key: 'expiry', label: 'Expiry', sortable: false, thStyle: 'width: 10%;', thClass: 'text-left', tdClass: 'text-left' },
         { key: 'number', label: '#', sortable: false, thStyle: 'width: 5%;', thClass: 'text-left', tdClass: 'text-left' },
@@ -1389,8 +1389,8 @@ data: {{ data }}
         { key: 'price', label: 'Price', sortable: false, thStyle: 'width: 20%;', tdClass: 'text-left' },
         { key: 'tokens', label: 'Tokens', sortable: false, thStyle: 'width: 25%;', tdClass: 'text-left' },
         { key: 'totalTokens', label: '∑ Tokens', sortable: false, thStyle: 'width: 25%;', thClass: 'text-left', tdClass: 'text-left' },
-        { key: 'wethAmount', label: 'WETH', sortable: false, thStyle: 'width: 25%;', tdClass: 'text-left' },
-        { key: 'totalWeth', label: '∑ WETH', sortable: false, thStyle: 'width: 25%;', thClass: 'text-left', tdClass: 'text-left' },
+        { key: 'weths', label: 'WETH', sortable: false, thStyle: 'width: 25%;', tdClass: 'text-left' },
+        { key: 'totalWeths', label: '∑ WETH', sortable: false, thStyle: 'width: 25%;', thClass: 'text-left', tdClass: 'text-left' },
         { key: 'maker', label: 'Maker', sortable: false, thStyle: 'width: 20%;', tdClass: 'text-left' },
         { key: 'expiry', label: 'Expiry', sortable: false, thStyle: 'width: 10%;', thClass: 'text-left', tdClass: 'text-left' },
         { key: 'number', label: '#', sortable: false, thStyle: 'width: 5%;', thClass: 'text-left', tdClass: 'text-left' },
@@ -1683,9 +1683,9 @@ data: {{ data }}
           for (const [i, price] of prices.entries()) {
             const bPrice = ethers.BigNumber.from(price);
             const bTokens = ethers.BigNumber.from(tokenss[i]);
-            const wethAmount = bPrice.mul(bTokens).div(ethers.BigNumber.from("1000000000000000000"));
-            // console.log(i + " " + price + " " + bTokens + " " + wethAmount);
-            results.push({ price: bPrice.toString(), tokens: bTokens.toString(), wethAmount: wethAmount.toString() });
+            const weths = bPrice.mul(bTokens).div(ethers.BigNumber.from("1000000000000000000"));
+            // console.log(i + " " + price + " " + bTokens + " " + weths);
+            results.push({ price: bPrice.toString(), tokens: bTokens.toString(), weths: weths.toString() });
           }
         }
       }
@@ -1834,7 +1834,7 @@ data: {{ data }}
       const records = [];
       const trades = [];
       let totalTokens = ethers.BigNumber.from(0);
-      let totalWeth = ethers.BigNumber.from(0);
+      let totalWeths = ethers.BigNumber.from(0);
       let filledTokens = null;
       let filledWeth = null;
       let filledAveragePrice = null;
@@ -1844,7 +1844,7 @@ data: {{ data }}
         const tokenApproval = ethers.BigNumber.from(!price.simulated && tokenApprovals[price.maker] && tokenApprovals[price.maker][this.tokenSet.demodexIndex] && tokenApprovals[price.maker][this.tokenSet.demodexIndex].tokens || 0);
         // console.log(i + " " + ignoreApproval + " " + ethers.utils.formatEther(tokenBalance) + " " + ethers.utils.formatEther(tokenApproval) + " " + JSON.stringify(price));
         let tokens = ethers.BigNumber.from(price.tokens);
-        let wethAmount = null;
+        let weths = null;
         // if (price.txHash == null) {
         //   console.log("SIMULATED prices[" + i + "]: " + JSON.stringify(price));
         // } else if (!price.valid) {
@@ -1864,19 +1864,19 @@ data: {{ data }}
             maxTokens = maxTokens.sub(tokens);
           }
           if (maxWeth != null) {
-            wethAmount = tokens.mul(ethers.BigNumber.from(price.price)).div(TENPOW18);
+            weths = tokens.mul(ethers.BigNumber.from(price.price)).div(TENPOW18);
             // maxTokensFromWeth = maxWeth * 10**18 / e.price
             const maxTokensFromWeth = maxWeth.mul(TENPOW18).div(price.price);
             if (tokens.gt(maxTokensFromWeth)) {
-              wethAmount = maxWeth;
+              weths = maxWeth;
               tokens = maxTokensFromWeth;
             }
-            maxWeth = maxWeth.sub(wethAmount);
+            maxWeth = maxWeth.sub(weths);
           }
           if (tokens.gt(0)) {
-            wethAmount = tokens.mul(ethers.BigNumber.from(price.price)).div(TENPOW18);
+            weths = tokens.mul(ethers.BigNumber.from(price.price)).div(TENPOW18);
             totalTokens = ethers.BigNumber.from(totalTokens).add(tokens);
-            totalWeth = ethers.BigNumber.from(totalWeth).add(wethAmount);
+            totalWeths = ethers.BigNumber.from(totalWeths).add(weths);
             tokenBalances[price.maker].tokens = ethers.BigNumber.from(tokenBalances[price.maker].tokens).sub(tokens).toString();
             if (!ignoreApproval && price.txHash != null && tokenApprovals[price.maker] && tokenApprovals[price.maker][this.tokenSet.demodexIndex]) {
               tokenApprovals[price.maker][this.tokenSet.demodexIndex].tokens = ethers.BigNumber.from(tokenApprovals[price.maker][this.tokenSet.demodexIndex].tokens).sub(tokens).toString();
@@ -1884,12 +1884,12 @@ data: {{ data }}
             trades.push({ index: price.offerIndex, price: price.price, execution: 1, tokenIds: [], tokenss: [tokens.toString()] });
           }
         }
-        records.push({ ...price, originalTokens: price.tokens, tokens: tokens.toString(), totalTokens: totalTokens.toString(), wethAmount: wethAmount != null && wethAmount.toString() || null, totalWeth: totalWeth.toString() });
+        records.push({ ...price, originalTokens: price.tokens, tokens: tokens.toString(), totalTokens: totalTokens.toString(), weths: weths != null && weths.toString() || null, totalWeths: totalWeths.toString() });
       }
       if (maxTokens != null || maxWeth != null) {
         filledTokens = totalTokens;
-        filledWeth = totalWeth;
-        filledAveragePrice = totalTokens > 0 ? totalWeth.mul(TENPOW18).div(totalTokens) : 0;
+        filledWeth = totalWeths;
+        filledAveragePrice = totalTokens > 0 ? totalWeths.mul(TENPOW18).div(totalTokens) : 0;
       }
       const filled = {
         tokens: filledTokens != null && filledTokens.toString() || null,
@@ -2044,7 +2044,7 @@ data: {{ data }}
       const records = [];
       const trades = [];
       let totalTokens = ethers.BigNumber.from(0);
-      let totalWeth = ethers.BigNumber.from(0);
+      let totalWeths = ethers.BigNumber.from(0);
       let filledTokens = null;
       let filledWeth = null;
       let filledAveragePrice = null;
@@ -2057,7 +2057,7 @@ data: {{ data }}
         const wethApproval = ethers.BigNumber.from(!price.simulated && wethApprovals[price.maker] && wethApprovals[price.maker][this.tokenSet.demodexIndex] && wethApprovals[price.maker][this.tokenSet.demodexIndex].tokens || 0);
         // console.log(i + " " + ignoreApproval + " " + ethers.utils.formatEther(wethBalance) + " " + ethers.utils.formatEther(wethApproval) + " " + JSON.stringify(price));
         let tokens = ethers.BigNumber.from(price.tokens);
-        let wethAmount = null;
+        let weths = null;
         // if (price.txHash == null) {
         //   console.log("SIMULATED prices[" + i + "]: " + JSON.stringify(price));
         // } else if (!price.valid) {
@@ -2089,6 +2089,7 @@ data: {{ data }}
           const tokensFromMaxWeth = maxWeth && maxWeth.mul(TENPOW18).div(price.price) || null;
           const wethFromTokensFromMaxWeth = tokensFromMaxWeth && tokensFromMaxWeth.mul(ethers.BigNumber.from(price.price)).div(TENPOW18) || null;
           console.log("maxWeth: " + (maxWeth && ethers.utils.formatEther(maxWeth) || null) + ", tokensFromMaxWeth: " + (tokensFromMaxWeth && ethers.utils.formatEther(tokensFromMaxWeth) || null) + ", wethFromTokensFromMaxWeth: " + (wethFromTokensFromMaxWeth && ethers.utils.formatEther(wethFromTokensFromMaxWeth) || null));
+          // filledAveragePrice = totalTokens > 0 ? totalWeths.mul(TENPOW18).div(totalTokens) : 0;
 
           if (tokens.gt(tokensWethBalance)) {
             tokens = tokensWethBalance;
@@ -2102,39 +2103,46 @@ data: {{ data }}
             }
             maxTokens = maxTokens.sub(tokens);
           }
-          wethAmount = tokens.mul(ethers.BigNumber.from(price.price)).div(TENPOW18);
-          if (maxWeth != null) {
-            // maxTokensFromWeth = maxWeth * 10**18 / e.price
-            const maxTokensFromWeth = maxWeth.mul(TENPOW18).div(price.price);
-            const maxWethFromMaxTokensFromWeth = maxTokensFromWeth.mul(ethers.BigNumber.from(price.price)).div(TENPOW18);
-            const tokensFromMaxWethFromMaxTokensFromWeth = maxWethFromMaxTokensFromWeth.mul(TENPOW18).div(price.price);
-            const maxWethFilledAveragePrice = tokensFromMaxWethFromMaxTokensFromWeth > 0 ? maxWethFromMaxTokensFromWeth.mul(TENPOW18).div(tokensFromMaxWethFromMaxTokensFromWeth) : 0;
-            console.log("HERE maxWeth: " + ethers.utils.formatEther(maxWeth) + ", wethAmount: " + ethers.utils.formatEther(wethAmount) + ", maxTokensFromWeth: " + ethers.utils.formatEther(maxTokensFromWeth) + ", maxWethFromMaxTokensFromWeth: " + ethers.utils.formatEther(maxWethFromMaxTokensFromWeth) + ", maxWethFilledAveragePrice: " + ethers.utils.formatEther(maxWethFilledAveragePrice));
-            if (tokens.gt(tokensFromMaxWethFromMaxTokensFromWeth)) {
-              wethAmount = maxWethFromMaxTokensFromWeth;
-              // TODO
-              tokens = tokensFromMaxWethFromMaxTokensFromWeth;
-              // wethAmount = tokens.mul(ethers.BigNumber.from(price.price)).div(TENPOW18);
+          if (tokensFromMaxWeth != null) {
+            if (tokens.gt(tokensFromMaxWeth)) {
+              tokens = tokensFromMaxWeth;
             }
-            maxWeth = maxWeth.sub(wethAmount);
+            const wethsToSubtract = tokens.mul(ethers.BigNumber.from(price.price)).div(TENPOW18);
+            maxWeth = maxWeth.sub(wethsToSubtract);
           }
+          // weths = tokens.mul(ethers.BigNumber.from(price.price)).div(TENPOW18);
+          // if (maxWeth != null) {
+          //   // maxTokensFromWeth = maxWeth * 10**18 / e.price
+          //   const maxTokensFromWeth = maxWeth.mul(TENPOW18).div(price.price);
+          //   const maxWethFromMaxTokensFromWeth = maxTokensFromWeth.mul(ethers.BigNumber.from(price.price)).div(TENPOW18);
+          //   const tokensFromMaxWethFromMaxTokensFromWeth = maxWethFromMaxTokensFromWeth.mul(TENPOW18).div(price.price);
+          //   const maxWethFilledAveragePrice = tokensFromMaxWethFromMaxTokensFromWeth > 0 ? maxWethFromMaxTokensFromWeth.mul(TENPOW18).div(tokensFromMaxWethFromMaxTokensFromWeth) : 0;
+          //   console.log("HERE maxWeth: " + ethers.utils.formatEther(maxWeth) + ", weths: " + ethers.utils.formatEther(weths) + ", maxTokensFromWeth: " + ethers.utils.formatEther(maxTokensFromWeth) + ", maxWethFromMaxTokensFromWeth: " + ethers.utils.formatEther(maxWethFromMaxTokensFromWeth) + ", maxWethFilledAveragePrice: " + ethers.utils.formatEther(maxWethFilledAveragePrice));
+          //   if (tokens.gt(tokensFromMaxWethFromMaxTokensFromWeth)) {
+          //     weths = maxWethFromMaxTokensFromWeth;
+          //     // TODO
+          //     tokens = tokensFromMaxWethFromMaxTokensFromWeth;
+          //     // weths = tokens.mul(ethers.BigNumber.from(price.price)).div(TENPOW18);
+          //   }
+          //   maxWeth = maxWeth.sub(weths);
+          // }
           if (tokens.gt(0)) {
-            // wethAmount = tokens.mul(ethers.BigNumber.from(price.price)).div(TENPOW18);
+            weths = tokens.mul(ethers.BigNumber.from(price.price)).div(TENPOW18);
             totalTokens = ethers.BigNumber.from(totalTokens).add(tokens);
-            totalWeth = ethers.BigNumber.from(totalWeth).add(wethAmount);
-            wethBalances[price.maker].tokens = ethers.BigNumber.from(wethBalances[price.maker].tokens).sub(wethAmount).toString();
+            totalWeths = ethers.BigNumber.from(totalWeths).add(weths);
+            wethBalances[price.maker].tokens = ethers.BigNumber.from(wethBalances[price.maker].tokens).sub(weths).toString();
             if (!ignoreApproval && price.txHash != null && wethApprovals[price.maker] && wethApprovals[price.maker][this.tokenSet.demodexIndex]) {
-              wethApprovals[price.maker][this.tokenSet.demodexIndex].tokens = ethers.BigNumber.from(wethApprovals[price.maker][this.tokenSet.demodexIndex].tokens).sub(wethAmount).toString();
+              wethApprovals[price.maker][this.tokenSet.demodexIndex].tokens = ethers.BigNumber.from(wethApprovals[price.maker][this.tokenSet.demodexIndex].tokens).sub(weths).toString();
             }
             trades.push({ index: price.offerIndex, price: price.price, execution: 1, tokenIds: [], tokenss: [tokens.toString()] });
           }
         }
-        records.push({ ...price, originalTokens: price.tokens, tokens: tokens.toString(), totalTokens: totalTokens.toString(), wethAmount: wethAmount != null && wethAmount.toString() || null, totalWeth: totalWeth.toString() });
+        records.push({ ...price, originalTokens: price.tokens, tokens: tokens.toString(), totalTokens: totalTokens.toString(), weths: weths != null && weths.toString() || null, totalWeths: totalWeths.toString() });
       }
       if (maxTokens != null || maxWeth != null) {
         filledTokens = totalTokens;
-        filledWeth = totalWeth;
-        filledAveragePrice = totalTokens > 0 ? totalWeth.mul(TENPOW18).div(totalTokens) : 0;
+        filledWeth = totalWeths;
+        filledAveragePrice = totalTokens > 0 ? totalWeths.mul(TENPOW18).div(totalTokens) : 0;
         console.log("filledTokens: " + ethers.utils.formatEther(filledTokens) + ", filledWeth: " + ethers.utils.formatEther(filledWeth) + ", filledAveragePrice: " + ethers.utils.formatEther(filledAveragePrice));
         // console.log("wethApproval: " + ethers.utils.formatEther(wethApproval) + ", tokensWethApproval: " + ethers.utils.formatEther(tokensWethApproval));
       }
