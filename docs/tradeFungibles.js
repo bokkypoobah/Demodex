@@ -3877,9 +3877,13 @@ function testIt() {
   const TENPOW18 = ethers.BigNumber.from("1000000000000000000");
   const price = ethers.utils.parseEther("0.0019");
   const weths = ethers.utils.parseEther("0.001");
+  // tokens = weth x 10^18 / price
   const tokens = weths.mul(TENPOW18).div(price);
+  // weth = tokens x price / 10^18
   const wethsFromTokens = tokens.mul(price).div(TENPOW18);
+  // tokens = weth x 10^18 / price
   const tokensFromWethsFromTokens = wethsFromTokens.mul(TENPOW18).div(price);
+  // price = weth x 10^18 / tokens
   const averagePrice = tokensFromWethsFromTokens.gt(0) ? wethsFromTokens.mul(TENPOW18).div(tokensFromWethsFromTokens) : 0;
 
   // price: 0.0019 1900000000000000
@@ -3894,17 +3898,6 @@ function testIt() {
   console.log("wethsFromTokens: " + ethers.utils.formatEther(wethsFromTokens) + " " + wethsFromTokens.toString());
   console.log("tokensFromWethsFromTokens: " + ethers.utils.formatEther(tokensFromWethsFromTokens) + " " + tokensFromWethsFromTokens.toString());
   console.log("averagePrice: " + ethers.utils.formatEther(averagePrice) + " " + averagePrice.toString());
-
-  // // tokens = weth x 10^18 / price
-  // tokensFromMaxWeth = maxWeth.mul(TENPOW18).div(price_);
-  // // weth = tokens x price / 10^18
-  // wethFromTokensFromMaxWeth = tokensFromMaxWeth.mul(price_).div(TENPOW18);
-  // // price = weth x 10^18 / tokens
-  // maxWethAveragePrice = tokensFromMaxWeth.gt(0) ? wethFromTokensFromMaxWeth.mul(TENPOW18).div(tokensFromMaxWeth) : 0;
-  // console.log("maxWeth: " + (maxWeth && ethers.utils.formatEther(maxWeth) || null) + ", tokensFromMaxWeth: " + (tokensFromMaxWeth && ethers.utils.formatEther(tokensFromMaxWeth) || null) + ", wethFromTokensFromMaxWeth: " + (wethFromTokensFromMaxWeth && ethers.utils.formatEther(wethFromTokensFromMaxWeth) || null) + ", maxWethAveragePrice: " + (maxWethAveragePrice && ethers.utils.formatEther(maxWethAveragePrice) || null));
-  // // price 0.0019
-  // // maxWeth: 0.001, tokensFromMaxWeth: 0.52631578947368421, wethFromTokensFromMaxWeth: 0.000999999999999999, maxWethAveragePrice: 0.001899999999999998
-
 }
 
 testIt();
