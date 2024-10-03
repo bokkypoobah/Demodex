@@ -2088,17 +2088,19 @@ data: {{ data }}
           const wethFromTokensFromWethApproval = tokensFromWethApproval.mul(price_).div(TENPOW18);
           console.log("wethApproval: " + ethers.utils.formatEther(wethApproval) + ", tokensFromWethApproval: " + ethers.utils.formatEther(tokensFromWethApproval) + ", wethFromTokensFromWethApproval: " + ethers.utils.formatEther(wethFromTokensFromWethApproval));
 
-          let [tokensFromMaxWeth, wethFromTokensFromMaxWeth, maxWethAveragePrice] = [null, null, null];
+          let [tokensFromMaxWeth, wethFromTokensFromMaxWeth, tokensFromWethFromTokensFromMaxWeth, maxWethAveragePrice] = [null, null, null];
           if (maxWeth != null) {
             // tokens = weth x 10^18 / price
             tokensFromMaxWeth = maxWeth.mul(TENPOW18).div(price_);
             // weth = tokens x price / 10^18
             wethFromTokensFromMaxWeth = tokensFromMaxWeth.mul(price_).div(TENPOW18);
+            // tokens = weth x 10^18 / price
+            tokensFromWethFromTokensFromMaxWeth = wethFromTokensFromMaxWeth.mul(TENPOW18).div(price_);
             // price = weth x 10^18 / tokens
-            maxWethAveragePrice = tokensFromMaxWeth.gt(0) ? wethFromTokensFromMaxWeth.mul(TENPOW18).div(tokensFromMaxWeth) : 0;
-            console.log("maxWeth: " + (maxWeth && ethers.utils.formatEther(maxWeth) || null) + ", tokensFromMaxWeth: " + (tokensFromMaxWeth && ethers.utils.formatEther(tokensFromMaxWeth) || null) + ", wethFromTokensFromMaxWeth: " + (wethFromTokensFromMaxWeth && ethers.utils.formatEther(wethFromTokensFromMaxWeth) || null) + ", maxWethAveragePrice: " + (maxWethAveragePrice && ethers.utils.formatEther(maxWethAveragePrice) || null));
+            maxWethAveragePrice = tokensFromWethFromTokensFromMaxWeth.gt(0) ? wethFromTokensFromMaxWeth.mul(TENPOW18).div(tokensFromWethFromTokensFromMaxWeth) : 0;
+            console.log("maxWeth: " + ethers.utils.formatEther(maxWeth) + ", tokensFromMaxWeth: " + ethers.utils.formatEther(tokensFromMaxWeth) + ", wethFromTokensFromMaxWeth: " + ethers.utils.formatEther(wethFromTokensFromMaxWeth) + ", tokensFromWethFromTokensFromMaxWeth: " + ethers.utils.formatEther(tokensFromWethFromTokensFromMaxWeth) + ", maxWethAveragePrice: " + ethers.utils.formatEther(maxWethAveragePrice));
             // price 0.0019
-            // maxWeth: 0.001, tokensFromMaxWeth: 0.52631578947368421, wethFromTokensFromMaxWeth: 0.000999999999999999, maxWethAveragePrice: 0.001899999999999998
+            // maxWeth: 0.001, tokensFromMaxWeth: 0.52631578947368421, wethFromTokensFromMaxWeth: 0.000999999999999999, tokensFromWethFromTokensFromMaxWeth: 0.526315789473683684, maxWethAveragePrice: 0.0019
 
           }
 
