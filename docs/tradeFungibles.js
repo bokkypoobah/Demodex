@@ -3870,13 +3870,23 @@ const tradeFungiblesModule = {
   },
 };
 
-function roundedTokens(price, tokens) {
-  console.log("roundedTokens price: " + ethers.utils.formatEther(price) + " " + price.toString() + ", tokens: " + ethers.utils.formatEther(tokens) + " " + tokens.toString());
+function roundedTokensFromWeth(price, weths) {
+  console.log("roundedTokensFromWeth - price: " + ethers.utils.formatEther(price) + " " + price.toString() + ", weths: " + ethers.utils.formatEther(weths) + " " + weths.toString());
+  // console.log("roundedTokensFromWeth - weths: " + ethers.utils.formatEther(weths) + " " + weths.toString());
+  // tokens = weths x 10^18 / price
+  const tokens = weths.mul(TENPOW18).div(price);
+  console.log("roundedTokensFromWeth - tokens: " + ethers.utils.formatEther(tokens) + " " + tokens.toString());
   // weths = tokens x price / 10^18
-  // const weths = tokens.mul()
-  result = 0;
+  const roundedWeths = tokens.mul(price).div(TENPOW18);
+  console.log("roundedTokensFromWeth - roundedWeths: " + ethers.utils.formatEther(roundedWeths) + " " + roundedWeths.toString());
 
-  return result;
+  const tokensFromRoundedWeth = roundedWeths.mul(TENPOW18).div(price);
+  console.log("roundedTokensFromWeth - tokensFromRoundedWeth: " + ethers.utils.formatEther(tokensFromRoundedWeth) + " " + tokensFromRoundedWeth.toString());
+
+  const wethsFromTokensFromRoundedWeth = tokensFromRoundedWeth.mul(price).div(TENPOW18);
+  console.log("roundedTokensFromWeth - wethsFromTokensFromRoundedWeth: " + ethers.utils.formatEther(wethsFromTokensFromRoundedWeth) + " " + wethsFromTokensFromRoundedWeth.toString());
+
+  return tokens;
 }
 
 
@@ -3886,8 +3896,8 @@ function testIt() {
   const price = ethers.utils.parseEther("0.0019");
   const weths = ethers.utils.parseEther("0.001");
 
-  const _roundedTokens = roundedTokens(price, tokens);
-  console.log("_roundedTokens: " + ethers.utils.formatEther(_roundedTokens) + " " + _roundedTokens.toString());
+  const _roundedTokensFromWeth = roundedTokensFromWeth(price, weths);
+  console.log("_roundedTokensFromWeth: " + ethers.utils.formatEther(_roundedTokensFromWeth) + " " + _roundedTokensFromWeth.toString());
 
   // // tokens = weths x 10^18 / price
   // const tokens = weths.mul(TENPOW18).div(price);
