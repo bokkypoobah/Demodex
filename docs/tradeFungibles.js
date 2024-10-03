@@ -2088,7 +2088,8 @@ data: {{ data }}
           console.log("wethApproval: " + ethers.utils.formatEther(wethApproval) + ", tokensWethApproval: " + ethers.utils.formatEther(tokensWethApproval) + ", wethFromTokensWethApproval: " + ethers.utils.formatEther(wethFromTokensWethApproval));
           const tokensFromMaxWeth = maxWeth && maxWeth.mul(TENPOW18).div(price.price) || null;
           const wethFromTokensFromMaxWeth = tokensFromMaxWeth && tokensFromMaxWeth.mul(ethers.BigNumber.from(price.price)).div(TENPOW18) || null;
-          console.log("maxWeth: " + (maxWeth && ethers.utils.formatEther(maxWeth) || null) + ", tokensFromMaxWeth: " + (tokensFromMaxWeth && ethers.utils.formatEther(tokensFromMaxWeth) || null) + ", wethFromTokensFromMaxWeth: " + (wethFromTokensFromMaxWeth && ethers.utils.formatEther(wethFromTokensFromMaxWeth) || null));
+          const maxWethAveragePrice = tokensFromMaxWeth && tokensFromMaxWeth.gt(0) ? wethFromTokensFromMaxWeth.mul(TENPOW18).div(tokensFromMaxWeth) : 0;
+          console.log("maxWeth: " + (maxWeth && ethers.utils.formatEther(maxWeth) || null) + ", tokensFromMaxWeth: " + (tokensFromMaxWeth && ethers.utils.formatEther(tokensFromMaxWeth) || null) + ", wethFromTokensFromMaxWeth: " + (wethFromTokensFromMaxWeth && ethers.utils.formatEther(wethFromTokensFromMaxWeth) || null) + ", maxWethAveragePrice: " + (maxWethAveragePrice && ethers.utils.formatEther(maxWethAveragePrice) || null));
           // filledAveragePrice = totalTokens > 0 ? totalWeths.mul(TENPOW18).div(totalTokens) : 0;
 
           if (tokens.gt(tokensWethBalance)) {
