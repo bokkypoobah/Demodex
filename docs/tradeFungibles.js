@@ -2114,10 +2114,10 @@ data: {{ data }}
             }
             maxTokens = maxTokens.sub(tokens);
           }
-          if (tokensFromWethFromTokensFromMaxWeth != null) {
-            console.log("tokens: " + ethers.utils.formatEther(tokens) + ", tokensFromWethFromTokensFromMaxWeth: " + ethers.utils.formatEther(tokensFromWethFromTokensFromMaxWeth));
-            if (tokens.gt(tokensFromWethFromTokensFromMaxWeth)) {
-              tokens = tokensFromWethFromTokensFromMaxWeth;
+          if (tokensFromMaxWeth != null) {
+            console.log("tokens: " + ethers.utils.formatEther(tokens) + ", tokensFromMaxWeth: " + ethers.utils.formatEther(tokensFromMaxWeth));
+            if (tokens.gt(tokensFromMaxWeth)) {
+              tokens = tokensFromMaxWeth;
             }
             const wethsToSubtract = tokens.mul(price_).div(TENPOW18);
             console.log("tokens: " + ethers.utils.formatEther(tokens) + ", wethsToSubtract: " + ethers.utils.formatEther(wethsToSubtract));
@@ -3869,61 +3869,3 @@ const tradeFungiblesModule = {
   actions: {
   },
 };
-
-function roundedTokensFromWeth(price, weths) {
-  console.log("roundedTokensFromWeth - price: " + ethers.utils.formatEther(price) + " " + price.toString() + ", weths: " + ethers.utils.formatEther(weths) + " " + weths.toString());
-  // console.log("roundedTokensFromWeth - weths: " + ethers.utils.formatEther(weths) + " " + weths.toString());
-  // tokens = weths x 10^18 / price
-  const tokens = weths.mul(TENPOW18).div(price);
-  console.log("roundedTokensFromWeth - tokens: " + ethers.utils.formatEther(tokens) + " " + tokens.toString());
-  // weths = tokens x price / 10^18
-  const roundedWeths = tokens.mul(price).div(TENPOW18);
-  console.log("roundedTokensFromWeth - roundedWeths: " + ethers.utils.formatEther(roundedWeths) + " " + roundedWeths.toString());
-
-  const tokensFromRoundedWeth = roundedWeths.mul(TENPOW18).div(price);
-  console.log("roundedTokensFromWeth - tokensFromRoundedWeth: " + ethers.utils.formatEther(tokensFromRoundedWeth) + " " + tokensFromRoundedWeth.toString());
-
-  const wethsFromTokensFromRoundedWeth = tokensFromRoundedWeth.mul(price).div(TENPOW18);
-  console.log("roundedTokensFromWeth - wethsFromTokensFromRoundedWeth: " + ethers.utils.formatEther(wethsFromTokensFromRoundedWeth) + " " + wethsFromTokensFromRoundedWeth.toString());
-
-  return tokens;
-}
-
-
-function testIt() {
-  console.log("testIt");
-  const tokens = ethers.utils.parseEther("1");
-  const price = ethers.utils.parseEther("0.0019");
-  const weths = ethers.utils.parseEther("0.001");
-
-  const _roundedTokensFromWeth = roundedTokensFromWeth(price, weths);
-  console.log("_roundedTokensFromWeth: " + ethers.utils.formatEther(_roundedTokensFromWeth) + " " + _roundedTokensFromWeth.toString());
-
-  // // tokens = weths x 10^18 / price
-  // const tokens = weths.mul(TENPOW18).div(price);
-  // // weths = tokens x price / 10^18
-  // const wethsFromTokens = tokens.mul(price).div(TENPOW18);
-  // // tokens = weths x 10^18 / price
-  // const tokensFromWethsFromTokens = wethsFromTokens.mul(TENPOW18).div(price);
-  // // price = weth x 10^18 / tokens
-  // const averagePrice = tokensFromWethsFromTokens.gt(0) ? wethsFromTokens.mul(TENPOW18).div(tokensFromWethsFromTokens) : 0;
-  // // weth = tokens x price / 10^18
-  // const wethsFromTokensFromWethsFromTokens = tokensFromWethsFromTokens.mul(price).div(TENPOW18);
-
-  // price: 0.0019 1900000000000000
-  // weths: 0.001 1000000000000000
-  // tokens: 0.52631578947368421 526315789473684210
-  // wethsFromTokens: 0.000999999999999999 999999999999999
-  // tokensFromWethsFromTokens: 0.526315789473683684 526315789473683684
-  // wethsFromTokensFromWethsFromTokens: 0.000999999999999998 999999999999998
-  // averagePrice: 0.0019 1900000000000000
-  // console.log("price: " + ethers.utils.formatEther(price) + " " + price.toString());
-  // console.log("weths: " + ethers.utils.formatEther(weths) + " " + weths.toString());
-  // console.log("tokens: " + ethers.utils.formatEther(tokens) + " " + tokens.toString());
-  // console.log("wethsFromTokens: " + ethers.utils.formatEther(wethsFromTokens) + " " + wethsFromTokens.toString());
-  // console.log("tokensFromWethsFromTokens: " + ethers.utils.formatEther(tokensFromWethsFromTokens) + " " + tokensFromWethsFromTokens.toString());
-  // console.log("wethsFromTokensFromWethsFromTokens: " + ethers.utils.formatEther(wethsFromTokensFromWethsFromTokens) + " " + wethsFromTokensFromWethsFromTokens.toString());
-  // console.log("averagePrice: " + ethers.utils.formatEther(averagePrice) + " " + averagePrice.toString());
-}
-
-testIt();

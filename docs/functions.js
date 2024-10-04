@@ -478,3 +478,113 @@ function decodeNameWrapperBytes(b) {
   }
   return parts;
 }
+
+// weths = tokens x price / 10^18
+function wethsFromPriceAndTokens(price, tokens) {
+  console.log(now() + " INFO functions:wethsFromPriceAndTokens - price: " + price.toString() + " tokens: " + tokens.toString());
+  const result = tokens.mul(price).div(TENPOW18);
+  return result;
+}
+
+// tokens = weths x 10^18 / price
+function tokensFromPriceAndWeths(price, weths) {
+  console.log(now() + " INFO functions:tokensFromPriceAndWeths - price: " + price.toString() + " weths: " + weths.toString());
+  const result = weths.mul(TENPOW18).div(price);
+  return result;
+}
+
+// price = weth x 10^18 / tokens
+function priceFromTokensAndWeths(tokens, weths) {
+  console.log(now() + " INFO functions:priceFromTokensAndWeths - tokens: " + tokens.toString() + " weths: " + weths.toString());
+  const result = weths.mul(TENPOW18).div(tokens);
+  return result;
+}
+
+
+// tokens = weths x 10^18 / price
+function roundedTokensAndWethsFromPriceAndWeths(price, weths, tokenDecimals, tokenRounding) {
+  console.log(now() + " INFO functions:tokensFromPriceAndWeths - price: " + ethers.utils.formatEther(price) + " " + price.toString() + " weths: " +ethers.utils.formatEther(weths) + " " + weths.toString() + ", tokenDecimals: " + tokenDecimals + ", tokenRounding: " + tokenRounding);
+  const tokens = weths.mul(TENPOW18).div(price);
+  console.log(now() + " INFO functions:tokensFromPriceAndWeths - tokens: " + ethers.utils.formatUnits(tokens, tokenDecimals) + " " + tokens.toString());
+  const roundOff = tokenDecimals - tokenRounding;
+  const roundedTokens = tokens.div(10**roundOff).mul(10**roundOff);
+  console.log(now() + " INFO functions:tokensFromPriceAndWeths - roundedTokens: " + ethers.utils.formatUnits(roundedTokens, tokenDecimals) + " " + roundedTokens.toString());
+  const roundedWeths = roundedTokens.mul(price).div(TENPOW18);
+  console.log(now() + " INFO functions:tokensFromPriceAndWeths - roundedWeths: " + ethers.utils.formatEther(roundedWeths) + " " + roundedWeths.toString());
+  return roundedTokens;
+}
+
+
+
+function testIt() {
+  console.log("testIt");
+  const price = ethers.utils.parseEther("0.0019");
+  const tokens = ethers.utils.parseEther("1");
+  const weths = ethers.utils.parseEther("0.001");
+  const tokenDecimals = 18;
+  const tokenRounding = 6;
+  console.log("price: " + ethers.utils.formatEther(price) + " " + price.toString());
+  console.log("tokens: " + ethers.utils.formatEther(tokens) + " " + tokens.toString());
+  console.log("weths: " + ethers.utils.formatEther(weths) + " " + weths.toString());
+  console.log("tokenDecimals: " + tokenDecimals + ", tokenRounding: " + tokenRounding);
+
+  const _roundedTokensAndWethsFromPriceAndWeths = roundedTokensAndWethsFromPriceAndWeths(price, tokens, tokenDecimals, tokenRounding);
+  console.log("_roundedTokensAndWethsFromPriceAndWeths: " + ethers.utils.formatEther(_roundedTokensAndWethsFromPriceAndWeths) + " " + _roundedTokensAndWethsFromPriceAndWeths.toString());
+
+
+  // const _wethsFromPriceAndTokens = wethsFromPriceAndTokens(price, tokens);
+  // console.log("_wethsFromPriceAndTokens: " + ethers.utils.formatEther(_wethsFromPriceAndTokens) + " " + _wethsFromPriceAndTokens.toString());
+  //
+  // const _tokensFromPriceAndWeths = tokensFromPriceAndWeths(price, weths);
+  // console.log("_tokensFromPriceAndWeths: " + ethers.utils.formatEther(_tokensFromPriceAndWeths) + " " + _tokensFromPriceAndWeths.toString());
+  //
+  // const _priceFromTokensAndWeths = priceFromTokensAndWeths(tokens, weths);
+  // console.log("_priceFromTokensAndWeths: " + ethers.utils.formatEther(_priceFromTokensAndWeths) + " " + _priceFromTokensAndWeths.toString());
+
+  // const _roundedTokensFromWeth = roundedTokensFromWeth(price, weths);
+  // console.log("_roundedTokensFromWeth: " + ethers.utils.formatEther(_roundedTokensFromWeth) + " " + _roundedTokensFromWeth.toString());
+
+  // // tokens = weths x 10^18 / price
+  // const tokens = weths.mul(TENPOW18).div(price);
+  // // weths = tokens x price / 10^18
+  // const wethsFromTokens = tokens.mul(price).div(TENPOW18);
+  // // tokens = weths x 10^18 / price
+  // const tokensFromWethsFromTokens = wethsFromTokens.mul(TENPOW18).div(price);
+  // // price = weth x 10^18 / tokens
+  // const averagePrice = tokensFromWethsFromTokens.gt(0) ? wethsFromTokens.mul(TENPOW18).div(tokensFromWethsFromTokens) : 0;
+  // // weth = tokens x price / 10^18
+  // const wethsFromTokensFromWethsFromTokens = tokensFromWethsFromTokens.mul(price).div(TENPOW18);
+
+  // price: 0.0019 1900000000000000
+  // weths: 0.001 1000000000000000
+  // tokens: 0.52631578947368421 526315789473684210
+  // wethsFromTokens: 0.000999999999999999 999999999999999
+  // tokensFromWethsFromTokens: 0.526315789473683684 526315789473683684
+  // wethsFromTokensFromWethsFromTokens: 0.000999999999999998 999999999999998
+  // averagePrice: 0.0019 1900000000000000
+  // console.log("wethsFromTokens: " + ethers.utils.formatEther(wethsFromTokens) + " " + wethsFromTokens.toString());
+  // console.log("tokensFromWethsFromTokens: " + ethers.utils.formatEther(tokensFromWethsFromTokens) + " " + tokensFromWethsFromTokens.toString());
+  // console.log("wethsFromTokensFromWethsFromTokens: " + ethers.utils.formatEther(wethsFromTokensFromWethsFromTokens) + " " + wethsFromTokensFromWethsFromTokens.toString());
+  // console.log("averagePrice: " + ethers.utils.formatEther(averagePrice) + " " + averagePrice.toString());
+}
+
+testIt();
+
+// function roundedTokensFromWeth(price, weths) {
+//   console.log("roundedTokensFromWeth - price: " + ethers.utils.formatEther(price) + " " + price.toString() + ", weths: " + ethers.utils.formatEther(weths) + " " + weths.toString());
+//   // console.log("roundedTokensFromWeth - weths: " + ethers.utils.formatEther(weths) + " " + weths.toString());
+//   // tokens = weths x 10^18 / price
+//   const tokens = weths.mul(TENPOW18).div(price);
+//   console.log("roundedTokensFromWeth - tokens: " + ethers.utils.formatEther(tokens) + " " + tokens.toString());
+//   // weths = tokens x price / 10^18
+//   const roundedWeths = tokens.mul(price).div(TENPOW18);
+//   console.log("roundedTokensFromWeth - roundedWeths: " + ethers.utils.formatEther(roundedWeths) + " " + roundedWeths.toString());
+//
+//   const tokensFromRoundedWeth = (roundedWeths.add(1)).mul(TENPOW18).div(price);
+//   console.log("roundedTokensFromWeth - tokensFromRoundedWeth: " + ethers.utils.formatEther(tokensFromRoundedWeth) + " " + tokensFromRoundedWeth.toString());
+//
+//   const wethsFromTokensFromRoundedWeth = tokensFromRoundedWeth.mul(price).div(TENPOW18);
+//   console.log("roundedTokensFromWeth - wethsFromTokensFromRoundedWeth: " + ethers.utils.formatEther(wethsFromTokensFromRoundedWeth) + " " + wethsFromTokensFromRoundedWeth.toString());
+//
+//   return tokens;
+// }

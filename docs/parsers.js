@@ -11,7 +11,7 @@ const EVENTTYPE_OFFERSINVALIDATED = 9; // TokenAgent - OffersInvalidated
 const EVENTTYPE_TRADED = 10;           // TokenAgent - Traded
 
 function parseTokenEventLogs(logs, chainId) {
-  // console.log(now() + " INFO functions:parseTokenEventLogs - logs: " + JSON.stringify(logs, null, 2));
+  // console.log(now() + " INFO parsers:parseTokenEventLogs - logs: " + JSON.stringify(logs, null, 2));
   const erc20Interface = new ethers.utils.Interface(ERC20ABI);
   const erc721Interface = new ethers.utils.Interface(ERC721ABI);
   const records = [];
@@ -58,7 +58,7 @@ function parseTokenEventLogs(logs, chainId) {
         // NOTE: Both 721 and 1155 fall into this category, but assigning all to 721
         eventRecord = { eventType: EVENTTYPE_APPROVALFORALL, owner, operator, approved /*, contractType: 721*/ };
       } else {
-        console.log(now() + " INFO functions:parseTokenEventLogs - UNHANDLED log: " + JSON.stringify(log));
+        console.log(now() + " INFO parsers:parseTokenEventLogs - UNHANDLED log: " + JSON.stringify(log));
       }
       if (eventRecord) {
         records.push( {
@@ -73,12 +73,12 @@ function parseTokenEventLogs(logs, chainId) {
       }
     }
   }
-  // console.log(now() + " INFO functions:parseTokenEventLogs - records: " + JSON.stringify(records, null, 2));
+  // console.log(now() + " INFO parsers:parseTokenEventLogs - records: " + JSON.stringify(records, null, 2));
   return records;
 }
 
 function parseTokenEventLogsOld(logs, chainId, latestBlockNumber) {
-  // console.log(now() + " INFO functions:parseTokenEventLogsOld - logs: " + JSON.stringify(logs, null, 2));
+  // console.log(now() + " INFO parsers:parseTokenEventLogsOld - logs: " + JSON.stringify(logs, null, 2));
   const erc20Interface = new ethers.utils.Interface(ERC20ABI);
   const erc721Interface = new ethers.utils.Interface(ERC721ABI);
   const records = [];
@@ -125,7 +125,7 @@ function parseTokenEventLogsOld(logs, chainId, latestBlockNumber) {
         // NOTE: Both 721 and 1155 fall into this category, but assigning all to 721
         eventRecord = { eventType: "ApprovalForAll", owner, operator, approved /*, contractType: 721*/ };
       } else {
-        console.log(now() + " INFO functions:parseTokenEventLogsOld - UNHANDLED log: " + JSON.stringify(log));
+        console.log(now() + " INFO parsers:parseTokenEventLogsOld - UNHANDLED log: " + JSON.stringify(log));
       }
       if (eventRecord) {
         records.push( {
@@ -141,14 +141,14 @@ function parseTokenEventLogsOld(logs, chainId, latestBlockNumber) {
       }
     }
   }
-  // console.log(now() + " INFO functions:parseTokenEventLogsOld - records: " + JSON.stringify(records, null, 2));
+  // console.log(now() + " INFO parsers:parseTokenEventLogsOld - records: " + JSON.stringify(records, null, 2));
   return records;
 }
 
 // TokenAgentFactory
 // event NewTokenAgent(TokenAgent indexed tokenAgent, Account indexed owner, Index indexed index, Index indexByOwner, Unixtime timestamp);
 function parseTokenAgentFactoryEventLogs(logs, chainId, tokenAgentFactoryAddress, tokenAgentFactoryAbi) {
-  // console.log(now() + " INFO functions:parseTokenAgentFactoryEventLogs - logs: " + JSON.stringify(logs, null, 2));
+  // console.log(now() + " INFO parsers:parseTokenAgentFactoryEventLogs - logs: " + JSON.stringify(logs, null, 2));
   const interface = new ethers.utils.Interface(tokenAgentFactoryAbi);
   const records = [];
   for (const log of logs) {
@@ -161,7 +161,7 @@ function parseTokenAgentFactoryEventLogs(logs, chainId, tokenAgentFactoryAddress
         const [tokenAgent, owner, index, timestamp] = logData.args;
         eventRecord = { eventType: EVENTTYPE_NEWTOKENAGENT, tokenAgent, owner, index, timestamp };
       } else {
-        console.log(now() + " INFO functions:parseTokenAgentFactoryEventLogs - UNHANDLED log: " + JSON.stringify(log));
+        console.log(now() + " INFO parsers:parseTokenAgentFactoryEventLogs - UNHANDLED log: " + JSON.stringify(log));
       }
       if (eventRecord) {
         records.push( {
@@ -176,11 +176,11 @@ function parseTokenAgentFactoryEventLogs(logs, chainId, tokenAgentFactoryAddress
       }
     }
   }
-  // console.log(now() + " INFO functions:parseTokenAgentFactoryEventLogs - records: " + JSON.stringify(records, null, 2));
+  // console.log(now() + " INFO parsers:parseTokenAgentFactoryEventLogs - records: " + JSON.stringify(records, null, 2));
   return records;
 }
 function parseTokenAgentFactoryEventLogsOld(logs, chainId, tokenAgentFactoryAddress, tokenAgentFactoryAbi, latestBlockNumber) {
-  // console.log(now() + " INFO functions:parseTokenAgentFactoryEventLogsOld - logs: " + JSON.stringify(logs, null, 2));
+  // console.log(now() + " INFO parsers:parseTokenAgentFactoryEventLogsOld - logs: " + JSON.stringify(logs, null, 2));
   const interface = new ethers.utils.Interface(tokenAgentFactoryAbi);
   const records = [];
   for (const log of logs) {
@@ -193,7 +193,7 @@ function parseTokenAgentFactoryEventLogsOld(logs, chainId, tokenAgentFactoryAddr
         const [tokenAgent, owner, index, timestamp] = logData.args;
         eventRecord = { eventType: EVENTTYPE_NEWTOKENAGENT, tokenAgent, owner, index, timestamp };
       } else {
-        console.log(now() + " INFO functions:parseTokenAgentFactoryEventLogsOld - UNHANDLED log: " + JSON.stringify(log));
+        console.log(now() + " INFO parsers:parseTokenAgentFactoryEventLogsOld - UNHANDLED log: " + JSON.stringify(log));
       }
       if (eventRecord) {
         records.push( {
@@ -209,12 +209,12 @@ function parseTokenAgentFactoryEventLogsOld(logs, chainId, tokenAgentFactoryAddr
       }
     }
   }
-  // console.log(now() + " INFO functions:parseTokenAgentFactoryEventLogsOld - records: " + JSON.stringify(records, null, 2));
+  // console.log(now() + " INFO parsers:parseTokenAgentFactoryEventLogsOld - records: " + JSON.stringify(records, null, 2));
   return records;
 }
 
 function parseDemodexEventLogs(logs, chainId, demodexAbi) {
-  // console.log(now() + " INFO functions:parseDemodexEventLogs - logs: " + JSON.stringify(logs, null, 2));
+  // console.log(now() + " INFO parsers:parseDemodexEventLogs - logs: " + JSON.stringify(logs, null, 2));
   const interface = new ethers.utils.Interface(demodexAbi);
   const records = [];
   for (const log of logs) {
@@ -254,7 +254,7 @@ function parseDemodexEventLogs(logs, chainId, demodexAbi) {
         const [maker, newNonce, timestamp] = logData.args;
         eventRecord = { eventType: EVENTTYPE_OFFERSINVALIDATED, maker, newNonce, timestamp };
       } else {
-        console.log(now() + " INFO functions:parseDemodexEventLogs - UNHANDLED log: " + JSON.stringify(log));
+        console.log(now() + " INFO parsers:parseDemodexEventLogs - UNHANDLED log: " + JSON.stringify(log));
       }
       if (eventRecord) {
         records.push( {
@@ -269,7 +269,7 @@ function parseDemodexEventLogs(logs, chainId, demodexAbi) {
       }
     }
   }
-  // console.log(now() + " INFO functions:parseDemodexEventLogs - records: " + JSON.stringify(records, null, 2));
+  // console.log(now() + " INFO parsers:parseDemodexEventLogs - records: " + JSON.stringify(records, null, 2));
   return records;
 }
 
@@ -295,7 +295,7 @@ function parseDemodexEventLogs(logs, chainId, demodexAbi) {
 // event Traded(Index index, Token indexed token, TokenType tokenType, Account indexed maker, Account indexed taker, BuySell makerBuySell, uint[] prices, uint[] tokenIds, uint[] tokenss, Tokens[] remainingTokenss, Price price, Unixtime timestamp);
 
 function parseTokenAgentEventLogs(logs, chainId, tokenAgentAbi) {
-  // console.log(now() + " INFO functions:parseTokenAgentEventLogs - logs: " + JSON.stringify(logs, null, 2));
+  // console.log(now() + " INFO parsers:parseTokenAgentEventLogs - logs: " + JSON.stringify(logs, null, 2));
   const interface = new ethers.utils.Interface(tokenAgentAbi);
   const records = [];
   for (const log of logs) {
@@ -335,7 +335,7 @@ function parseTokenAgentEventLogs(logs, chainId, tokenAgentAbi) {
         const [newNonce, timestamp] = logData.args;
         eventRecord = { eventType: EVENTTYPE_OFFERSINVALIDATED, newNonce, timestamp };
       } else {
-        console.log(now() + " INFO functions:parseTokenAgentEventLogs - UNHANDLED log: " + JSON.stringify(log));
+        console.log(now() + " INFO parsers:parseTokenAgentEventLogs - UNHANDLED log: " + JSON.stringify(log));
       }
       if (eventRecord) {
         records.push( {
@@ -350,13 +350,13 @@ function parseTokenAgentEventLogs(logs, chainId, tokenAgentAbi) {
       }
     }
   }
-  // console.log(now() + " INFO functions:parseTokenAgentEventLogs - records: " + JSON.stringify(records, null, 2));
+  // console.log(now() + " INFO parsers:parseTokenAgentEventLogs - records: " + JSON.stringify(records, null, 2));
   return records;
 }
 
 // TODO: Delete below
 function parseTokenAgentEventLogsOld(logs, chainId, tokenAgentAddress, tokenAgentAbi, latestBlockNumber) {
-  // console.log(now() + " INFO functions:parseTokenAgentEventLogsOld - logs: " + JSON.stringify(logs, null, 2));
+  // console.log(now() + " INFO parsers:parseTokenAgentEventLogsOld - logs: " + JSON.stringify(logs, null, 2));
   const interface = new ethers.utils.Interface(tokenAgentAbi);
   const records = [];
   for (const log of logs) {
@@ -396,7 +396,7 @@ function parseTokenAgentEventLogsOld(logs, chainId, tokenAgentAddress, tokenAgen
         const [newNonce, timestamp] = logData.args;
         eventRecord = { eventType: "OffersInvalidated", newNonce, timestamp };
       } else {
-        console.log(now() + " INFO functions:parseTokenAgentEventLogsOld - UNHANDLED log: " + JSON.stringify(log));
+        console.log(now() + " INFO parsers:parseTokenAgentEventLogsOld - UNHANDLED log: " + JSON.stringify(log));
       }
       if (eventRecord) {
         records.push( {
@@ -412,6 +412,6 @@ function parseTokenAgentEventLogsOld(logs, chainId, tokenAgentAddress, tokenAgen
       }
     }
   }
-  // console.log(now() + " INFO functions:parseTokenAgentEventLogsOld - records: " + JSON.stringify(records, null, 2));
+  // console.log(now() + " INFO parsers:parseTokenAgentEventLogsOld - records: " + JSON.stringify(records, null, 2));
   return records;
 }
