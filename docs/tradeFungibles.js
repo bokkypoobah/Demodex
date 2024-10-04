@@ -1709,6 +1709,7 @@ data: {{ data }}
       // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - this.tokenSet: " + JSON.stringify(this.tokenSet, null, 2));
       // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - tokenSet.timestamp: " + this.formatTimestamp(this.tokenSet.timestamp) + ", token.symbol: " + this.tokenSet.symbol + ", token.decimals: " + this.tokenSet.decimals);
 
+      const wethModDecimals = this.settings.config.wethModDecimals;
       const mineOnly = this.settings.sellOffers.mineOnly;
       const ignoreMyApprovals = this.settings.sellOffers.ignoreMyApprovals;
       const includeInvalidated = this.settings.sellOffers.includeInvalidated;
@@ -1867,13 +1868,21 @@ data: {{ data }}
             maxTokens = maxTokens.sub(tokens);
           }
           if (maxWeth != null) {
-            weths = tokens.mul(ethers.BigNumber.from(price.price)).div(TENPOW18);
+            // wethModDecimals
+            const mod = BigInt(maxWeth.toString()) * BigInt(TENPOW18.toString()) % (BigInt(price.price.toString()) * BigInt(10**wethModDecimals));
+            console.log("SELL mod: " + ethers.utils.formatEther(mod) + " " + mod.toString());
+            //
+            // // tokens = weth x 10^18 / price
+            // tokensFromMaxWeth = maxWeth.mul(TENPOW18).sub(mod).div(price_);
+            const tokensFromMaxWeth = maxWeth.mul(TENPOW18).sub(mod).div(price.price);
+
+            // weths = tokens.mul(ethers.BigNumber.from(price.price)).div(TENPOW18);
             // maxTokensFromWeth = maxWeth * 10**18 / e.price
-            const maxTokensFromWeth = maxWeth.mul(TENPOW18).div(price.price);
-            if (tokens.gt(maxTokensFromWeth)) {
-              weths = maxWeth;
-              tokens = maxTokensFromWeth;
+            // const maxTokensFromWeth = maxWeth.mul(TENPOW18).div(price.price);
+            if (tokens.gt(tokensFromMaxWeth)) {
+              tokens = tokensFromMaxWeth;
             }
+            weths = tokens.mul(ethers.BigNumber.from(price.price)).div(TENPOW18);
             maxWeth = maxWeth.sub(weths);
           }
           if (tokens.gt(0)) {
@@ -1908,6 +1917,7 @@ data: {{ data }}
       // console.log(now() + " INFO TradeFungibles:computed.newBuyOffers - this.tokenSet: " + JSON.stringify(this.tokenSet, null, 2));
       // console.log(now() + " INFO TradeFungibles:computed.newBuyOffers - tokenSet.timestamp: " + this.formatTimestamp(this.tokenSet.timestamp) + ", token.symbol: " + this.tokenSet.symbol + ", token.decimals: " + this.tokenSet.decimals);
 
+      const wethModDecimals = this.settings.config.wethModDecimals;
       const mineOnly = this.settings.buyOffers.mineOnly;
       const ignoreMyApprovals = this.settings.buyOffers.ignoreMyApprovals;
       const includeInvalidated = this.settings.buyOffers.includeInvalidated;
@@ -2092,17 +2102,22 @@ data: {{ data }}
 
           let [tokensFromMaxWeth, wethFromTokensFromMaxWeth, tokensFromWethFromTokensFromMaxWeth, maxWethAveragePrice] = [null, null, null];
           if (maxWeth != null) {
+
+            // wethModDecimals
+            const mod = BigInt(maxWeth.toString()) * BigInt(TENPOW18.toString()) % (BigInt(price_.toString()) * BigInt(10**wethModDecimals));
+            console.log("BUY mod: " + ethers.utils.formatEther(mod) + " " + mod.toString());
+
             // tokens = weth x 10^18 / price
-            tokensFromMaxWeth = maxWeth.mul(TENPOW18).div(price_);
-            // weth = tokens x price / 10^18
-            wethFromTokensFromMaxWeth = tokensFromMaxWeth.mul(price_).div(TENPOW18);
-            // tokens = weth x 10^18 / price
-            tokensFromWethFromTokensFromMaxWeth = wethFromTokensFromMaxWeth.mul(TENPOW18).div(price_);
-            // price = weth x 10^18 / tokens
-            maxWethAveragePrice = tokensFromWethFromTokensFromMaxWeth.gt(0) ? wethFromTokensFromMaxWeth.mul(TENPOW18).div(tokensFromWethFromTokensFromMaxWeth) : 0;
-            console.log("maxWeth: " + ethers.utils.formatEther(maxWeth) + ", tokensFromMaxWeth: " + ethers.utils.formatEther(tokensFromMaxWeth) + ", wethFromTokensFromMaxWeth: " + ethers.utils.formatEther(wethFromTokensFromMaxWeth) + ", tokensFromWethFromTokensFromMaxWeth: " + ethers.utils.formatEther(tokensFromWethFromTokensFromMaxWeth) + ", maxWethAveragePrice: " + ethers.utils.formatEther(maxWethAveragePrice));
-            // price 0.0019
-            // maxWeth: 0.001, tokensFromMaxWeth: 0.52631578947368421, wethFromTokensFromMaxWeth: 0.000999999999999999, tokensFromWethFromTokensFromMaxWeth: 0.526315789473683684, maxWethAveragePrice: 0.0019
+            tokensFromMaxWeth = maxWeth.mul(TENPOW18).sub(mod).div(price_);
+            // // weth = tokens x price / 10^18
+            // wethFromTokensFromMaxWeth = tokensFromMaxWeth.mul(price_).div(TENPOW18);
+            // // tokens = weth x 10^18 / price
+            // tokensFromWethFromTokensFromMaxWeth = wethFromTokensFromMaxWeth.mul(TENPOW18).div(price_);
+            // // price = weth x 10^18 / tokens
+            // maxWethAveragePrice = tokensFromWethFromTokensFromMaxWeth.gt(0) ? wethFromTokensFromMaxWeth.mul(TENPOW18).div(tokensFromWethFromTokensFromMaxWeth) : 0;
+            // console.log("maxWeth: " + ethers.utils.formatEther(maxWeth) + ", tokensFromMaxWeth: " + ethers.utils.formatEther(tokensFromMaxWeth) + ", wethFromTokensFromMaxWeth: " + ethers.utils.formatEther(wethFromTokensFromMaxWeth) + ", tokensFromWethFromTokensFromMaxWeth: " + ethers.utils.formatEther(tokensFromWethFromTokensFromMaxWeth) + ", maxWethAveragePrice: " + ethers.utils.formatEther(maxWethAveragePrice));
+            // // price 0.0019
+            // // maxWeth: 0.001, tokensFromMaxWeth: 0.52631578947368421, wethFromTokensFromMaxWeth: 0.000999999999999999, tokensFromWethFromTokensFromMaxWeth: 0.526315789473683684, maxWethAveragePrice: 0.0019
 
           }
 
