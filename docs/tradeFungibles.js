@@ -93,8 +93,11 @@ const TradeFungibles = {
           <b-form-group label="Token display decimals:" label-for="config-tokendisplaydecimals" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
             <b-form-select size="sm" id="config-tokendisplaydecimals" v-model="settings.config.tokenDisplayDecimals" @change="saveSettings" :options="decimalsOptions" v-b-popover.hover.ds500="'Number of decimals to display for prices'"></b-form-select>
           </b-form-group>
-          <b-form-group label="WETH display decimals:" label-for="config-wethisplaydecimals" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
-            <b-form-select size="sm" id="config-wethisplaydecimals" v-model="settings.config.wethDisplayDecimals" @change="saveSettings" :options="decimalsOptions" v-b-popover.hover.ds500="'Number of decimals to display for prices'"></b-form-select>
+          <b-form-group label="WETH display decimals:" label-for="config-wethdisplaydecimals" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
+            <b-form-select size="sm" id="config-wethdisplaydecimals" v-model="settings.config.wethDisplayDecimals" @change="saveSettings" :options="decimalsOptions" v-b-popover.hover.ds500="'Number of decimals to display for prices'"></b-form-select>
+          </b-form-group>
+          <b-form-group label="WETH mod decimals:" label-for="config-wethmoddecimals" label-size="sm" label-cols-sm="5" label-align-sm="right" class="mx-0 my-1 p-0">
+            <b-form-select size="sm" id="config-wethmoddecimals" v-model="settings.config.wethModDecimals" @change="saveSettings" :options="priceDecimalsOptions" v-b-popover.hover.ds500="'Number of decimals used in weth mod (%) calculations'"></b-form-select>
           </b-form-group>
         </b-modal>
 
@@ -1156,8 +1159,9 @@ data: {{ data }}
           priceDisplayDecimals: 6,
           tokenDisplayDecimals: 9,
           wethDisplayDecimals: 9,
+          wethModDecimals: 9,
         },
-        version: 4,
+        version: 5,
       },
 
       tokenAgentFactoryEvents: [],
