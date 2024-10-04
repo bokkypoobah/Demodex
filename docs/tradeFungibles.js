@@ -556,11 +556,11 @@ modalBuyOffer: {{ modalBuyOffer }}
                           </b-input-group-append>
                         </b-input-group>
                       </b-form-group>
-                      <b-form-group :label="'Receive ' + settings.symbol + ':'" label-for="takeselloffer-filledtokens" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
-                        <b-form-input size="sm" plaintext id="takeselloffer-filledtokens" :value="newSellOffers.filled.tokens && formatDecimals(newSellOffers.filled.tokens, 18)" class="pl-2 w-75"></b-form-input>
-                      </b-form-group>
                       <b-form-group :label="settings.sellOffers.paymentType == 'weth' ? 'Pay WETH:' : 'Pay ETH:'" label-for="takeselloffer-filledweth" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
                         <b-form-input size="sm" plaintext id="takeselloffer-filledweth" :value="newSellOffers.filled.weth && formatDecimals(newSellOffers.filled.weth, 18)" class="pl-2 w-75"></b-form-input>
+                      </b-form-group>
+                      <b-form-group :label="'Receive ' + settings.symbol + ':'" label-for="takeselloffer-filledtokens" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+                        <b-form-input size="sm" plaintext id="takeselloffer-filledtokens" :value="newSellOffers.filled.tokens && formatDecimals(newSellOffers.filled.tokens, 18)" class="pl-2 w-75"></b-form-input>
                       </b-form-group>
                       <b-form-group label="Average Price:" label-for="takeselloffer-filledaverageprice" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
                         <b-form-input size="sm" plaintext id="takeselloffer-filledaverageprice" :value="newSellOffers.filled.averagePrice && formatDecimals(newSellOffers.filled.averagePrice, 18)" class="pl-2 w-75"></b-form-input>
@@ -651,11 +651,11 @@ modalBuyOffer: {{ modalBuyOffer }}
                           </b-input-group-append>
                         </b-input-group>
                       </b-form-group>
-                      <b-form-group :label="settings.buyOffers.paymentType == 'weth' ? 'Receive WETH:' : 'Receive ETH:'" label-for="takebuyoffer-filledweth" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
-                        <b-form-input size="sm" plaintext id="takebuyoffer-filledweth" :value="newBuyOffers.filled.weth && formatDecimals(newBuyOffers.filled.weth, 18)" class="pl-2 w-75"></b-form-input>
-                      </b-form-group>
                       <b-form-group :label="'Pay ' + settings.symbol + ':'" label-for="takebuyoffer-filledtokens" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
                         <b-form-input size="sm" plaintext id="takebuyoffer-filledtokens" :value="newBuyOffers.filled.tokens && formatDecimals(newBuyOffers.filled.tokens, 18)" class="pl-2 w-75"></b-form-input>
+                      </b-form-group>
+                      <b-form-group :label="settings.buyOffers.paymentType == 'weth' ? 'Receive WETH:' : 'Receive ETH:'" label-for="takebuyoffer-filledweth" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+                        <b-form-input size="sm" plaintext id="takebuyoffer-filledweth" :value="newBuyOffers.filled.weth && formatDecimals(newBuyOffers.filled.weth, 18)" class="pl-2 w-75"></b-form-input>
                       </b-form-group>
                       <b-form-group label="Average Price:" label-for="takebuyoffer-filledaverageprice" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
                         <b-form-input size="sm" plaintext id="takebuyoffer-filledaverageprice" :value="newBuyOffers.filled.averagePrice && formatDecimals(newBuyOffers.filled.averagePrice, 18)" class="pl-2 w-75"></b-form-input>
