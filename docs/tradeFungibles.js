@@ -209,8 +209,13 @@ const TradeFungibles = {
           <b-row class="m-0 p-0">
             <b-col v-if="settings.viewMode == 0 || settings.viewMode == 1" class="m-0 mr-1 p-0">
               <div class="d-flex flex-wrap m-0 mt-1 p-0">
-                <div class="mt-1 pr-1">
+                <div class="mt-1 pr-3">
                   Sell Offers
+                </div>
+                <div class="mt-0 pr-1">
+                  <b-button size="sm" @click="settings.sellOffers.myMode = (parseInt(settings.sellOffers.myMode) + 1) % 3;" variant="link" v-b-popover.hover.ds500="settings.sellOffers.myMode == 0 ? 'All offers' : (settings.sellOffers.myMode == 1 ? 'Only my offers' : 'Not my offers')" class="m-0 p-0">
+                    <b-icon :icon="settings.sellOffers.myMode == 0 ? 'people' : (settings.sellOffers.myMode == 1 ? 'person-fill' : 'people-fill')" shift-v="-2" font-scale="1.1"></b-icon>
+                  </b-button>
                 </div>
                 <div class="mt-0 pr-1">
                   <b-dropdown size="sm" id="dropdown-left" variant="link" no-caret v-b-popover.hover.ds500="'Filters'" class="m-0 p-0">
@@ -365,8 +370,13 @@ const TradeFungibles = {
                     <b-icon-chevron-right shift-v="+1" font-scale="0.9"></b-icon-chevron-right>
                   </b-button>
                 </div>
-                <div class="mt-1 pr-1">
+                <div class="mt-1 pr-3">
                   Buy Offers
+                </div>
+                <div class="mt-0 pr-1">
+                  <b-button size="sm" @click="settings.buyOffers.myMode = (parseInt(settings.buyOffers.myMode) + 1) % 3;" variant="link" v-b-popover.hover.ds500="settings.buyOffers.myMode == 0 ? 'All offers' : (settings.buyOffers.myMode == 1 ? 'Only my offers' : 'Not my offers')" class="m-0 p-0">
+                    <b-icon :icon="settings.buyOffers.myMode == 0 ? 'people' : (settings.buyOffers.myMode == 1 ? 'person-fill' : 'people-fill')" shift-v="-2" font-scale="1.1"></b-icon>
+                  </b-button>
                 </div>
                 <div class="mt-0 pr-1">
                   <b-dropdown size="sm" id="dropdown-left" variant="link" no-caret v-b-popover.hover.ds500="'Filters'" class="m-0 p-0">
@@ -1059,6 +1069,7 @@ data: {{ data }}
         viewMode: 0, // 0:split, 1:sell, 2:buy
 
         sellOffers: {
+          myMode: 0, // 0: All, 1: Only My Offers, 2: Not My Offers
           mineOnly: false,
           ignoreMyApprovals: false,
           includeInvalidated: false,
@@ -1080,6 +1091,7 @@ data: {{ data }}
           sortOption: 'txorderdsc',
         },
         buyOffers: {
+          myMode: 0, // 0: All, 1: Only My Offers, 2: Not My Offers
           mineOnly: false,
           ignoreMyApprovals: false,
           includeInvalidated: false,
@@ -1113,7 +1125,7 @@ data: {{ data }}
           wethDisplayDecimals: 9,
           wethModDecimals: 9,
         },
-        version: 5,
+        version: 6,
       },
 
       tokenAgentFactoryEvents: [],
