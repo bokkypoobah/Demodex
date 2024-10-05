@@ -2060,6 +2060,8 @@ data: {{ data }}
       let filledTokens = null;
       let filledWeth = null;
       let filledAveragePrice = null;
+      let complete = false;
+      let zeroTokens = false;
       for (const [i, price] of prices.entries()) {
         // price.price = "7000000000000000000";
         // price.price = "33333333333333333";
@@ -2130,6 +2132,7 @@ data: {{ data }}
           if (maxTokens != null) {
             if (tokens.gt(maxTokens)) {
               tokens = maxTokens;
+              complete = true;
             }
             maxTokens = maxTokens.sub(tokens);
           }
@@ -2137,6 +2140,7 @@ data: {{ data }}
             console.log("tokens: " + ethers.utils.formatEther(tokens) + ", tokensFromMaxWeth: " + ethers.utils.formatEther(tokensFromMaxWeth));
             if (tokens.gt(tokensFromMaxWeth)) {
               tokens = tokensFromMaxWeth;
+              complete = true;
             }
             const wethsToSubtract = tokens.mul(price_).div(TENPOW18);
             console.log("tokens: " + ethers.utils.formatEther(tokens) + ", wethsToSubtract: " + ethers.utils.formatEther(wethsToSubtract));
@@ -2159,7 +2163,7 @@ data: {{ data }}
           //   }
           //   maxWeth = maxWeth.sub(weths);
           // }
-          if (tokens.gt(0)) {
+          if (tokens.gt(0) && !zeroTokens) {
             weths = tokens.mul(price_).div(TENPOW18);
             totalTokens = ethers.BigNumber.from(totalTokens).add(tokens);
             totalWeths = ethers.BigNumber.from(totalWeths).add(weths);
@@ -2168,6 +2172,9 @@ data: {{ data }}
               wethApprovals[price.maker][this.tokenSet.demodexIndex].tokens = ethers.BigNumber.from(wethApprovals[price.maker][this.tokenSet.demodexIndex].tokens).sub(weths).toString();
             }
             trades.push({ index: price.offerIndex, price: price.price, execution: 1, tokenIds: [], tokenss: [tokens.toString()] });
+            if (complete) {
+              zeroTokens = true;
+            }
           }
         }
         records.push({ ...price, originalTokens: price.tokens, tokens: tokens.toString(), totalTokens: totalTokens.toString(), weths: weths != null && weths.toString() || null, totalWeths: totalWeths.toString() });
