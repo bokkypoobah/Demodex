@@ -1423,7 +1423,7 @@ data: {{ data }}
         if (this.settings.sellOffers.expiryDate == null || this.settings.sellOffers.expiryDate == '') {
           this.settings.sellOffers.expiry = null;
         } else if (this.settings.sellOffers.expiryTime == null || this.settings.sellOffers.expiryTime == '') {
-          this.settings.sellOffers.expiry = moment(this.settings.sellOffers.expiryDate + 'T00:00:00');
+          this.settings.sellOffers.expiry = moment(this.settings.sellOffers.expiryDate + 'T00:00:00').unix();
         } else {
           this.settings.sellOffers.expiry = moment(this.settings.sellOffers.expiryDate + 'T' + this.settings.sellOffers.expiryTime).unix();
         }
@@ -1455,7 +1455,7 @@ data: {{ data }}
         if (this.settings.buyOffers.expiryDate == null || this.settings.buyOffers.expiryDate == '') {
           this.settings.buyOffers.expiry = null;
         } else if (this.settings.buyOffers.expiryTime == null || this.settings.buyOffers.expiryTime == '') {
-          this.settings.buyOffers.expiry = moment(this.settings.buyOffers.expiryDate + 'T00:00:00');
+          this.settings.buyOffers.expiry = moment(this.settings.buyOffers.expiryDate + 'T00:00:00').unix();
         } else {
           this.settings.buyOffers.expiry = moment(this.settings.buyOffers.expiryDate + 'T' + this.settings.buyOffers.expiryTime).unix();
         }
