@@ -1732,7 +1732,7 @@ data: {{ data }}
           try {
             prices.push({
               txHash: null, logIndex: null,
-              maker: this.tokenSet.coinbaseIndex,
+              maker: this.addressToIndex[this.coinbase],
               offerIndex: null, nonce: null, expiry: this.settings.sellOffers.expiry,
               priceIndex: i, price: ethers.utils.parseEther(point.price).toString(),
               tokens: ethers.utils.parseUnits(point.tokens, this.tokenSet.decimals).toString(),
@@ -1947,7 +1947,7 @@ data: {{ data }}
           try {
             prices.push({
               txHash: null, logIndex: null,
-              maker: this.tokenSet.coinbaseIndex,
+              maker: this.addressToIndex[this.coinbase],
               offerIndex: null, nonce: null, expiry: this.settings.buyOffers.expiry,
               priceIndex: i, price: ethers.utils.parseEther(point.price).toString(),
               tokens: ethers.utils.parseUnits(point.tokens, this.tokenSet.decimals).toString(),
