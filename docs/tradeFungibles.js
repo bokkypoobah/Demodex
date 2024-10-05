@@ -1842,6 +1842,8 @@ data: {{ data }}
       let filledTokens = null;
       let filledWeth = null;
       let filledAveragePrice = null;
+      let complete = false;
+      let zeroTokens = false;
       for (const [i, price] of prices.entries()) {
         const ignoreApproval = price.maker == coinbaseIndex && ignoreMyApprovals;
         const tokenBalance = ethers.BigNumber.from(tokenBalances[price.maker] && tokenBalances[price.maker].tokens || 0);
@@ -1864,6 +1866,7 @@ data: {{ data }}
           if (maxTokens != null) {
             if (tokens.gt(maxTokens)) {
               tokens = maxTokens;
+              complete = true;
             }
             maxTokens = maxTokens.sub(tokens);
           }
@@ -1881,11 +1884,12 @@ data: {{ data }}
             // const maxTokensFromWeth = maxWeth.mul(TENPOW18).div(price.price);
             if (tokens.gt(tokensFromMaxWeth)) {
               tokens = tokensFromMaxWeth;
+              complete = true;
             }
             weths = tokens.mul(ethers.BigNumber.from(price.price)).div(TENPOW18);
             maxWeth = maxWeth.sub(weths);
           }
-          if (tokens.gt(0)) {
+          if (tokens.gt(0) && !zeroTokens) {
             weths = tokens.mul(ethers.BigNumber.from(price.price)).div(TENPOW18);
             totalTokens = ethers.BigNumber.from(totalTokens).add(tokens);
             totalWeths = ethers.BigNumber.from(totalWeths).add(weths);
@@ -1894,6 +1898,9 @@ data: {{ data }}
               tokenApprovals[price.maker][this.tokenSet.demodexIndex].tokens = ethers.BigNumber.from(tokenApprovals[price.maker][this.tokenSet.demodexIndex].tokens).sub(tokens).toString();
             }
             trades.push({ index: price.offerIndex, price: price.price, execution: 1, tokenIds: [], tokenss: [tokens.toString()] });
+            if (complete) {
+              zeroTokens = true;
+            }
           }
         }
         records.push({ ...price, originalTokens: price.tokens, tokens: tokens.toString(), totalTokens: totalTokens.toString(), weths: weths != null && weths.toString() || null, totalWeths: totalWeths.toString() });
