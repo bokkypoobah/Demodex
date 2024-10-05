@@ -222,11 +222,6 @@ const TradeFungibles = {
                     <template #button-content>
                       <b-icon-list-task shift-v="-1" font-scale="1.2"></b-icon-list-task><span class="sr-only">Menu</span>
                     </template>
-                    <b-dropdown-item href="#" @click="settings.sellOffers.mineOnly = !settings.sellOffers.mineOnly; saveSettings(); ">
-                      <b-form-checkbox size="sm" v-model="settings.sellOffers.mineOnly">
-                        Mine Only
-                      </b-form-checkbox>
-                    </b-dropdown-item>
                     <b-dropdown-item href="#" @click="settings.sellOffers.ignoreMyApprovals = !settings.sellOffers.ignoreMyApprovals; saveSettings(); ">
                       <b-form-checkbox size="sm" v-model="settings.sellOffers.ignoreMyApprovals">
                         Ignore My Approvals
@@ -383,11 +378,6 @@ const TradeFungibles = {
                     <template #button-content>
                       <b-icon-list-task shift-v="-1" font-scale="1.2"></b-icon-list-task><span class="sr-only">Menu</span>
                     </template>
-                    <b-dropdown-item href="#" @click="settings.buyOffers.mineOnly = !settings.buyOffers.mineOnly; saveSettings(); ">
-                      <b-form-checkbox size="sm" v-model="settings.buyOffers.mineOnly">
-                        Mine Only
-                      </b-form-checkbox>
-                    </b-dropdown-item>
                     <b-dropdown-item href="#" @click="settings.buyOffers.ignoreMyApprovals = !settings.buyOffers.ignoreMyApprovals; saveSettings(); ">
                       <b-form-checkbox size="sm" v-model="settings.buyOffers.ignoreMyApprovals">
                         Ignore My Approvals
@@ -1070,7 +1060,6 @@ data: {{ data }}
 
         sellOffers: {
           myMode: 0, // 0: All, 1: Only My Offers, 2: Not My Offers
-          mineOnly: false,
           ignoreMyApprovals: false,
           includeInvalidated: false,
           includeExpired: false,
@@ -1092,7 +1081,6 @@ data: {{ data }}
         },
         buyOffers: {
           myMode: 0, // 0: All, 1: Only My Offers, 2: Not My Offers
-          mineOnly: false,
           ignoreMyApprovals: false,
           includeInvalidated: false,
           includeExpired: false,
@@ -1125,7 +1113,7 @@ data: {{ data }}
           wethDisplayDecimals: 9,
           wethModDecimals: 9,
         },
-        version: 6,
+        version: 7,
       },
 
       tokenAgentFactoryEvents: [],
@@ -1674,7 +1662,7 @@ data: {{ data }}
       // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - tokenSet.timestamp: " + this.formatTimestamp(this.tokenSet.timestamp) + ", token.symbol: " + this.tokenSet.symbol + ", token.decimals: " + this.tokenSet.decimals);
 
       const wethModDecimals = this.settings.config.wethModDecimals;
-      const mineOnly = this.settings.sellOffers.mineOnly;
+      const myMode = this.settings.sellOffers.myMode;
       const ignoreMyApprovals = this.settings.sellOffers.ignoreMyApprovals;
       const includeInvalidated = this.settings.sellOffers.includeInvalidated;
       const includeExpired = this.settings.sellOffers.includeExpired;
@@ -1690,7 +1678,7 @@ data: {{ data }}
       for (const e of (this.tokenSet.events || [])) {
         if (e.eventType == EVENTTYPE_OFFERED && e.buySell == 1) {
           // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - OFFERED e: " + JSON.stringify(e));
-          if ((!mineOnly || e.maker == coinbaseIndex) && /*(includeInvalidated || d.nonce == e.nonce) &&*/ (includeExpired || (e.expiry == 0 || e.expiry >= this.tokenSet.timestamp))) {
+          if ((myMode == 0 || (myMode == 1 && e.maker == coinbaseIndex) || (myMode == 2 && e.maker != coinbaseIndex)) && /*(includeInvalidated || d.nonce == e.nonce) &&*/ (includeExpired || (e.expiry == 0 || e.expiry >= this.tokenSet.timestamp))) {
             // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - OFFERED SELL e: " + JSON.stringify(e));
             if (!(e.maker in collator)) {
               collator[e.maker] = {
@@ -1738,7 +1726,7 @@ data: {{ data }}
       }
       // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - prices: " + JSON.stringify(prices, null, 2));
 
-      if (simulate && this.tokenSet.timestamp) {
+      if (simulate && this.tokenSet.timestamp && (myMode == 0 || myMode == 1)) {
         for (const [i, point] of points.entries()) {
           // console.log(now() + " INFO TradeFungibles:computed.newSellOffers - point[" + i + "]: " + JSON.stringify(point));
           try {
@@ -1889,7 +1877,7 @@ data: {{ data }}
       // console.log(now() + " INFO TradeFungibles:computed.newBuyOffers - tokenSet.timestamp: " + this.formatTimestamp(this.tokenSet.timestamp) + ", token.symbol: " + this.tokenSet.symbol + ", token.decimals: " + this.tokenSet.decimals);
 
       const wethModDecimals = this.settings.config.wethModDecimals;
-      const mineOnly = this.settings.buyOffers.mineOnly;
+      const myMode = this.settings.buyOffers.myMode;
       const ignoreMyApprovals = this.settings.buyOffers.ignoreMyApprovals;
       const includeInvalidated = this.settings.buyOffers.includeInvalidated;
       const includeExpired = this.settings.buyOffers.includeExpired;
@@ -1905,7 +1893,7 @@ data: {{ data }}
       for (const e of (this.tokenSet.events || [])) {
         if (e.eventType == EVENTTYPE_OFFERED && e.buySell == 0) {
           // console.log(now() + " INFO TradeFungibles:computed.newBuyOffers - OFFERED e: " + JSON.stringify(e));
-          if ((!mineOnly || e.maker == coinbaseIndex) && /*(includeInvalidated || d.nonce == e.nonce) &&*/ (includeExpired || (e.expiry == 0 || e.expiry >= this.tokenSet.timestamp))) {
+          if ((myMode == 0 || (myMode == 1 && e.maker == coinbaseIndex) || (myMode == 2 && e.maker != coinbaseIndex)) && /*(includeInvalidated || d.nonce == e.nonce) &&*/ (includeExpired || (e.expiry == 0 || e.expiry >= this.tokenSet.timestamp))) {
             // console.log(now() + " INFO TradeFungibles:computed.newBuyOffers - OFFERED BUY e: " + JSON.stringify(e));
             if (!(e.maker in collator)) {
               collator[e.maker] = {
@@ -1953,7 +1941,7 @@ data: {{ data }}
       }
       // console.log(now() + " INFO TradeFungibles:computed.newBuyOffers - prices: " + JSON.stringify(prices, null, 2));
 
-      if (simulate && this.tokenSet.timestamp) {
+      if (simulate && this.tokenSet.timestamp && (myMode == 0 || myMode == 1)) {
         for (const [i, point] of points.entries()) {
           // console.log(now() + " INFO TradeFungibles:computed.newBuyOffers - point[" + i + "]: " + JSON.stringify(point));
           try {
