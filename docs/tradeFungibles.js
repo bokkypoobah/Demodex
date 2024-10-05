@@ -1855,7 +1855,7 @@ data: {{ data }}
             }
           }
         }
-        records.push({ ...price, originalTokens: price.tokens, tokens: tokens.toString(), totalTokens: totalTokens.toString(), weths: weths != null && weths.toString() || null, totalWeths: totalWeths.toString() });
+        records.push({ ...price, originalTokens: price.tokens, tokens: tokens.toString(), totalTokens: totalTokens.toString(), weths: weths != null && weths.toString() || null, totalWeths: totalWeths.toString(), _rowVariant: price.txHash == null ? 'danger' : null });
       }
       if (maxTokens != null || maxWeth != null) {
         filledTokens = totalTokens;
@@ -2136,7 +2136,7 @@ data: {{ data }}
             }
           }
         }
-        records.push({ ...price, originalTokens: price.tokens, tokens: tokens.toString(), totalTokens: totalTokens.toString(), weths: weths != null && weths.toString() || null, totalWeths: totalWeths.toString() });
+        records.push({ ...price, originalTokens: price.tokens, tokens: tokens.toString(), totalTokens: totalTokens.toString(), weths: weths != null && weths.toString() || null, totalWeths: totalWeths.toString(), _rowVariant: price.txHash == null ? 'danger' : null });
       }
       if (maxTokens != null || maxWeth != null) {
         filledTokens = totalTokens;
