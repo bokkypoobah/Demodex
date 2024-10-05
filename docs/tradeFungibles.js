@@ -101,54 +101,6 @@ const TradeFungibles = {
           </b-form-group>
         </b-modal>
 
-        <!-- <b-modal ref="modalbuyoffer" hide-footer header-class="m-0 px-3 py-2" body-class="m-0 p-0" body-bg-variant="light" size="lg">
-          <template #modal-title>Trade Fungibles - Buy Offer</template>
-          <div class="m-0 p-1">
-            <b-form-group label="Maker:" label-for="modalbuyoffer-maker" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
-              <b-input-group style="width: 25.0rem;">
-                <b-form-input size="sm" plaintext id="modalbuyoffer-maker" :value="modalBuyOffer.maker" class="pl-2 w-75"></b-form-input>
-                <b-input-group-append>
-                  <b-button size="sm" :href="explorer + 'address/' + modalBuyOffer.maker" variant="link" v-b-popover.hover.ds500="'View in explorer'" target="_blank" class="m-0 mt-1 ml-2 mr-2 p-0"><b-icon-link45deg shift-v="-1" font-scale="1.2"></b-icon-link45deg></b-button>
-                </b-input-group-append>
-              </b-input-group>
-            </b-form-group>
-            <b-form-group label="Token Agent:" label-for="modalbuyoffer-tokenagent" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
-              <b-input-group style="width: 25.0rem;">
-                <b-form-input size="sm" plaintext id="modalbuyoffer-tokenagent" :value="modalBuyOffer.tokenAgent" class="pl-2 w-75"></b-form-input>
-                <b-input-group-append>
-                  <b-button size="sm" :href="explorer + 'address/' + modalBuyOffer.tokenAgent + '#code'" variant="link" v-b-popover.hover.ds500="'View in explorer'" target="_blank" class="m-0 mt-1 ml-2 mr-2 p-0"><b-icon-link45deg shift-v="-1" font-scale="1.2"></b-icon-link45deg></b-button>
-                </b-input-group-append>
-              </b-input-group>
-            </b-form-group>
-            <b-form-group label="Timestamp:" label-for="modalbuyoffer-timestamp" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
-              <b-input-group style="width: 25.0rem;">
-                <b-form-input size="sm" plaintext id="modalbuyoffer-timestamp" :value="modalBuyOffer.offer && formatTimestamp(modalBuyOffer.offer.timestamp)" class="pl-2 w-75"></b-form-input>
-                <b-input-group-append>
-                  <b-button size="sm" :disabled="!modalBuyOffer.offer" :href="explorer + 'tx/' + (modalBuyOffer.offer && modalBuyOffer.offer.txHash || '') + '#eventlog#' + modalBuyOffer.logIndex" variant="link" v-b-popover.hover.ds500="'View transaction in explorer'" target="_blank" class="m-0 mt-1 ml-2 mr-2 p-0"><b-icon-link45deg shift-v="-1" font-scale="1.2"></b-icon-link45deg></b-button>
-                </b-input-group-append>
-              </b-input-group>
-            </b-form-group>
-            <b-form-group label="Expiry:" label-for="modalbuyoffer-expiry" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
-              <b-input-group style="width: 25.0rem;">
-                <b-form-input size="sm" plaintext id="modalbuyoffer-expiry" :value="modalBuyOffer.expiry == 0 ? 'n/a' : formatTimestamp(modalBuyOffer.expiry)" class="pl-2 w-75"></b-form-input>
-              </b-input-group>
-            </b-form-group>
-            <b-form-group label="Nonce:" label-for="modalbuyoffer-nonce" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
-              <b-input-group style="width: 25.0rem;">
-                <b-form-input size="sm" plaintext id="modalbuyoffer-nonce" :value="modalBuyOffer.offer && modalBuyOffer.offer.nonce" class="pl-2 w-75"></b-form-input>
-              </b-input-group>
-            </b-form-group>
-            <font size="-2">
-              <pre>
-buyOffer: {{ buyOffer }}
-              </pre>
-              <pre>
-modalBuyOffer: {{ modalBuyOffer }}
-              </pre>
-            </font>
-          </div>
-        </b-modal> -->
-
         <b-tabs small card v-model="settings.tabIndex" @input="saveSettings();" content-class="mt-0" align="left">
           <template #tabs-start>
             <div class="d-flex flex-wrap m-0 p-0">
@@ -2230,86 +2182,6 @@ data: {{ data }}
       return this.filteredSortedSellOffers.slice((this.settings.sellOffers.currentPage - 1) * this.settings.sellOffers.pageSize, this.settings.sellOffers.currentPage * this.settings.sellOffers.pageSize);
     },
 
-    // buyOffersToDelete() {
-    //   const results = [];
-    //   console.log(now() + " INFO TradeFungibles:computed.buyOffers - this.buyByMakers: " + JSON.stringify(this.buyByMakers, null, 2));
-    //   const collator = {};
-    //   for (const [tokenAgent, d] of Object.entries(this.data.tokenAgents)) {
-    //     if (!(d.owner in collator)) {
-    //       collator[d.owner] = {
-    //         wethBalance: this.balances[this.data.weth] && this.balances[this.data.weth][d.owner] && this.balances[this.data.weth][d.owner].tokens || 0,
-    //         tokenAgents: {},
-    //       };
-    //     }
-    //     collator[d.owner].tokenAgents[tokenAgent] = {
-    //       wethApproval: this.approvals[this.data.weth] && this.approvals[this.data.weth][d.owner] && this.approvals[this.data.weth][d.owner][tokenAgent] && this.approvals[this.data.weth][d.owner][tokenAgent].tokens || 0,
-    //       offers: {},
-    //       prices: [],
-    //     };
-    //     const prices = [];
-    //     for (const [offerIndex, o] of Object.entries(d.offers)) {
-    //       if (d.nonce == o.nonce && (o.expiry == 0 || o.expiry > this.data.timestamp) && o.buySell == 0) {
-    //         collator[d.owner].tokenAgents[tokenAgent].offers[offerIndex] = o;
-    //         if (o.prices.length == 1 && o.tokenss.length == 0) {
-    //           prices.push({ offerIndex: o.index, priceIndex: 0, price: o.prices[0], tokens: null });
-    //         } else {
-    //           for (let i = 0; i < o.prices.length; i++) {
-    //             prices.push({ offerIndex: o.index, priceIndex: i, price: o.prices[i], tokens: o.tokenss[i], tokensAvailable: null });
-    //           }
-    //         }
-    //       }
-    //     }
-    //     prices.sort((a, b) => {
-    //       const aP = ethers.BigNumber.from(a.price);
-    //       // TODO: handle null tokens
-    //       const aT = a.tokens != null && ethers.BigNumber.from(a.tokens) || null;
-    //       const bP = ethers.BigNumber.from(b.price);
-    //       const bT = b.tokens != null && ethers.BigNumber.from(b.tokens) || null;
-    //       if (aP.eq(bP)) {
-    //         if (aT == null) {
-    //           return 1;
-    //         } else if (bT == null) {
-    //           return -1;
-    //         } else {
-    //           return aT.lt(bT) ? 1 : -1;
-    //         }
-    //       } else {
-    //         return aP.lt(bP) ? 1 : -1;
-    //       }
-    //     });
-    //     const wethBalance = ethers.BigNumber.from(collator[d.owner].wethBalance);
-    //     // const wethBalance = ethers.BigNumber.from("100000000000000003");
-    //     const wethApproval = ethers.BigNumber.from(collator[d.owner].tokenAgents[tokenAgent].wethApproval);
-    //     let wethRemaining = wethBalance.lte(wethApproval) ? wethBalance: wethApproval;
-    //     console.log(now() + " INFO TradeFungibles:computed.buyOffers - maker: " + d.owner.substring(0, 10) + ", tokenAgent: " + tokenAgent.substring(0, 10) + ", wethBalance: " + ethers.utils.formatEther(wethBalance) + ", wethApproval: " + ethers.utils.formatEther(wethApproval) + ", wethRemaining: " + ethers.utils.formatEther(wethRemaining));
-    //     for (const [i, e] of prices.entries()) {
-    //       const tokens = ethers.BigNumber.from(e.tokens);
-    //       const tokensRemaining = wethRemaining.mul(TENPOW18).div(e.price);
-    //       const tokensAvailable = tokens.lte(tokensRemaining) ? tokens : tokensRemaining;
-    //       const wethAvailable = tokensAvailable.mul(ethers.BigNumber.from(e.price)).div(TENPOW18);
-    //       wethRemaining = wethRemaining.sub(wethAvailable);
-    //       console.log("    offerIndex: " + e.offerIndex + ", priceIndex: " + e.priceIndex + ", price: " + ethers.utils.formatEther(e.price) +
-    //         ", tokens: " + ethers.utils.formatEther(tokens) +
-    //         ", tokensAvailable: " + ethers.utils.formatEther(tokensAvailable) +
-    //         ", wethRemaining: " + ethers.utils.formatEther(wethRemaining)
-    //       );
-    //       prices[i].tokensAvailable = tokensAvailable.toString();
-    //       if (tokensAvailable.gt(0)) {
-    //         const o = d.offers[e.offerIndex];
-    //         results.push({
-    //           txHash: o.txHash, logIndex: o.logIndex, maker: d.owner, tokenAgent,
-    //           tokenAgentIndexByOwner: this.data.tokenAgents[tokenAgent].indexByOwner,
-    //           offerIndex: e.offerIndex, priceIndex: e.priceIndex, price: e.price, tokens: tokens.toString(), tokensAvailable: tokensAvailable.toString(),
-    //           expiry: o.expiry,
-    //         });
-    //       }
-    //     }
-    //     collator[d.owner].tokenAgents[tokenAgent].prices = prices;
-    //   }
-    //   // console.log(now() + " INFO TradeFungibles:computed.buyOffers - collator: " + JSON.stringify(collator, null, 2));
-    //   return results;
-    // },
-
     filteredSortedBuyOffers() {
       // const results = this.buyOffers;
       const results = this.newBuyOffers.records;
@@ -3470,45 +3342,6 @@ data: {{ data }}
         // };
         // this.$refs.modalbuyoffer.show();
         this.$refs.buyOffersTable.clearSelected();
-      }
-    },
-
-    async deployNewTokenAgent() {
-      console.log(now() + " INFO TradeFungibles:methods.deployNewTokenAgent");
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const network = this.chainId && NETWORKS[this.chainId.toString()] || {};
-      if (network.tokenAgentFactory) {
-        const contract = new ethers.Contract(network.tokenAgentFactory.address, network.tokenAgentFactory.abi, provider);
-        const contractWithSigner = contract.connect(provider.getSigner());
-        try {
-          const tx = await contractWithSigner.newTokenAgent();
-          // const tx = { hash: "blah" };
-          console.log(now() + " INFO TradeFungibles:methods.deployNewTokenAgent - tx: " + JSON.stringify(tx));
-          const h = this.$createElement;
-          const vNodesMsg = h(
-            'p',
-            { class: ['text-left', 'mb-0'] },
-            [
-              h('a', { attrs: { href: this.explorer + 'tx/' + tx.hash, target: '_blank' } }, tx.hash.substring(0, 20) + '...' + tx.hash.slice(-18)),
-              h('br'),
-              h('br'),
-              'Resync after this tx has been included',
-            ]
-          );
-          this.$bvToast.toast([vNodesMsg], {
-            title: 'Transaction submitted',
-            autoHideDelay: 5000,
-          });
-          this.$refs['modalnewtokenagent'].hide();
-          this.settings.newTokenAgent.show = false;
-          this.saveSettings();
-        } catch (e) {
-          console.log(now() + " ERROR TradeFungibles:methods.deployNewTokenAgent: " + JSON.stringify(e));
-          this.$bvToast.toast(`${e.message}`, {
-            title: 'Error!',
-            autoHideDelay: 5000,
-          });
-        }
       }
     },
 
