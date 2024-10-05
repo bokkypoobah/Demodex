@@ -23,7 +23,7 @@ Select `0x7439E9Bb6D8a84dd3A23fe621A30F95403F87fB9` `WEENUS` from the dropdown l
 
 `WEENUS` should now be in your list of token contracts.
 
-Note: To mint 1,000 `WEENUS` tokens for testing, send a 0 value transaction to `0x7439E9Bb6D8a84dd3A23fe621A30F95403F87fB9` on Sepolia.
+Note: To mint 1,000 `WEENUS` tokens for testing, send a 0 value transaction to [0x7439E9Bb6D8a84dd3A23fe621A30F95403F87fB9](https://sepolia.etherscan.io/address/0x7439E9Bb6D8a84dd3A23fe621A30F95403F87fB9#code) on Sepolia.
 
 <kbd><img src="images/TokenContracts_3_20241005.png" width="600"/></kbd>
 
@@ -69,6 +69,10 @@ Click on the [circular-arrow] icon to Sync after adding.
 
 <kbd><img src="images/TradeFungibles_8_20241005.png" width="600"/></kbd>
 
+<br />
+
+###### Take Offer
+
 Taking a Buy Offer. Enter requested amount and click [Sell WEENUS].
 
 Note:
@@ -80,6 +84,21 @@ Note:
 The Events tab shows the offers, trades and related transfers
 
 <kbd><img src="images/TradeFungibles_10_20241005.png" width="600"/></kbd>
+
+<br />
+
+###### Approvals
+
+Click on the [Wallet] icon to view and/or set your token balances and approvals
+
+<kbd><img src="images/Wallet_1_20241005.png" width="600"/></kbd>
+
+Enter amounts in the appropriate fields and click the associated button to update.
+
+Note: To mint 1,000 `WEENUS` tokens for testing, send a 0 value transaction to [0x7439E9Bb6D8a84dd3A23fe621A30F95403F87fB9](https://sepolia.etherscan.io/address/0x7439E9Bb6D8a84dd3A23fe621A30F95403F87fB9#code) on Sepolia.
+
+<kbd><img src="images/Wallet_2_20241005.png" width="600"/></kbd>
+
 
 
 <br />
