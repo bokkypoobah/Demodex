@@ -208,6 +208,8 @@ const TradeFungibles = {
         <b-card v-if="settings.tabIndex == 0" class="m-0 p-0 border-0" body-class="m-0 p-0">
           <b-row class="m-0 p-0">
             <b-col v-if="settings.viewMode == 0 || settings.viewMode == 1" class="m-0 mr-1 p-0">
+
+              <!-- :SELLOFFERS -->
               <div class="d-flex flex-wrap m-0 mt-1 p-0">
                 <div class="mt-1 pr-3">
                   Sell Offers
@@ -356,6 +358,8 @@ const TradeFungibles = {
               </font>
             </b-col>
             <b-col v-if="settings.viewMode == 0 || settings.viewMode == 2" class="m-0 ml-1 p-0">
+
+              <!-- :BUYOFFERS -->
               <div class="d-flex flex-wrap m-0 mt-1 p-0">
                 <div class="mt-0 pr-1">
                   <b-button v-if="settings.viewMode == 0" size="sm" @click="settings.viewMode = 2; saveSettings();" variant="link" v-b-popover.hover.ds500="'Buy offers view'" class="m-0 p-0">
@@ -495,6 +499,8 @@ const TradeFungibles = {
             <b-col class="m-0 mr-1 p-0">
               <b-card v-if="settings.viewMode == 0 || settings.viewMode == 1" :cols="settings.viewMode == 0 ? null : 6" no-body>
                 <b-tabs small card v-model="settings.sellOffers.tabIndex" @input="saveSettings();" pills card vertical nav-class="m-0 p-1" content-class="mt-0" active-tab-class="m-1 p-1" align="left" style="min-height: 260px;">
+
+                  <!-- :TAKESELLOFFER -->
                   <b-tab title="Take Offer" active>
                     <b-card-text class="m-0 p-0">
                       <b-form-group label="Requested amount:" label-for="takeselloffer-amounttype" label-size="sm" label-cols-sm="4" label-align-sm="right" class="m-0 p-0">
@@ -537,6 +543,8 @@ const TradeFungibles = {
                       </b-form-group>
                     </b-card-text>
                   </b-tab>
+
+                  <!-- :MAKESELLOFFER -->
                   <b-tab title="Make Offer">
                     <b-card-text>
                       <b-form-group label="Points:" label-size="sm" label-cols-sm="4" label-align-sm="right" :state="!sellOfferPointsFeedback" :invalid-feedback="sellOfferPointsFeedback" class="mx-0 my-1 p-0">
@@ -590,6 +598,8 @@ const TradeFungibles = {
             <b-col class="m-0 ml-1 p-0">
               <b-card v-if="settings.viewMode == 0 || settings.viewMode == 2" :cols="settings.viewMode == 0 ? null : 6" no-body>
                 <b-tabs small card v-model="settings.buyOffers.tabIndex" @input="saveSettings();" pills card vertical nav-class="m-0 p-1" content-class="mt-0" active-tab-class="m-1 p-1" align="left" style="min-height: 260px;">
+
+                  <!-- :TAKEBUYOFFER -->
                   <b-tab title="Take Offer" active>
                     <b-card-text class="m-0 p-0">
                       <b-form-group label="Requested amount:" label-for="takebuyoffer-amounttype" label-size="sm" label-cols-sm="4" label-align-sm="right" class="m-0 p-0">
@@ -632,6 +642,8 @@ const TradeFungibles = {
                       </b-form-group>
                     </b-card-text>
                   </b-tab>
+
+                  <!-- :MAKEBUYOFFER -->
                   <b-tab title="Make Offer">
                     <b-card-text>
                       <b-form-group label="Points:" label-size="sm" label-cols-sm="4" label-align-sm="right" :state="!buyOfferPointsFeedback" :invalid-feedback="buyOfferPointsFeedback" class="mx-0 my-1 p-0">
@@ -722,6 +734,7 @@ buyOffers: {{ buyOffers }}
           </b-row> -->
         </b-card>
 
+        <!-- :EVENTS -->
         <b-card v-if="settings.tabIndex == 1" class="m-0 p-0 border-0" body-class="m-0 p-0">
           <div class="d-flex flex-wrap m-0 mt-1 p-0">
             <div class="mt-0 pr-1">
