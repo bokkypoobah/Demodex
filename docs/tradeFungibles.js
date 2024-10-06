@@ -5,7 +5,7 @@ const TradeFungibles = {
 
         <b-modal id="wallet" ref="modalwallet" v-model="wallet.show" @close="wallet.show = false;" hide-footer :hide-header-close=false header-class="m-0 px-3 pt-2 pb-1" body-class="m-0 p-0" body-bg-variant="light" size="lg">
           <template #modal-header="{ close }">
-            <h5 class="m-0 p-0">Balances and Approvals</h5>
+            <h6 class="m-0 mt-1 p-0">{{ indexToAddress[wallet.address] }}</h6>
             <div>
               <b-button type="button" @click="close()" variant="none" class="close">×</b-button>
               <b-button size="sm" :disabled="!networkSupported || sync.completed != null" @click="refreshWallet();" v-b-popover.hover.ds500="'Refresh'" variant="link"><b-icon-arrow-repeat shift-v="+1" font-scale="1.2"></b-icon-arrow-repeat></b-button>
@@ -547,9 +547,9 @@ const TradeFungibles = {
                   <!-- :MAKESELLOFFER -->
                   <b-tab title="Make Offer">
                     <b-card-text>
-                      <b-form-group label="Points:" label-size="sm" label-cols-sm="4" label-align-sm="right" :state="!sellOfferPointsFeedback" :invalid-feedback="sellOfferPointsFeedback" class="mx-0 my-1 p-0">
+                      <b-form-group label="Points:" label-size="sm" label-cols-sm="3" label-align-sm="right" :state="!sellOfferPointsFeedback" :invalid-feedback="sellOfferPointsFeedback" class="mx-0 my-1 p-0">
                         <font size="-1">
-                          <b-table ref="addSellOfferPointsTable" small fixed striped sticky-header="600px" responsive hover :fields="addSellOfferPointsFields" :items="settings.sellOffers.points" show-empty head-variant="light" class="m-0 mt-1">
+                          <b-table ref="addSellOfferPointsTable" small fixed striped sticky-header="600px" responsive hover :fields="addSellOfferPointsFields" :items="settings.sellOffers.points" show-empty head-variant="light" class="m-0 mt-1 w-75">
                             <template #empty="scope">
                               Click [+] below to add a new row
                             </template>
@@ -581,13 +581,13 @@ const TradeFungibles = {
                           </b-table>
                         </font>
                       </b-form-group>
-                      <b-form-group label="Expiry:" label-for="addselloffer-expirytime" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+                      <b-form-group label="Expiry:" label-for="addselloffer-expirytime" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
                         <b-form-datepicker size="sm" id="addselloffer-expirydate" v-model="sellExpiryDate" :date-format-options="{ year: 'numeric', month: 'short', day: '2-digit', weekday: 'short' }" reset-button today-button close-button label-reset-button="No Expiry" label-no-date-selected="No Expiry" class="w-75"></b-form-datepicker>
                       </b-form-group>
-                      <b-form-group v-if="sellExpiryDate" label="" label-for="addselloffer-expirytime" label-size="sm" label-cols-sm="4" label-align-sm="right" :description="formatTimestampUTC(settings.sellOffers.expiry)" class="mx-0 my-1 p-0">
+                      <b-form-group v-if="sellExpiryDate" label="" label-for="addselloffer-expirytime" label-size="sm" label-cols-sm="3" label-align-sm="right" :description="formatTimestampUTC(settings.sellOffers.expiry)" class="mx-0 my-1 p-0">
                         <b-form-timepicker size="sm" id="addselloffer-expirytime" v-model="sellExpiryTime" minutes-step="15" now-button label-no-time-selected="Select" class="w-50"></b-form-timepicker>
                       </b-form-group>
-                      <b-form-group label="" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+                      <b-form-group label="" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
                         <b-button size="sm" :disabled="settings.sellOffers.points.length == 0 || !!sellOfferPointsFeedback" @click="execAddSellOffer" variant="warning">Add Sell {{ settings.symbol }} Offer</b-button>
                       </b-form-group>
                     </b-card-text>
@@ -646,9 +646,9 @@ const TradeFungibles = {
                   <!-- :MAKEBUYOFFER -->
                   <b-tab title="Make Offer">
                     <b-card-text>
-                      <b-form-group label="Points:" label-size="sm" label-cols-sm="4" label-align-sm="right" :state="!buyOfferPointsFeedback" :invalid-feedback="buyOfferPointsFeedback" class="mx-0 my-1 p-0">
+                      <b-form-group label="Points:" label-size="sm" label-cols-sm="3" label-align-sm="right" :state="!buyOfferPointsFeedback" :invalid-feedback="buyOfferPointsFeedback" class="mx-0 my-1 p-0">
                         <font size="-1">
-                          <b-table ref="addSellOfferPointsTable" small fixed striped sticky-header="600px" responsive hover :fields="addSellOfferPointsFields" :items="settings.buyOffers.points" show-empty head-variant="light" class="m-0 mt-1">
+                          <b-table ref="addSellOfferPointsTable" small fixed striped sticky-header="600px" responsive hover :fields="addSellOfferPointsFields" :items="settings.buyOffers.points" show-empty head-variant="light" class="m-0 mt-1 w-75">
                             <template #empty="scope">
                               Click [+] below to add a new row
                             </template>
@@ -680,13 +680,13 @@ const TradeFungibles = {
                           </b-table>
                         </font>
                       </b-form-group>
-                      <b-form-group label="Expiry:" label-for="addbuyoffer-expirytime" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+                      <b-form-group label="Expiry:" label-for="addbuyoffer-expirytime" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
                         <b-form-datepicker size="sm" id="addbuyoffer-expirydate" v-model="buyExpiryDate" :date-format-options="{ year: 'numeric', month: 'short', day: '2-digit', weekday: 'short' }" reset-button today-button close-button label-reset-button="No Expiry" label-no-date-selected="No Expiry" class="w-75"></b-form-datepicker>
                       </b-form-group>
-                      <b-form-group v-if="buyExpiryDate" label="" label-for="addbuyoffer-expirytime" label-size="sm" label-cols-sm="4" label-align-sm="right" :description="formatTimestampUTC(settings.buyOffers.expiry)" class="mx-0 my-1 p-0">
+                      <b-form-group v-if="buyExpiryDate" label="" label-for="addbuyoffer-expirytime" label-size="sm" label-cols-sm="3" label-align-sm="right" :description="formatTimestampUTC(settings.buyOffers.expiry)" class="mx-0 my-1 p-0">
                         <b-form-timepicker size="sm" id="addbuyoffer-expirytime" v-model="buyExpiryTime" minutes-step="15" now-button label-no-time-selected="Select" class="w-50"></b-form-timepicker>
                       </b-form-group>
-                      <b-form-group label="" label-size="sm" label-cols-sm="4" label-align-sm="right" class="mx-0 my-1 p-0">
+                      <b-form-group label="" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
                         <b-button size="sm" :disabled="settings.buyOffers.points.length == 0 || !!buyOfferPointsFeedback" @click="execAddBuyOffer" variant="warning">Add Buy {{ settings.symbol }} Offer</b-button>
                       </b-form-group>
                     </b-card-text>
